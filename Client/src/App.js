@@ -1,33 +1,21 @@
 import React from 'react'
-import './App.css'
+import {Route, Switch} from 'react-router-dom'
+import Auth from './containers/Auth/Auth'
+import Registration from './containers/Registration/Registration'
+import Main from './containers/Main/Main'
 
-function App() {
-  return (
-    <div className='app'>
-      <div className='header'>
-        <a href='http://'>Регистрация</a>
-      </div>
-
-      <div className="form_box">
-        <h2>Авторизация</h2>
-        <form>
-          <lable>Имя пользователя/Email</lable>
-          <input type='text'></input><br />
-
-          <label>Пароль</label>
-          <input type='password'></input><br />
-
-          <label>Должность</label>
-          <input type='select'></input><br />
-
-          <input type='checkbox' /><label>Запомнить меня</label><br />
-          <input type='submit' value='Вход'></input>
-          <a href='http://'>Забыли пароль?</a><br />
-          <a class='link_registration' href='http://'>Нужен аккаунт? Зарегистрируйтесь!</a>
-        </form>
-      </div>
-    </div>
-  )
+class App extends React.Component {
+	render() {
+		return (
+    		<div className='app'>
+				<Switch>
+					<Route path='/registration' component={Registration} />
+					<Route path='/auth' component={Auth} />
+					<Route path='/' exact component={Main} />
+				</Switch>
+    		</div>
+  		)
+	}
 }
 
 export default App
