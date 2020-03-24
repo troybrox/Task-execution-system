@@ -1,11 +1,22 @@
 import React from 'react'
+import './Input.scss'
+import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 
 const Input = props => {
+    const cls = ['input_fields']
+
+    if (!props.valid) cls.push('invalid')
+    
     return (
-        <input
-            className='input_fields'
-            type={props.type}
-        />
+        <Auxiliary>
+            <input
+                className={cls.join(' ')}
+                type={props.type}
+                value={props.value}
+                onChange={props.onChange}
+            /><br />
+        </Auxiliary>
+
     )
 }
 

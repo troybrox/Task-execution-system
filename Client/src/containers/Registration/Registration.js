@@ -1,109 +1,130 @@
 import React from 'react'
 import './Registration.scss'
-import LayoutAuth from '../../hoc/LayoutAuth/LayoutAuth'
-import Label from '../../components/UI/Label/Label'
-import Input from '../../components/UI/Input/Input'
-import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
+import Layout from '../../hoc/Layout/Layout'
 
 class Registration extends React.Component {
 	state = {
 		roles: ['Выберите роль','Преподаватель','Студент'],
 		fields: [
-			{ label: 'Имя пользователя', type: 'text', visible: true },
-			{ label: 'Адрес эл. почты', type: 'email', visible: true },
-			{ label: 'Роль', type: 'select', visible: true },
-			{ label: 'Кафедра', type: 'text', visible: true },
-			{ label: 'Факультет', type: 'text', visible: true },
-			{ label: 'Должность', type: 'text', visible: false },
-			{ label: 'Группа', type: 'text', visible: false },
-			{ label: 'Пароль', type: 'password', visible: true },
-			{ label: 'Введите пароль еще раз', type: 'password', visible: true },
+			{ value: '', label: 'Имя пользователя', type: 'text', valid: true },
+			{ value: '', label: 'Адрес эл. почты', type: 'email', valid: true },
+			{ value: '', label: 'Роль', type: 'select', valid: true },
+			{ value: '', label: 'Кафедра', type: 'text', valid: true },
+			{ value: '', label: 'Факультет', type: 'text', valid: true },
+			{ value: '', label: 'Должность', type: 'text', invisible: true, valid: true },
+			{ value: '', label: 'Группа', type: 'text', invisible: true, valid: true },
+			{ value: '', label: 'Пароль', type: 'password', valid: true },
+			{ value: '', label: 'Введите пароль еще раз', type: 'password', valid: true },
 		]
 	}
+
+	// Отслеживаем изменение каждого input поля
+	onChangeHandler = (event, index) => {
+        let fields = [...this.state.fields]
+		let control = fields[index]
+
+		control.value = event.target.value
+		control.type === 'password' ? 
+			fields[index].valid = control.value !== '' : 
+			fields[index].valid = control.value.trim() !== ''
+        
+        fields[index] = control
+
+        this.setState({
+            fields
+        })
+    }
 	
 	// Функция для динамического появления/скрытия дополнительного поля
 	// при выборе роли пользователя
-	selectRole = role => {
+	// + изменение поля Роли
+	selectRole = event => {
 		const fields = [...this.state.fields]
-		const index = 5 // номер элемента, в state.fields, который мы будем, либо показывать, либо скрывать
-		fields[index].visible = false // изначально скрываем поле Должность
-		fields[index + 1].visible = false // так же скрываем поле Группа
+		let index;
+		
+		// вычисляем индекс скрытых полей
+		fields.forEach((el, number) => {
+			if (el.hasOwnProperty('invisible')) {
+				index = number - 1
+				return
+			} 
+		})
+	 	// номер элемента в state.fields, который мы будем, либо показывать, либо скрывать
+		fields[index].invisible = true // изначально скрываем поле Должность
+		fields[index + 1].invisible = true // так же скрываем поле Группа
 		
 		// В зависимости от роли отображаем нужное, либо ничего не менчем
-		switch (role) {
+		switch (event.target.value) {
 			case 'Преподаватель': 
-				fields[index].visible = true; 
+				fields[index].invisible = false
 				break;
 			case 'Студент': 
-				fields[index + 1].visible = true; 
+				fields[index + 1].invisible = false
 				break;
 			default: break;
 		}
+
+		// Меняем поле выбора Роли
+		fields.forEach((el, number) => {
+			if (el.type === 'select') {
+				index = number 
+				return
+			} 
+		})
+
+		let control = fields[index]
+
+		control.value = event.target.value
+		control.valid = control.value !== 'Выберите роль'
+		
+		fields[index] = control
 
 		this.setState({
 			fields
 		})
 	}
 
-	// Рендерим поля для select(для выбора роли), данные о полях берем из массива state.roles
-	renderOptionRole() {
-		return this.state.roles.map((role, index) => {
-			return (
-				<option 
-					key={index} 
-				>
-					{role}
-				</option>
-			)
+	// Смена валидации паролей, в случае их совпадения или несовпадения
+	checkPasswordsHandler = result => {
+		const fields = [...this.state.fields]
+		fields.forEach(el => {
+			if (el.type === 'password')	el.valid = result
 		})
+
+		this.setState({fields})
 	}
 
-	// Рендерим колону с label с помощью универсального компонента Label
-	renderLabels() {
-		return this.state.fields.map((item, index) => {
-			return item.visible ? <Label key={index} label={item.label} /> : null
+	// Отображение всех пустых полей
+	emptyFieldsHandler = () => {
+		const fields = [...this.state.fields]
+		fields.forEach(el => {
+			if (el.value === '') el.valid = false
 		})
+
+		this.setState({fields})
 	}
 
-	// Рендерим колону с input, с помощью универсального компонента Input
-	// но так как у нас есть поле select, то делаем проверку на type
-	// и в случае type='select' выводим select
-	renderInputs() {
-		const select = (
-			<Auxiliary key='select'>
-				<select className='select' onChange={(event) => this.selectRole(event.target.value)} required>
-					{ this.renderOptionRole() }
-				</select><br />
-			</Auxiliary>
-		)
-		return this.state.fields.map((item, index) => {
-			return item.type === 'select' ? select : 
-				item.visible ? <Input key={index} type={item.type} /> : null
-		})
-	}
-
-	// LayoutAuth - компонент высшего порядка для аутентификации
-	// (универсальный для регистрации и авторизации)
+	// Layout - компонент высшего порядка для аутентификации
+	// (универсальный для регистрации, авторизации и восстановления пароля)
 	// поэтому вносим необходимые данные компонента регистрации в props 
-	// и редерим компонент LayoutAuth 
+	// и редерим компонент Layout 
 	render() {
         return (
-			<LayoutAuth
+			<Layout
 				head='Вход'
 				hTitle='Регистрация'
 				link='Уже есть аккаунт? Авторизируйтесь!'
 				to='/auth'
 				img='images/reg.png'
+				fields={this.state.fields}
+				roles={this.state.roles}
+				onChange={this.onChangeHandler}
+				onSelect={this.selectRole}
+				checkPasswords={this.checkPasswordsHandler}
+				emptyFields={this.emptyFieldsHandler}
 			>
-				<div className='all_labels'>
-					{ this.renderLabels() }
-				</div>
-
-				<div className='all_inputs'>
-					{ this.renderInputs() }
-					<input type='submit' className='submit input_fields' value='Регистрация пользователя' />
-				</div>
-			</LayoutAuth>
+				<input className='submit input_fields' type='submit' value='Регистрация пользователя' />
+			</Layout>
         )
     }
 }
