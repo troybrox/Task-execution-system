@@ -17,7 +17,9 @@ class Auth extends React.Component {
         let control = fields[index]
 
         control.value = event.target.value
-        control.valid = control.value !== ''
+		control.type === 'password' ? 
+			fields[index].valid = control.value !== '' : 
+			fields[index].valid = control.value.trim() !== ''
         
         fields[index] = control
 
@@ -25,6 +27,16 @@ class Auth extends React.Component {
             fields
         })
     }
+
+    // Выявление невалидных полей
+    emptyFieldsHandler = () => {
+		const fields = [...this.state.fields]
+		fields.forEach(el => {
+			if (el.value === '') el.valid = false
+		})
+
+		this.setState({fields})
+	}
 
 	// Layout - компонент высшего порядка для аутентификации
 	// (универсальный для регистрации, авторизации и восстановления пароля)
@@ -40,6 +52,7 @@ class Auth extends React.Component {
                 img='images/user.png'
                 fields={this.state.fields}
                 onChange={this.onChangeHandler}
+                emptyFields={this.emptyFieldsHandler}
 			>
                 <input type='checkbox' id='checkbox' className='any_types_inputs' />
                 <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br />

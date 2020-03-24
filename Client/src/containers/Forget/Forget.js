@@ -6,7 +6,7 @@ class Forget extends React.Component {
     state = {
         fields: [
             { value: '', label: 'Имя', type: 'text', valid: true },
-            { value: '', label: 'Адрес эл. почты', type: 'text', valid: true },
+            { value: '', label: 'Адрес эл. почты', type: 'email', valid: true },
             { value: '', label: 'Телефон', type: 'text', valid: true },
         ]
     }
@@ -17,7 +17,7 @@ class Forget extends React.Component {
         let control = fields[index]
 
         control.value = event.target.value
-        control.valid = control.value !== ''
+        control.valid = control.value.trim() !== ''
         
         fields[index] = control
 
@@ -25,6 +25,15 @@ class Forget extends React.Component {
             fields
         })
     }
+
+    emptyFieldsHandler = () => {
+		const fields = [...this.state.fields]
+		fields.forEach(el => {
+			if (el.value === '') el.valid = false
+		})
+
+		this.setState({fields})
+	}
 
 	// Layout - компонент высшего порядка для аутентификации
 	// (универсальный для регистрации, авторизации и восстановления пароля)
@@ -40,6 +49,7 @@ class Forget extends React.Component {
                 img='images/reg.png'
                 fields={this.state.fields}
                 onChange={this.onChangeHandler}
+                emptyFields={this.emptyFieldsHandler}
 			>
                 <input className='submit any_types_inputs' type='submit' value='Восстановление' />
 
