@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 import './Registration.scss'
 import Layout from '../../hoc/Layout/Layout'
 
@@ -6,16 +7,79 @@ class Registration extends React.Component {
 	state = {
 		roles: ['Выберите роль','Преподаватель','Студент'],
 		fields: [
-			{ value: '', label: 'Имя пользователя', type: 'text', valid: true },
-			{ value: '', label: 'Адрес эл. почты', type: 'email', valid: true },
+			{ value: '', label: 'Имя', type: 'text', serverName: 'Name', valid: true },
+			{ value: '', label: 'Отчество', type: 'text', serverName: 'Patronymic', valid: true },
+			{ value: '', label: 'Фамилия', type: 'text', serverName: 'Surname', valid: true },
+			{ value: '', label: 'Логин', type: 'text', serverName: 'UserName', valid: true },
+			{ value: '', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true },
 			{ value: '', label: 'Роль', type: 'select', valid: true },
-			{ value: '', label: 'Кафедра', type: 'text', valid: true },
-			{ value: '', label: 'Факультет', type: 'text', valid: true },
-			{ value: '', label: 'Должность', type: 'text', invisible: true, valid: true },
-			{ value: '', label: 'Группа', type: 'text', invisible: true, valid: true },
-			{ value: '', label: 'Пароль', type: 'password', valid: true },
+			{ value: '', label: 'Кафедра', type: 'text', serverName: 'Department', invisible: true, valid: true },
+			{ value: '', label: 'Предмет', type: 'text', serverName: 'Discipline', invisible: true, valid: true },
+			{ value: '', label: 'Должность', type: 'text', serverName: 'Position', invisible: true, valid: true },
+			{ value: '', label: 'Группа', type: 'text', serverName: 'Group', invisible: true, valid: true },
+			{ value: '', label: 'Пароль', type: 'password', serverName: 'Password', valid: true },
 			{ value: '', label: 'Введите пароль еще раз', type: 'password', valid: true },
 		]
+	}
+
+	// функция для отправки формы на сервер с проверкой на корректность данных
+	onSubmitHandler = event => {
+		event.preventDefault()
+		
+		let success = true // изначально проверка на валидность со значением true   
+		const password = []
+			
+		// если поле заполнено, валидно и предыдущие поля такие же, значит success = true
+		this.state.fields.forEach(el => {
+			if (el.invisible) return
+			if (el.type === 'password') {
+				password.push(el.value)
+			}
+			success = !!el.value && success
+		})
+
+		// если пароли не совпадают, то делаем их валидацию success = false
+		// и показываем это на полях
+		if (password[0] !== password[1]) {
+			success = false
+			this.checkPasswordsHandler(false)
+		} else {
+			this.checkPasswordsHandler(true)
+		}
+		
+		// если все поля валидны, то есть success = true
+		if (success) {
+			this.registerHandler()
+			// window.location.pathname = '/success'	
+		} else {
+			// если success = false, то показываем какие поля невалидны
+			this.emptyFieldsHandler()
+		}
+	}
+
+	registerHandler = async() => {
+		let role = ''
+		const data = {}
+		this.state.fields.forEach(item => {
+			if (item.type === 'select') {
+				if (item.value === 'Студент') role = 'student'
+				else role = 'teacher'
+			}
+			if (!item.hasOwnProperty('serverName')) return
+			if (item.hasOwnProperty('invisible')) {
+				if (!item.invisible) data[item.serverName] = item.value
+			} else {
+				data[item.serverName] = item.value
+			}
+		})
+		const url = `https://localhost:44303/api/account/register/${role}`
+
+		try {
+			await axios.post(url, data)
+		} catch (error) {
+			console.log(error)
+		}
+		
 	}
 
 	// Отслеживаем изменение каждого input поля
@@ -35,7 +99,7 @@ class Registration extends React.Component {
         })
     }
 	
-	// Функция для динамического появления/скрытия дополнительного поля
+	// Функция для динамического появления/скрытия дополнительных полей
 	// при выборе роли пользователя
 	// + изменение поля Роли
 	selectRole = event => {
@@ -45,21 +109,24 @@ class Registration extends React.Component {
 		// вычисляем индекс скрытых полей
 		fields.forEach((el, number) => {
 			if (el.hasOwnProperty('invisible')) {
-				index = number - 1
-				return
+				index = number
 			} 
 		})
+
 	 	// номер элемента в state.fields, который мы будем, либо показывать, либо скрывать
-		fields[index].invisible = true // изначально скрываем поле Должность
-		fields[index + 1].invisible = true // так же скрываем поле Группа
+		for (let i = 0; i < 4; i++) {
+			fields[index - i].invisible = true
+		}
 		
-		// В зависимости от роли отображаем нужное, либо ничего не менчем
+		// В зависимости от роли отображаем нужное, либо ничего не меняем
 		switch (event.target.value) {
 			case 'Преподаватель': 
-				fields[index].invisible = false
+				for (let i = 1; i < 4; i++)	{
+					fields[index - i].invisible = false
+				}
 				break;
 			case 'Студент': 
-				fields[index + 1].invisible = false
+				fields[index].invisible = false
 				break;
 			default: break;
 		}
@@ -68,7 +135,6 @@ class Registration extends React.Component {
 		fields.forEach((el, number) => {
 			if (el.type === 'select') {
 				index = number 
-				return
 			} 
 		})
 
@@ -120,8 +186,7 @@ class Registration extends React.Component {
 				roles={this.state.roles}
 				onChange={this.onChangeHandler}
 				onSelect={this.selectRole}
-				checkPasswords={this.checkPasswordsHandler}
-				emptyFields={this.emptyFieldsHandler}
+				onSubmit={this.onSubmitHandler}
 			>
 				<input className='submit input_fields' type='submit' value='Регистрация пользователя' />
 			</Layout>

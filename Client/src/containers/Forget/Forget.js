@@ -1,5 +1,4 @@
 import React from 'react'
-// import './Forget.scss'
 import Layout from '../../hoc/Layout/Layout'
 
 class Forget extends React.Component {
@@ -10,6 +9,26 @@ class Forget extends React.Component {
             { value: '', label: 'Телефон', type: 'text', valid: true },
         ]
     }
+
+        // функция для отправки формы на сервер с проверкой на корректность данных
+        onSubmitHandler = event => {
+            event.preventDefault()
+
+            let success = true // изначально проверка на валидность со значением true
+
+            // проверка полей авторизации или страницы забытого пароля
+            this.state.fields.forEach(el => {
+                success = el.valid && !!el.value && success
+            })
+    
+            // если все поля валидны, то есть success = true
+            if (success) {
+                window.location.pathname = '/success' 
+            } else {
+                // если success = false, то показываем какие поля невалидны
+                this.emptyFieldsHandler()
+            }
+        }
 
     // Отслеживаем изменение каждого input поля
     onChangeHandler = (event, index) => {
@@ -49,10 +68,9 @@ class Forget extends React.Component {
                 img='images/reg.png'
                 fields={this.state.fields}
                 onChange={this.onChangeHandler}
-                emptyFields={this.emptyFieldsHandler}
+                onSubmit={this.onSubmitHandler}
 			>
                 <input className='submit any_types_inputs' type='submit' value='Восстановление' />
-
 			</Layout>
         )
     }

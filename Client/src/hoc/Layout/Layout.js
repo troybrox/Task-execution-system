@@ -7,81 +7,6 @@ import Input from '../../components/UI/Input/Input'
 
 class Layout extends React.Component {
    
-    // функция для отправки формы на сервер с проверкой на корректность данных
-    submitHandler = event => {
-        event.preventDefault()
-        
-        let success = true // изначально проверка на валидность со значением true
-        // проверка полей Регистрации
-        if (this.props.hTitle === 'Регистрация') {   
-            const password = []
-            
-            // если поле заполнено, валидно и предыдущие поля такие же, значит success = true
-            this.props.fields.forEach(el => {
-                // скрытые поля не рассматриваем
-                if (el.invisible) return
-
-                // запоминаем значения двух паролей
-                if (el.type === 'password') {
-                    password.push(el.value)
-                }
-                success = !!el.value && success
-            })
-
-            // если пароли не совпадают, то делаем их валидацию success = false
-            // и показываем это на полях
-            if (password[0] !== password[1]) {
-                success = false
-                this.props.checkPasswords(false)
-            } else {
-                this.props.checkPasswords(true)
-            }
-        } else {
-            // проверка полей авторизации или страницы забытого пароля
-            this.props.fields.forEach(el => {
-                success = el.valid && !!el.value && success
-            })
-        }
-
-        // если все поля валидны, то есть success = true
-        if (success) {
-            if (this.props.hTitle === 'Авторизация') {
-                // при авторизации на сервер отправляем данные и ждем ответа, 
-                // после чего переходим на основную страницу
-
-// const request = new XMLHttpRequest()   // axios
-// const url = 'index.php'
-// const data = {
-//     page: this.props.hTitle, 
-//     fields: this.props.fields
-// }
-// request.open('POST', url)
-// request.send(data)
-
-// request.onload = function() {
-//     console.log(this.response)
-// }
-
-                window.location.pathname = '/'
-            } else {
-                // при регистрации на сервер отправляем данные
-                if (this.props.hTitle === 'Регистрация') {
-
-                }
-                // но если это была страница забытого пароля, то ничего не делаем,
-                // но можем и что-то сделать, если захотим))
-
-                // после чего перенаправляем на страницу успешной отправки данных 
-                // и просим пользователя ждать ответа на почту от администратора
-                window.location.pathname = '/success'
-            }
-        } else {
-            // если success = false, то показываем какие поля невалидны
-            this.props.emptyFields()
-        }
-        
-    }
-
     // Рендерим поля для select(для выбора роли), данные о полях берем из массива state.roles
 	renderOptionRole() {
 		return this.props.roles.map((role, index) => {
@@ -168,7 +93,7 @@ class Layout extends React.Component {
                 <main className="form_box">
                     <h2>{this.props.hTitle}</h2>
 
-                    <form onSubmit={this.submitHandler}>
+                    <form onSubmit={this.props.onSubmit}>
                         <div className='all_labels'>
 					        { this.renderLabels() }
 				        </div>

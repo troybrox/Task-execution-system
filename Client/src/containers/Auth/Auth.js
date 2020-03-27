@@ -1,14 +1,50 @@
 import React from 'react'
+import { NavLink } from 'react-router-dom'
+import axios from 'axios'
 import './Auth.scss'
 import Layout from '../../hoc/Layout/Layout'
-import { NavLink } from 'react-router-dom'
 
 class Auth extends React.Component {
     state = {
         fields: [
-            { value: '', label: 'Имя пользователя/Email', type: 'text', valid: true },
-            { value: '', label: 'Пароль', type: 'password', valid: true }
+            { value: '', label: 'Логин/Email', type: 'text', serverName: 'Login', valid: true },
+            { value: '', label: 'Пароль', type: 'password', serverName: 'Password', valid: true }
         ]
+    }
+
+    // функция для отправки формы на сервер с проверкой на корректность данных
+    onSubmitHandler = event => {
+        event.preventDefault()
+        
+        let success = true // изначально проверка на валидность со значением true
+
+        // проверка полей авторизации
+        this.state.fields.forEach(el => {
+            success = el.valid && !!el.value && success
+        })
+        
+        // если все поля валидны, то есть success = true
+        if (success) {  
+            this.loginHandler()  
+            //window.location.pathname = '/'
+        } else {
+            // если success = false, то показываем какие поля невалидны
+            this.emptyFieldsHandler()
+        }
+    }
+
+    loginHandler = async() => {
+        const url = 'https://localhost:44303/api/account/login'
+        const data = {}
+        this.state.fields.forEach(item => {
+            data[item.serverName] = item.value
+        })
+
+        try {
+            await axios.post(url, data)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     // Отслеживаем изменение каждого input поля
@@ -52,7 +88,7 @@ class Auth extends React.Component {
                 img='images/user.png'
                 fields={this.state.fields}
                 onChange={this.onChangeHandler}
-                emptyFields={this.emptyFieldsHandler}
+                onSubmit={this.onSubmitHandler}
 			>
                 <input type='checkbox' id='checkbox' className='any_types_inputs' />
                 <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br />
