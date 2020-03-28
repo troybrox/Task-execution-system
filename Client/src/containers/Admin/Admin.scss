@@ -1,0 +1,32 @@
+.admin {
+    header {
+        width: auto;
+        height: 50px;
+        background: rgb(196, 196, 196);
+        border-bottom: 2px solid rgb(150, 150, 150);
+        display: flex;
+    }
+
+    aside {
+        height: auto;
+        border-right: 1px solid rgb(150, 150, 150);
+        width: 300px;
+
+        ul {
+            list-style: none;
+            
+            li {
+                width: 120px;
+                padding: 5px 10px;
+                // width: min-content;
+                border-radius: 30px;
+                color: rgb(106, 187, 224);
+                border: 1px solid rgb(106, 187, 224);
+                text-align: center;
+                margin-bottom: 10px;
+            }
+        }
+    }
+
+
+}
