@@ -3,9 +3,9 @@ import React from 'react'
 class Action extends React.Component {
     render() {
         return (
-            <dvi className='action'>
+            <div className='action'>
 
-            </dvi>
+            </div>
         )
     }
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import {Route, Switch} from 'react-router-dom'
+import {Route, Switch, Redirect} from 'react-router-dom'
 import Auth from './containers/Auth/Auth'
 import Registration from './containers/Registration/Registration'
 import Admin from './containers/Admin/Admin'
@@ -13,9 +13,10 @@ class App extends React.Component {
 				<Switch>
 					<Route path='/registration' component={Registration} />
 					<Route path='/forget' component={Forget} />
-					<Route path='/auth' component={Auth} />
 					<Route path='/success' component={Success} />
-					<Route path='/' exact component={Admin} />
+					<Route path='/auth' component={Auth} />
+					<Redirect to={'/auth'} />
+					<Route path='/admin' exact component={Admin} />
 				</Switch>
     		</div>
   		)

@@ -3,6 +3,7 @@ import axios from 'axios'
 import './Registration.scss'
 import Layout from '../../hoc/Layout/Layout'
 
+
 class Registration extends React.Component {
 	state = {
 		roles: ['Выберите роль','Преподаватель','Студент'],
@@ -74,9 +75,17 @@ class Registration extends React.Component {
 		})
 		const url = `https://localhost:44303/api/account/register/${role}`
 
+
+		// return (
+		// 	<App>
+		// 		<Switch>
+		// 			{/* <Route path='/success' component={Success} /> */}
+		// 			<Redirect to={'/success'} />
+		// 		  </Switch>
+		// 	</App>
+		// )
 		try {
 			await axios.post(url, data)
-			window.location.pathname = '/success'
 		} catch (error) {
 			console.log(error)
 		}

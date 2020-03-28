@@ -1,29 +1,70 @@
 .admin {
+
     header {
-        width: auto;
-        height: 50px;
-        background: rgb(196, 196, 196);
-        border-bottom: 2px solid rgb(150, 150, 150);
         display: flex;
+        border-bottom: 2px solid rgb(167, 167, 167);
+        background: rgb(206, 206, 206);
+    
+        h2 {
+            position: absolute;
+            margin: 0 auto;
+            left: 0; 
+            right: 0;
+            line-height: 40px;
+            width: min-content;
+        }
+
+        span {
+            display: flex;
+            margin-left: auto;
+            margin-right: 10px;
+
+            h3 {
+                display: inline-block;
+                line-height: 40px;
+                margin-right: 10px;
+            }
+    
+            img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+            }
+
+        }
     }
 
     aside {
-        height: auto;
-        border-right: 1px solid rgb(150, 150, 150);
-        width: 300px;
+        height: calc(100vh - 42px);
+        border-right: 1px solid rgb(167, 167, 167);
+        width: min-content;
+        padding: 0 20px;
 
         ul {
             list-style: none;
+            padding-top: 100px;
             
-            li {
-                width: 120px;
+            .list {
+                width: 130px;
                 padding: 5px 10px;
-                // width: min-content;
                 border-radius: 30px;
-                color: rgb(106, 187, 224);
-                border: 1px solid rgb(106, 187, 224);
+                color: rgb(66, 150, 189);
+                border: 1px solid rgb(66, 150, 189);
                 text-align: center;
                 margin-bottom: 10px;
+                cursor: pointer;
+                
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+            }
+
+            .active {
+                color: #000000;
+                background: rgb(106, 187, 224);
             }
         }
     }
