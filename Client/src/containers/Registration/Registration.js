@@ -76,6 +76,7 @@ class Registration extends React.Component {
 
 		try {
 			await axios.post(url, data)
+			window.location.pathname = '/success'
 		} catch (error) {
 			console.log(error)
 		}
