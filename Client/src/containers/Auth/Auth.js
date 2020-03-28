@@ -7,7 +7,7 @@ import Layout from '../../hoc/Layout/Layout'
 class Auth extends React.Component {
     state = {
         fields: [
-            { value: '', label: 'Логин/Email', type: 'text', serverName: 'Login', valid: true },
+            { value: '', label: 'Логин/Email', type: 'text', serverName: 'UserName', valid: true },
             { value: '', label: 'Пароль', type: 'password', serverName: 'Password', valid: true }
         ]
     }
@@ -26,7 +26,7 @@ class Auth extends React.Component {
         // если все поля валидны, то есть success = true
         if (success) {  
             this.loginHandler()  
-            //window.location.pathname = '/'
+            //window.location.pathname = '/admin'
         } else {
             // если success = false, то показываем какие поля невалидны
             this.emptyFieldsHandler()
@@ -42,7 +42,8 @@ class Auth extends React.Component {
 
         try {
             await axios.post(url, data)
-            window.location.pathname = '/'
+            // записывается в глобальном state и относительно него преходит на другую страницу 
+            window.location.pathname = '/admin' 
         } catch (error) {
             console.log(error)
         }
