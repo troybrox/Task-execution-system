@@ -42,6 +42,7 @@ class Auth extends React.Component {
 
         try {
             await axios.post(url, data)
+            window.location.pathname = '/'
         } catch (error) {
             console.log(error)
         }
