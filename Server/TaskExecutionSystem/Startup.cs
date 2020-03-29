@@ -1,12 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TaskExecutionSystem.DAL.Entities;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using TaskExecutionSystem.DAL.Data;
-using TaskExecutionSystem.DAL.Roles;
 
 namespace TaskExecutionSystem
 {
@@ -29,8 +30,7 @@ namespace TaskExecutionSystem
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    // our origin
-                    builder.WithOrigins("https://localhost:44303")
+                    builder.WithOrigins("https://localhost:3000")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -56,6 +56,15 @@ namespace TaskExecutionSystem
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
+
+            app.UseCookiePolicy(new CookiePolicyOptions 
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            } );
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
