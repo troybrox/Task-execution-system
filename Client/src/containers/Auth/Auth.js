@@ -1,8 +1,9 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import axios from 'axios'
 import './Auth.scss'
 import Layout from '../../hoc/Layout/Layout'
+import { connect } from 'react-redux'
+import { auth } from '../../store/actions/auth'
 
 class Auth extends React.Component {
     state = {
@@ -33,20 +34,13 @@ class Auth extends React.Component {
         }
     }
 
-    loginHandler = async() => {
-        const url = 'https://localhost:44303/api/account/login'
+    loginHandler = () => {
         const data = {}
         this.state.fields.forEach(item => {
             data[item.serverName] = item.value
         })
-        
-        try {
-            await axios.post(url, data)
-            // записывается в глобальном state и относительно него преходит на другую страницу 
-            window.location.pathname = '/admin' 
-        } catch (error) {
-            console.log(error)
-        }
+
+        this.props.auth(data)
     }
 
     // Отслеживаем изменение каждого input поля
@@ -103,4 +97,10 @@ class Auth extends React.Component {
     }
 }
 
-export default Auth
+function mapDispatchToProps(dispatch) {
+    return {
+        auth: (data) => dispatch(auth(data))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Auth)

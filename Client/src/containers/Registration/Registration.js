@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+// import {Redirect} from 'react-router-dom'
 import './Registration.scss'
 import Layout from '../../hoc/Layout/Layout'
 
@@ -50,8 +51,7 @@ class Registration extends React.Component {
 		
 		// если все поля валидны, то есть success = true
 		if (success) {
-			this.registerHandler()
-			// window.location.pathname = '/success'	
+			this.registerHandler()	
 		} else {
 			// если success = false, то показываем какие поля невалидны
 			this.emptyFieldsHandler()
@@ -85,7 +85,10 @@ class Registration extends React.Component {
 		// 	</App>
 		// )
 		try {
-			await axios.post(url, data)
+			const response = await axios.post(url, data)
+			console.log(response.data)
+			// if (response.data[0]) return (<Redirect to={'/success'} />)
+			// else return (<Redirect to={'/error'} />)
 		} catch (error) {
 			console.log(error)
 		}
