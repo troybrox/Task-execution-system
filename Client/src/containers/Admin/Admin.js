@@ -5,11 +5,10 @@ import Action from '../../components/Action/Action'
 class Admin extends React.Component {
     state = {
         aside: [
-            {value: 'Добавить преподавателя', active: false}, 
-            {value: 'Добавить студента', active: false},
-            {value: 'Удалить преподавателя', active: false},
-            {value: 'Удалить студента', active: false}
-        ]
+            {value: 'Преподаватели', active: true}, 
+            {value: 'Студенты', active: false},
+        ],
+        hTitle: 'Преподаватели'
     }
 
     chooseHandler = (index) => {
@@ -19,9 +18,11 @@ class Admin extends React.Component {
         })
         
         aside[index].active = true
+        const hTitle = aside[index].value
 
         this.setState({
-            aside
+            aside,
+            hTitle
         })
     }
 
@@ -52,7 +53,7 @@ class Admin extends React.Component {
             <div className='admin'>
 
                 <header>
-                    <h2>Преподаватели</h2>
+                    <h2>{ this.state.hTitle }</h2>
                     <span>
                         <h3>Администратор</h3>
                         <img src='images/login.png' alt='login' />

@@ -1,5 +1,6 @@
 import React from 'react'
 import Layout from '../../hoc/Layout/Layout'
+import { Redirect } from 'react-router-dom'
 
 class Forget extends React.Component {
     state = {
@@ -23,7 +24,10 @@ class Forget extends React.Component {
     
             // если все поля валидны, то есть success = true
             if (success) {
-                window.location.pathname = '/success' 
+                // window.location.pathname = '/success'
+                return (
+                    <Redirect to={'/success'} />
+                ) 
             } else {
                 // если success = false, то показываем какие поля невалидны
                 this.emptyFieldsHandler()
