@@ -39,7 +39,7 @@ class Auth extends React.Component {
         this.state.fields.forEach(item => {
             data[item.serverName] = item.value
         })
-
+        
         try {
             await axios.post(url, data)
             // записывается в глобальном state и относительно него преходит на другую страницу 
