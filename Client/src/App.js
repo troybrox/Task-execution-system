@@ -11,6 +11,14 @@ import { connect } from 'react-redux'
 class App extends React.Component {
 	renderLinks = () => {
 		switch (this.props.role) {
+			case 'success':
+				return (
+					<Switch>
+						<Route path='/success' component={Success} />
+						<Redirect to={'/success'} />
+					</Switch>
+				)
+			
 			case 'admin':
 				return (
 					<Switch>
@@ -40,7 +48,6 @@ class App extends React.Component {
 					<Switch>
 						<Route path='/registration' component={Registration} />
 						<Route path='/forget' component={Forget} />
-						<Route path='/success' component={Success} />
 						<Route path='/auth' component={Auth} />
 						<Redirect to={'/auth'} />
 					</Switch>

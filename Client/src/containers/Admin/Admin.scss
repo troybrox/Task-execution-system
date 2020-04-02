@@ -1,4 +1,5 @@
 .admin {
+    // min-width: ;
 
     header {
         display: flex;
@@ -67,6 +68,108 @@
                 color: #000000;
                 background: rgb(106, 187, 224);
             }
+        }
+    }
+
+    main {
+        display: flex;
+        
+        .handle {
+            width: 100vw;
+
+            .nav {
+                display: flex;
+                border-bottom: 1px solid rgb(167, 167, 167);
+
+                .tab {
+                    line-height: 30px;
+                    width: 50%;
+                    text-align: center;
+                    cursor: pointer;
+
+                    &:hover {
+                        background: rgb(235, 235, 235);
+                    }
+
+                    &:nth-child(1) {
+                        border-right: 1px solid rgb(167, 167, 167);
+                    }
+                }
+
+                .active_tab {
+                    background: rgb(235, 235, 235);
+                }
+            }
+
+            .sort {
+                display: flex;
+                align-items: flex-end;
+                text-align: center;
+                margin-top: 20px;
+
+                .sort_item {
+                    margin-left: 100px;
+
+                    p {
+                        margin-bottom: 10px;
+                    }
+
+                    select {
+                        height: 30px;
+                        width: 300px;
+                        background: white;
+                        border: 1px solid rgb(66, 150, 189);
+                        border-radius: 5px;
+                        color: rgb(49, 49, 49);
+                    }
+                }
+
+                button {
+                    margin-left: 20px;
+                }
+            }
+
+            .search {
+                margin-top: 10px;
+
+                input {
+                    margin: 0 20px;
+                    padding: 0 10px;
+                    width: 850px;
+                    line-height: 30px;
+                    height: 30px;
+                    border-radius: 30px;
+                    border: 2px solid rgb(143, 143, 143);
+                }
+
+                button {
+                    border: 2px solid rgb(143, 143, 143);
+                    background: rgb(211, 211, 211);
+                }
+            }
+        }
+
+        button {
+            border-radius: 5px;;
+            height: 30px;
+            line-height: 26px;
+            padding: 0 10px;
+            cursor: pointer;
+        }
+
+        .rm_button {
+            border: 2px solid rgb(33, 115, 153);
+            background: rgb(81, 163, 201);
+        }
+
+        .bottom_button {
+            height: 40px;
+            line-height: 36px;
+            padding-right: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            display: block;
+            margin: 30px 0 0 20px;
         }
     }
 
