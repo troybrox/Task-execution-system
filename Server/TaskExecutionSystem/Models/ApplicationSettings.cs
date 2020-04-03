@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace TaskExecutionSystem.Models
 {
-    public class TeacherRegisterModel : RegisterModelBase
+    public class ApplicationSettings
     {
-        public string Position { get; set; }
+        public string JWT_Secret { get; set; }
 
-        public string Department { get; set; }
+        public string Client_URL { get; set; }
     }
 }

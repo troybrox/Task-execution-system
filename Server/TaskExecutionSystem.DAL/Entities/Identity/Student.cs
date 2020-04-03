@@ -8,14 +8,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
 {
-    public class UserBase : IdentityUser<long>
+    public class Student
     {
-        [Column(TypeName = "varchar(255)")]
-        public override string Email { get; set; }
+        [Required]
+        public int Id { get; set; }
 
         [Required]
-        [Column(TypeName = "varchar(255)")]
-        public override string PasswordHash { get; set; }
+        public long UserId { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(255)")]
@@ -28,5 +27,14 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Required]
         [Column(TypeName = "varchar(255)")]
         public string Patronymic { get; set; }
+
+        [Required]
+        public int StudyGroupId { get; set; }
+
+        public int FacultyId { get; set; }
+
+
+        [ForeignKey("UserId")]
+        public User User { get; set; }
     }
 }

@@ -22,6 +22,6 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         public Role(string roleName) : base(roleName)
         {
             NormalizedName = roleName.ToUpperInvariant();
-        }
+        } 
     }
 }
