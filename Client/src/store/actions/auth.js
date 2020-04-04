@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { AUTH_SUCCESS, LOGOUT, SUCCESS } from './actionTypes'
+import { AUTH_SUCCESS, LOGOUT, SUCCESS, ERROR_MESSAGE_AUTH } from './actionTypes'
 
 export function registr(url, data) {
     return async dispatch => {
@@ -25,14 +25,23 @@ export function registr(url, data) {
 
 export function auth(data) {
     return async dispatch => {
-        const url = 'https://localhost:44303/api/account/login'
-        const response = await axios.post(url, data)
-        const respData = response.data
-        // localStorage.setItem('token'), respData.idToken)
-        // localStorage.setItem('userId'), respData.userId)
-        // localStorage.setItem('role'), respData.role)
-        
-        dispatch(authSuccess(respData.idToken, respData.role))
+        try {
+            const url = 'https://localhost:44303/api/account/login'
+            const response = await axios.post(url, data)
+            const respData = response.data
+            // localStorage.setItem('token'), respData.idToken)
+            // localStorage.setItem('userId'), respData.userId)
+            // localStorage.setItem('role'), respData.role)
+
+            if (respData.succede) {            
+                dispatch(authSuccess(respData.idToken, respData.role))
+            } else {
+                dispatch(errorMessageAuth('Неверные данные!'))
+            }
+        } catch (e) {
+            const role = 'success'
+            dispatch(success(role, 'Ошибка', e.message))
+        }
     }
 }
 
@@ -56,5 +65,12 @@ export function logout() {
     // localStorage.removeItem('role'), respData.role)
     return {
         type: LOGOUT
+    }
+}
+
+export function errorMessageAuth(errorMessages) {
+    return {
+        type: ERROR_MESSAGE_AUTH,
+        errorMessages
     }
 }

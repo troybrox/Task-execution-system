@@ -1,5 +1,6 @@
 export const AUTH_SUCCESS = 'AUTH_SUCCESS'
 export const LOGOUT = 'LOGOUT'
 export const SUCCESS = 'SUCCESS'
+export const ERROR_MESSAGE_AUTH = 'ERROR_MESSAGE_AUTH'
 
 export const CHANGE_CHECKED = 'CHANGE_CHECKED'
