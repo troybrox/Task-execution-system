@@ -1,13 +1,14 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import axios from 'axios'
 import './Auth.scss'
 import Layout from '../../hoc/Layout/Layout'
+import { connect } from 'react-redux'
+import { auth } from '../../store/actions/auth'
 
 class Auth extends React.Component {
     state = {
         fields: [
-            { value: '', label: 'Логин/Email', type: 'text', serverName: 'Login', valid: true },
+            { value: '', label: 'Логин/Email', type: 'text', serverName: 'UserName', valid: true },
             { value: '', label: 'Пароль', type: 'password', serverName: 'Password', valid: true }
         ]
     }
@@ -26,25 +27,20 @@ class Auth extends React.Component {
         // если все поля валидны, то есть success = true
         if (success) {  
             this.loginHandler()  
-            //window.location.pathname = '/'
+            //window.location.pathname = '/admin'
         } else {
             // если success = false, то показываем какие поля невалидны
             this.emptyFieldsHandler()
         }
     }
 
-    loginHandler = async() => {
-        const url = 'https://localhost:44303/api/account/login'
+    loginHandler = () => {
         const data = {}
         this.state.fields.forEach(item => {
             data[item.serverName] = item.value
         })
 
-        try {
-            await axios.post(url, data)
-        } catch (error) {
-            console.log(error)
-        }
+        this.props.auth(data)
     }
 
     // Отслеживаем изменение каждого input поля
@@ -101,4 +97,10 @@ class Auth extends React.Component {
     }
 }
 
-export default Auth
+function mapDispatchToProps(dispatch) {
+    return {
+        auth: (data) => dispatch(auth(data))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Auth)

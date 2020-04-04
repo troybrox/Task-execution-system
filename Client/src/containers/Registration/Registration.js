@@ -1,7 +1,9 @@
 import React from 'react'
-import axios from 'axios'
 import './Registration.scss'
 import Layout from '../../hoc/Layout/Layout'
+import { connect } from 'react-redux'
+import { registr } from '../../store/actions/auth'
+
 
 class Registration extends React.Component {
 	state = {
@@ -12,6 +14,7 @@ class Registration extends React.Component {
 			{ value: '', label: 'Фамилия', type: 'text', serverName: 'Surname', valid: true },
 			{ value: '', label: 'Логин', type: 'text', serverName: 'UserName', valid: true },
 			{ value: '', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true },
+			// { value: '', label: 'Факультет', type: 'number', valid: true },
 			{ value: '', label: 'Роль', type: 'select', valid: true },
 			{ value: '', label: 'Кафедра', type: 'text', serverName: 'Department', invisible: true, valid: true },
 			{ value: '', label: 'Предмет', type: 'text', serverName: 'Discipline', invisible: true, valid: true },
@@ -50,7 +53,7 @@ class Registration extends React.Component {
 		// если все поля валидны, то есть success = true
 		if (success) {
 			this.registerHandler()
-			// window.location.pathname = '/success'	
+			// window.location.pathname = '/success'
 		} else {
 			// если success = false, то показываем какие поля невалидны
 			this.emptyFieldsHandler()
@@ -74,12 +77,7 @@ class Registration extends React.Component {
 		})
 		const url = `https://localhost:44303/api/account/register/${role}`
 
-		try {
-			await axios.post(url, data)
-		} catch (error) {
-			console.log(error)
-		}
-		
+		this.props.registr(url, data)
 	}
 
 	// Отслеживаем изменение каждого input поля
@@ -194,4 +192,10 @@ class Registration extends React.Component {
     }
 }
 
-export default Registration
+function mapDispatchToProps(dispatch) {
+	return {
+		registr: (url, data) => dispatch(registr(url, data))
+	}
+}
+
+export default connect(null, mapDispatchToProps)(Registration)

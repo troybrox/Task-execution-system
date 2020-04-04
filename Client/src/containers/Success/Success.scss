@@ -15,11 +15,18 @@
         padding: 10px 10px 0 10px;
     }
 	
-	.link_registration {
+	.link_return {
         width: max-content;
         font-size: 13px;
 		display: block;
 		margin: 10px 5px 0 auto;
+		border-radius: 5px;
+		height: 30px;
+		line-height: 26px;
+		padding: 0 10px;
+		background: rgb(219, 219, 219);
+		border: 2px solid rgb(102, 102, 102);
+		cursor: pointer;
 	}
 }
   

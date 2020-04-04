@@ -1,5 +1,7 @@
 import React from 'react'
 import Layout from '../../hoc/Layout/Layout'
+import { connect } from 'react-redux'
+import { success } from '../../store/actions/auth'
 
 class Forget extends React.Component {
     state = {
@@ -23,7 +25,10 @@ class Forget extends React.Component {
     
             // если все поля валидны, то есть success = true
             if (success) {
-                window.location.pathname = '/success' 
+                const role = 'success'
+                const title = 'Успешно'
+                const message = 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.'
+                this.props.success(role, title, message)
             } else {
                 // если success = false, то показываем какие поля невалидны
                 this.emptyFieldsHandler()
@@ -76,4 +81,10 @@ class Forget extends React.Component {
     }
 }
 
-export default Forget
+function mapDispatchToProps(dispatch) {
+    return {
+        success: (role, title, message) => dispatch(success(role, title, message))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Forget)
