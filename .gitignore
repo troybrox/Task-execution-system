@@ -42,6 +42,7 @@ msbuild.wrn
 node_modules/
 .pnp
 .pnp.js
+package-lock.json
 
 # production
 build/

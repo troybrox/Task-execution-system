@@ -10,7 +10,9 @@ class Auth extends React.Component {
         fields: [
             { value: '', label: 'Логин/Email', type: 'text', serverName: 'UserName', valid: true },
             { value: '', label: 'Пароль', type: 'password', serverName: 'Password', valid: true }
-        ]
+        ],
+
+        errorMessages: null
     }
 
     // функция для отправки формы на сервер с проверкой на корректность данных
@@ -39,6 +41,8 @@ class Auth extends React.Component {
         this.state.fields.forEach(item => {
             data[item.serverName] = item.value
         })
+
+
 
         this.props.auth(data)
     }
@@ -86,6 +90,7 @@ class Auth extends React.Component {
                 onChange={this.onChangeHandler}
                 onSubmit={this.onSubmitHandler}
 			>
+                {!!this.props.errorMessages ? <p className='errorMessages'>{this.props.errorMessages}</p> : null}
                 <input type='checkbox' id='checkbox' className='any_types_inputs' />
                 <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br />
                 <input className='submit any_types_inputs' type='submit' value='Вход' />
@@ -97,10 +102,16 @@ class Auth extends React.Component {
     }
 }
 
+function mapStateToProps(state) {
+    return {
+        errorMessages: state.auth.errorMessages
+    }
+}
+
 function mapDispatchToProps(dispatch) {
     return {
         auth: (data) => dispatch(auth(data))
     }
 }
 
-export default connect(null, mapDispatchToProps)(Auth)
+export default connect(mapStateToProps, mapDispatchToProps)(Auth)
