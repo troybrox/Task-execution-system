@@ -79,17 +79,16 @@
 
             .nav {
                 display: flex;
-                border-bottom: 1px solid rgb(167, 167, 167);
+                
 
                 .tab {
+                    background: rgb(235, 235, 235);
                     line-height: 30px;
                     width: 50%;
                     text-align: center;
                     cursor: pointer;
-
-                    &:hover {
-                        background: rgb(235, 235, 235);
-                    }
+                    border-bottom: 1px solid rgb(167, 167, 167);
+                    box-shadow: inset 0 -5px 10px 1px rgba(167, 167, 167, 0.644);
 
                     &:nth-child(1) {
                         border-right: 1px solid rgb(167, 167, 167);
@@ -97,7 +96,10 @@
                 }
 
                 .active_tab {
-                    background: rgb(235, 235, 235);
+                    color: rgb(66, 150, 189);;
+                    background: #ffffff;
+                    border-bottom: none;
+                    box-shadow: none;
                 }
             }
 

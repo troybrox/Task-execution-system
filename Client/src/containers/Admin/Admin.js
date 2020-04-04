@@ -1,6 +1,7 @@
 import React from 'react'
 import './Admin.scss'
 import Action from '../../components/Action/Action'
+import { connect } from 'react-redux'
 // import axios from 'axios'
 
 class Admin extends React.Component {
@@ -10,11 +11,11 @@ class Admin extends React.Component {
             {value: 'Студенты', forSelect: 'Группа', active: false},
         ],
         hTitle: 'Преподаватели',
-
         tabTitles: [
             {title: 'Существующие', active: true}, 
             {title: 'Заявки', active: false}
         ],
+        
         selects: [
             {
                 title: 'Факультет', 
@@ -31,7 +32,12 @@ class Admin extends React.Component {
                 options: ['Все', '6213-010201D', '2402-020502A'], 
                 show: false
             }
-        ]
+        ],
+
+        showButton: false,
+        wordAction: 'Удалить',
+
+        showUsers: this.props.users
     }
     // https://localhost:44303/api/admin/student/regrequest
     // https://localhost:44303/api/admin/student/add
@@ -60,6 +66,7 @@ class Admin extends React.Component {
     }
 
     chooseHandler = index => {
+        const showButton = false
         const aside = [...this.state.aside]
         const selects = [...this.state.selects]
 
@@ -78,7 +85,8 @@ class Admin extends React.Component {
         this.setState({
             aside,
             hTitle,
-            selects
+            selects,
+            showButton
         })
 
         // let url = 'https://localhost:44303/api/admin/teacher'
@@ -106,13 +114,25 @@ class Admin extends React.Component {
         // запрос на сервер для юзеров нужных
         // const response = axios.get('https://localhost:44303/api/admin/student/reqrequest')
         const tabTitles = [...this.state.tabTitles]
+        let wordAction = 'Удалить'
         tabTitles.forEach(el => {
             el.active = false
         })
         tabTitles[index].active = true
+        if (tabTitles[index].title === 'Заявки') wordAction = 'Добавить'
 
         this.setState({
-            tabTitles
+            tabTitles,
+            wordAction
+        })
+    }
+
+    checkSelect = event => {
+        let showButton = false
+        if (event.target.value !== 'Все') showButton = true
+
+        this.setState({
+            showButton
         })
     }
 
@@ -122,7 +142,9 @@ class Admin extends React.Component {
                 return (
                     <div key={index} className='sort_item'>
                         <p>{item.title}</p>
-                        <select>
+                        <select
+                            onChange = {item.title === 'Группа' ? event => this.checkSelect(event) : null }
+                        >
                             { this.renderOptions(item.options) }
                         </select>
                     </div>
@@ -140,6 +162,37 @@ class Admin extends React.Component {
             )
         })
     }
+
+    componentDidMount() {
+        // запрос на сервер для получения данных
+    }
+
+    searchHandler = () => {
+        const showUsers = [...this.props.users]
+        // const find
+        // if (find.trim() !== '') {
+            // сделать map'ом
+            // showUsers.forEach(el => {
+                // if (el.name.indexOf(find) === -1)
+                // удаляем из showUsers
+            // })
+        // }
+
+        this.setState({
+            showUsers
+        })
+    }
+
+    // ДЛЯ ПОДСВЕТКИ ЭЛЕМЕНТОВ ПОИСКА(В LOCAL STATE ХРАНИТЬ СТРОКУ ПОИСКА)
+    // И ФУНКЦИЮ ИСПОЛЬЗОВАТЬ ДЛЯ ACTION(ТАК ЖЕ СДЕЛАТЬ ПРОВЕРКУ НА ПУСТУЮ СТРОКУ)
+    // highlight = text => {
+    //     return text.id + 
+    //     '. <b>' + 
+    //     text.name.replace(new RegExp(this.query, 'gi'), '<span class="highlighted">$&</span>') + 
+    //     '</b> - <em>' + 
+    //     text.city.replace(new RegExp(this.query, 'gi'), '<span class="highlighted">$&</span>') + 
+    //     '</em>';
+    // }
 
     render() {
         return (
@@ -169,18 +222,22 @@ class Admin extends React.Component {
 
                         <div className='sort'>
                             { this.renderSelect() }
-                            <button className='rm_button'>Удалить группу</button>
+                            { this.state.showButton ? <button className='rm_button'>{this.state.wordAction} группу</button> : null}
                         </div>
 
                         <div className='search'>
                             <input type='search' placeholder='Поиск...' />
-                            <button>Поиск</button>
+                            <button 
+                                // onClick={this.searchHandler}
+                            >
+                                Поиск
+                            </button>
                         </div>
 
                         <Action
-                            
+                            showUsers={this.state.showUsers}
                         />
-                        <button className='rm_button bottom_button'>Удалить выбранные</button>
+                        <button className='rm_button bottom_button'>{this.state.wordAction} выбранные</button>
                     </div>
                 </main>
 
@@ -189,4 +246,16 @@ class Admin extends React.Component {
     }
 }
 
-export default Admin
+function mapStateToProps(state) {
+    return {
+        users: state.admin.users
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Admin)

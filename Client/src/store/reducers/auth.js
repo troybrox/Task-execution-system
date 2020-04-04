@@ -4,7 +4,7 @@ const initialState = {
     title: 'Успешно',
     message: 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.',
     token: null,
-    role: null
+    role: 'admin'
 }
 
 export default function authReducer(state = initialState, action) {

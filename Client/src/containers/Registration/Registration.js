@@ -53,7 +53,6 @@ class Registration extends React.Component {
 		// если все поля валидны, то есть success = true
 		if (success) {
 			this.registerHandler()
-			// window.location.pathname = '/success'
 		} else {
 			// если success = false, то показываем какие поля невалидны
 			this.emptyFieldsHandler()
