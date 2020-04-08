@@ -2,7 +2,7 @@ import React from 'react'
 import './Admin.scss'
 import Action from '../../components/Action/Action'
 import { connect } from 'react-redux'
-// import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 class Admin extends React.Component {
     state = {
@@ -35,7 +35,7 @@ class Admin extends React.Component {
         ],
 
         showButton: false,
-        wordAction: 'Удалить',
+        buttonAction: false,
 
         showUsers: this.props.users
     }
@@ -111,25 +111,27 @@ class Admin extends React.Component {
     }
 
     changeTab = index => {
+        const showButton = false
         // запрос на сервер для юзеров нужных
         // const response = axios.get('https://localhost:44303/api/admin/student/reqrequest')
         const tabTitles = [...this.state.tabTitles]
-        let wordAction = 'Удалить'
+        let buttonAction = false
         tabTitles.forEach(el => {
             el.active = false
         })
         tabTitles[index].active = true
-        if (tabTitles[index].title === 'Заявки') wordAction = 'Добавить'
+        if (tabTitles[index].title === 'Заявки') buttonAction = true
 
         this.setState({
             tabTitles,
-            wordAction
+            buttonAction,
+            showButton
         })
     }
 
     checkSelect = event => {
         let showButton = false
-        if (event.target.value !== 'Все') showButton = true
+        if (event.target.value !== 'Все') showButton = true && !this.state.buttonAction
 
         this.setState({
             showButton
@@ -199,15 +201,16 @@ class Admin extends React.Component {
             <div className='admin'>
 
                 <header>
-                    <h2>{ this.state.hTitle }</h2>
-                    <span>
-                        <h3>Администратор</h3>
+                    <span className='header_items admin'>
                         <img src='images/login.png' alt='login' />
+                        <h3>Администратор</h3>
                     </span>
 
-                    {/* <span> */}
-                        {/* <h3>Выход</h3> */}
-                    {/* </span> */}
+                    <h2 className='header_items head'>{ this.state.hTitle }</h2>
+
+                    <span className='header_items'>
+                        <Link className='exit' to='/logout'>Выход</Link>
+                    </span>
                 </header>
 
                 <main>
@@ -222,7 +225,7 @@ class Admin extends React.Component {
 
                         <div className='sort'>
                             { this.renderSelect() }
-                            { this.state.showButton ? <button className='rm_button'>{this.state.wordAction} группу</button> : null}
+                            { this.state.showButton ? <button className='rm_button'>Удалить группу</button> : null}
                         </div>
 
                         <div className='search'>
@@ -237,7 +240,8 @@ class Admin extends React.Component {
                         <Action
                             showUsers={this.state.showUsers}
                         />
-                        <button className='rm_button bottom_button'>{this.state.wordAction} выбранные</button>
+                        <button className='rm_button bottom_button'>Удалить выбранные</button>
+                        {this.state.buttonAction ? <button className='rm_button bottom_button'>Добавить выбранные</button> : null}
                     </div>
                 </main>
 

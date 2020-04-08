@@ -4,11 +4,11 @@ const initialState = {
     title: 'Успешно',
     message: 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.',
     errorMessages: null,
-    token: null,
-    role: null
+    token: localStorage.getItem('token') || null,
+    role: localStorage.getItem('role') || null
 }
 
-export default function authReducer(state = initialState, action) {
+export default function authReadducer(state = initialState, action) {
     switch (action.type) {
         case AUTH_SUCCESS:
             return {

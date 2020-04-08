@@ -7,18 +7,24 @@ class Action extends React.Component {
     renderUsers = () => {
         const list = this.props.showUsers.map((item, index) => {
             return (
-                <li 
-                    key={index} 
-                    className='user_list_admin'
-                    onClick={this.props.changeChecked.bind(this, index)}
+                <li
+                    key={index}
                 >
-                    <img src='images/card.png' alt='' />
-                    <label htmlFor={`check-${index}`}>{item.name}</label>
                     <input 
                         type='checkbox' 
                         id={`check-${index}`}
+                        className='check_list_input'
                         // checked={item.check} 
                     />
+
+                    <label 
+                        htmlFor={`check-${index}`} 
+                        className='user_list_admin check_list_label'
+                        onClick={this.props.changeChecked.bind(this, index)}
+                    >
+                        <img src='images/card.png' alt='' />
+                        <p>{item.name}</p>
+                    </label>
                 </li>
             )
         })

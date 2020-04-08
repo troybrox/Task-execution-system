@@ -2,54 +2,56 @@
     ul {
         list-style: none;
 
-        .user_list_admin {
-            display: flex;
-            align-items: flex-end;
+        li {
             border-bottom: 1px solid gray;
-            margin-top: 10px;
             margin-right: 50px;
-            padding-left: 20px;
-            cursor: pointer;
 
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-
-            img {
-                width: 40px;
-                height: 40px;
-                border: 1px solid gray;
-                margin-bottom: 2px;
+            .check_list_input {
+                display: none;
             }
 
-            label {
-                margin-left: 10px;
-                margin-bottom: 5px;
+            .check_list_label {
+                display: flex;
+                align-items: flex-end;
+                padding-top: 7px;
+                padding-left: 20px;
                 cursor: pointer;
 
-                // &:after {
-                //     content:'';
-                //     display:block;
-                //     height:14px;
-                //     width:14px;
-                //     outline:1px solid #939598;
-                // }
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+
+                img {
+                    width: 40px;
+                    height: 40px;
+                    border: 1px solid gray;
+                    margin-bottom: 2px;
+                }
+
+                p {
+                    margin: 0 0 7px 10px;
+                }
+
+                &:after {
+                    content: '';
+                    display: inline-block;
+                    height: 14px;
+                    width: 14px;
+                    outline: 1px solid #939598;
+                    margin: 0 100px 7px auto;
+                }
             }
 
-            // input {
-            //     display: none;
-            // }
-
-            // input:checked, label:after {
-            //     outline:1px solid #939598;
-            //     border:2px solid #fff;
-            //     width:10px;
-            //     height:10px;
-            //     background-color:#63849F;
-            // }
+            .check_list_input:checked + .check_list_label:after {
+                outline:1px solid #939598;
+                border:2px solid #fff;
+                width:10px;
+                height:10px;
+                background-color:rgb(70, 121, 163);
+            }
         }
     }
 }
