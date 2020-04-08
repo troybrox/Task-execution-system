@@ -10,7 +10,7 @@ export function registr(url, data) {
             let title = 'Успешно'
             let message = 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.'
             
-            if (respData.succeded) {
+            if (respData.succeeded) {
                 dispatch(success(role, title, message))
             } else {
                 title = 'Ошибка'
@@ -29,9 +29,8 @@ export function auth(data) {
             const url = 'https://localhost:44303/api/account/login'
             const response = await axios.post(url, data)
             const respData = response.data
-            // localStorage.setItem('token'), respData.idToken)
-            // localStorage.setItem('userId'), respData.userId)
-            // localStorage.setItem('role'), respData.role)
+            localStorage.setItem('token', respData.idToken)
+            localStorage.setItem('role', respData.role)
 
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.idToken, respData.role))
@@ -60,9 +59,8 @@ export function authSuccess(token, role) {
 }
 
 export function logout() {
-    // localStorage.removeItem('token'), respData.idToken)
-    // localStorage.removeItem('userId'), respData.userId)
-    // localStorage.removeItem('role'), respData.role)
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
     return {
         type: LOGOUT
     }

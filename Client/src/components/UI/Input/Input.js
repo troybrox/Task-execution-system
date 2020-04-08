@@ -6,6 +6,7 @@ const Input = props => {
     const cls = ['input_fields']
 
     if (!props.valid) cls.push('invalid')
+    if (props.classUser) cls.push('hide')
     
     return (
         <Auxiliary>
@@ -14,7 +15,9 @@ const Input = props => {
                 type={props.type}
                 value={props.value}
                 onChange={props.onChange}
-            /><br />
+            />
+            {props.classUser ? <img className='pen' src='images/pen-square-solid.svg' alt='' /> : null}
+            <br />
         </Auxiliary>
 
     )
