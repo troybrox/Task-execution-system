@@ -33,7 +33,7 @@ export function auth(data) {
             // localStorage.setItem('userId'), respData.userId)
             // localStorage.setItem('role'), respData.role)
 
-            if (respData.succede) {            
+            if (respData.succeeded) {            
                 dispatch(authSuccess(respData.idToken, respData.role))
             } else {
                 dispatch(errorMessageAuth('Неверные данные!'))
