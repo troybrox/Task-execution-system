@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using TaskExecutionSystem.Models;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.Interfaces;
 using Newtonsoft.Json;
@@ -26,8 +24,6 @@ namespace TaskExecutionSystem.Controllers
         public async Task<IActionResult> RegisterTeacher([FromBody]TeacherRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
-            Console.WriteLine(test);
-
             var detail = new OperationDetailDTO();
 
             if (dto != null)
@@ -36,25 +32,53 @@ namespace TaskExecutionSystem.Controllers
                 detail = res;
             }
             else
-                detail.ErrorMessages.Add("Ошибка! Значение аргументы было нулевым");
+                detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
 
             return Ok(detail);
         }
 
         [HttpPost]
-        [Route("api/account/register/student")]
+        [Route("register/student")]
         public async Task<IActionResult> RegisterStudent([FromBody]StudentRegisterDTO dto)
         {
-            // todo: send model to service
-            return null;
+            var test = JsonConvert.SerializeObject(dto);
+            var detail = new OperationDetailDTO();
+
+            if (dto != null)
+            {
+                var res = await _acountService.CreateStudentAsync(dto);
+                detail = res;
+            }
+            else
+            {
+                detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
+            }
+
+
+            return Ok(detail);
         }
 
         [HttpPost]
-        [Route("api/account/login")]
-        public async Task<IActionResult> Login([FromBody]LoginModel model)
+        [Route("login")]
+        public async Task<IActionResult> Login([FromBody]UserLoginDTO dto)
         {
-            // todo: send model to service
-            return null;
+            OperationDetailDTO<SignInDetailDTO> detailResult;
+            var serviceResult = await _acountService.SignInAsync(dto);
+            if (!serviceResult.Succeeded)
+                return Unauthorized();
+            else
+            {
+                detailResult = new OperationDetailDTO<SignInDetailDTO>
+                {
+                    Succeeded = true,
+                    Data = new SignInDetailDTO
+                    {
+                        Role = serviceResult.Data.UserRoles.FirstOrDefault().ToLowerInvariant(),
+                        IdToken = "server_token"
+                    },
+                };
+                return Ok(detailResult);
+            }
         }
     }
 }

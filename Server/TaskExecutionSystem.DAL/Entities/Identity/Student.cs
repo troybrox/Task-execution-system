@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
@@ -28,10 +23,9 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Column(TypeName = "varchar(255)")]
         public string Patronymic { get; set; }
 
-        [Required]
-        public int StudyGroupId { get; set; }
+        public string StudyGroupNumber { get; set; }
 
-        public int FacultyId { get; set; }
+        public int FacultyNumber { get; set; }
 
 
         [ForeignKey("UserId")]

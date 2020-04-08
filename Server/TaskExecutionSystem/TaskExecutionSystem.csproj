@@ -25,10 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Identity.JWT\Extensions\" />
     <Folder Include="Identity.JWT\Middleware\" />
     <Folder Include="Identity.JWT\Interfaces\" />
-    <Folder Include="Initialization\" />
   </ItemGroup>
 
 </Project>

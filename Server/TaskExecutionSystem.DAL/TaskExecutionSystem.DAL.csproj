@@ -19,4 +19,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Studies\" />
+    <Folder Include="Entities\Elements\" />
+  </ItemGroup>
+
 </Project>

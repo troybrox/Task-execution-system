@@ -5,11 +5,11 @@ namespace TaskExecutionSystem.BLL.DTO
     public class UserLoginDTO
     {
         [Required]
-        public string Email { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
-        public string PasswordHash { get; set; }
+        public string Password { get; set; }
 
         public bool RememberMe { get; set; }
     }

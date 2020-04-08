@@ -8,6 +8,8 @@ namespace TaskExecutionSystem.BLL.DTO
     public class StudentRegisterDTO : UserRegisterDTO
     {
         [Required]
-        public int StudyGroupId { get; set; }
+        public string Group { get; set; }
+
+        public string Faculty { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace TaskExecutionSystem.Application.Options
 {
-    public class TeacherOptions
+    public class StudentOptions
     {
         public string UserName { get; set; }
     }

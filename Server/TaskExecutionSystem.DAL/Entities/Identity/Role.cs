@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using TaskExecutionSystem.DAL.Interfaces;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
 {
-    public class Role : IdentityRole<long>
+    public class Role : IdentityRole<long>, IEntity
     {
         public enum Types
         {

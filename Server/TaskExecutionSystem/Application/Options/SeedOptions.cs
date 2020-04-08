@@ -8,5 +8,7 @@ namespace TaskExecutionSystem.Application.Options
     public class SeedOptions
     {
         public List<TeacherOptions> Teachers { get; set; }
+
+        public List<StudentOptions> Students { get; set; }
     }
 }

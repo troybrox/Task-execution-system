@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaskExecutionSystem.DAL.Interfaces;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
 {
-    public class User : IdentityUser<long>
+    public class User : IdentityUser<long>, IEntity
     {
         [Column(TypeName = "varchar(255)")]
         public override string Email { get; set; }
@@ -21,9 +18,8 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Column(TypeName = "varchar(255)")]
         public override string UserName { get; set; }
 
-
-        [Required]
         public int EntityId { get; set; }
+
 
         public Student Student { get; set; }
 

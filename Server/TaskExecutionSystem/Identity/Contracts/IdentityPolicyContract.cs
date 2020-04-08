@@ -1,4 +1,9 @@
-﻿namespace TaskExecutionSystem.Identity
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace TaskExecutionSystem.Identity.Contracts
 {
     public static class IdentityPolicyContract
     {

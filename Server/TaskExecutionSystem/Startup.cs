@@ -11,10 +11,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using TaskExecutionSystem.Application;
+using TaskExecutionSystem.Application.Initialization;
 using TaskExecutionSystem.Application.Options;
 using TaskExecutionSystem.Identity;
-using static TaskExecutionSystem.Identity.IdentityPolicyContract;
+using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.BLL.Services;
 using TaskExecutionSystem.DAL.Entities;
@@ -34,7 +34,7 @@ namespace TaskExecutionSystem
 
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-
+        // добавление и настройка сервисов, используемых приложением
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(optionsBuilder => optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -71,10 +71,6 @@ namespace TaskExecutionSystem
                 .AddDefaultTokenProviders();
 
 
-            //services.AddIdentity<User<Student>, Role>()
-            //    .AddEntityFrameworkStores<DataContext>()
-            //    .AddDefaultTokenProviders();
-
             var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"].ToString());
 
             services.AddAuthentication(options =>
@@ -109,7 +105,8 @@ namespace TaskExecutionSystem
             services.AddTransient<IAccountService, AccountService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
+        // данный методом вызывается при запуске, используется для настройки конфигурации конвейера http запросов 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

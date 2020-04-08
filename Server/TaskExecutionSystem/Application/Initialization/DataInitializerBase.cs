@@ -6,8 +6,9 @@ using AspNetCore.AsyncInitialization;
 using Microsoft.Extensions.DependencyInjection;
 using TaskExecutionSystem.DAL.Data;
 
-namespace TaskExecutionSystem.Application
+namespace TaskExecutionSystem.Application.Initialization
 {
+    // родительский класс для инициализаторов
     public abstract class DataInitializerBase : IAsyncInitializer
     {
         private readonly IServiceProvider _serviceProvider;
