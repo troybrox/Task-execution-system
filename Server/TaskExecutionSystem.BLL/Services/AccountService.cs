@@ -36,6 +36,7 @@ namespace TaskExecutionSystem.BLL.Services
         public async Task<OperationDetailDTO<LoginServiceDetailDTO>> SignInAsync(UserLoginDTO dto)
         {
             List<string> errors = new List<string>();
+            
             try
             {
                 if (!String.IsNullOrEmpty(dto.UserName))
@@ -66,6 +67,11 @@ namespace TaskExecutionSystem.BLL.Services
                         }
                     }
                 }
+                else
+                {
+                    errors.Add("Имя пользователя или почта не соответствует требованиям");
+                    return new OperationDetailDTO<LoginServiceDetailDTO> { Succeeded = false, ErrorMessages = errors };
+                }
             }
 
             catch (Exception e)
@@ -73,9 +79,6 @@ namespace TaskExecutionSystem.BLL.Services
                 errors.Add(_serverErrorMessage + e.Message);
                 return new OperationDetailDTO<LoginServiceDetailDTO> { Succeeded = false, ErrorMessages = errors };
             }
-
-
-            throw new NotImplementedException();
         }
 
         // создание сущности студента и добавление в БД
@@ -90,8 +93,7 @@ namespace TaskExecutionSystem.BLL.Services
                     Name = dto.Name,
                     Surname = dto.Surname,
                     Patronymic = dto.Patronymic,
-                    StudyGroupNumber = ,
-                    FacultyNumber = dto.
+                    StudyGroupNumber = dto.Group,
                 };
 
                 var user = new User

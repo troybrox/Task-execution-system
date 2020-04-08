@@ -10,6 +10,5 @@ namespace TaskExecutionSystem.BLL.DTO
         [Required]
         public string Group { get; set; }
 
-        public string Faculty { get; set; }
     }
 }

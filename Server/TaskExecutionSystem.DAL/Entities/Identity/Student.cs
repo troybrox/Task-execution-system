@@ -25,8 +25,6 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
 
         public string StudyGroupNumber { get; set; }
 
-        public int FacultyNumber { get; set; }
-
 
         [ForeignKey("UserId")]
         public User User { get; set; }

@@ -32,11 +32,9 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Column(TypeName = "varchar(255)")]
         public string Department { get; set; }
 
-        // add subjectId - main subject
-
         public string MainSubject { get; set; }
 
         [ForeignKey("UserId")]
-        public User UserEntity { get; set; }
+        public User User { get; set; }
     }
 }
