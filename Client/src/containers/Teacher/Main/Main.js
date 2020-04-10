@@ -145,7 +145,7 @@ class Main extends React.Component {
                         className={cls.join(' ')} 
                         onClick={this.choiceStudent.bind(this, index)}
                     >
-                        <img src='images/card.png' alt='' />
+                        <img src='images/card.svg' alt='' />
                         <p>{item.name}</p>
                     </div>
                     {item.open ? this.renderLabs(item.labs) : null}
