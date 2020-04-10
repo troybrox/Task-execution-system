@@ -1,14 +1,25 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using TaskExecutionSystem.Application.Initialization;
+using TaskExecutionSystem.Application.Options;
+using TaskExecutionSystem.Identity;
+using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
+using TaskExecutionSystem.BLL.Interfaces;
+using TaskExecutionSystem.BLL.Services;
+using TaskExecutionSystem.DAL.Entities;
+using TaskExecutionSystem.DAL.Entities.Identity;
+using TaskExecutionSystem.DAL.Data;
 
 namespace TaskExecutionSystem
 {
@@ -20,29 +31,82 @@ namespace TaskExecutionSystem
         }
         
         public IConfiguration Configuration { get; }
+
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        // äîáàâëåíèå è íàñòðîéêà ñåðâèñîâ, èñïîëüçóåìûõ ïðèëîæåíèåì
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DataContext>(optionsBuilder => optionsBuilder.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.Configure<SeedOptions>(Configuration.GetSection("Seed"));
+
+            services.AddAsyncInitializer<IdentityInitializer>();
+
             services.AddCors(options =>
             {
-                //todo: add client-origin
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("https://localhost:44303")
+                    builder.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://localhost:44303")
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
-
                 });
             });
+
             services.AddControllers();
+
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 6;
+            });
+
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<DataContext>()
+                .AddDefaultTokenProviders();
+
+
+            var key = Encoding.UTF8.GetBytes(Configuration["ApplicationSettings:JWT_Secret"].ToString());
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+                {
+                    options.RequireHttpsMetadata = true;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        RequireExpirationTime = true,
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(TeacherUserPolicy, policy => policy.RequireRole(nameof(Role.Types.Teacher)));
+                options.AddPolicy(StudentUserPolicy, policy => policy.RequireRole(nameof(Role.Types.Student)));
+                options.AddPolicy(AdministratorPolicy, policy => policy.RequireRole(nameof(Role.Types.Administrator)));
+            });
+
+            services.AddTransient<IAccountService, AccountService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
+        // äàííûé ìåòîäîì âûçûâàåòñÿ ïðè çàïóñêå, èñïîëüçóåòñÿ äëÿ íàñòðîéêè êîíôèãóðàöèè êîíâåéåðà http çàïðîñîâ 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -51,11 +115,26 @@ namespace TaskExecutionSystem
             }
 
             app.UseCors(MyAllowSpecificOrigins);
+
             app.UseRouting();
+
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
+
             app.UseRouting();
             app.UseAuthorization();
+
+            app.UseAuthorization();
+
+            app.UseCookiePolicy(new CookiePolicyOptions 
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            } );
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
