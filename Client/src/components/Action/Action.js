@@ -22,7 +22,7 @@ class Action extends React.Component {
                         className='user_list_admin check_list_label'
                         onClick={this.props.changeChecked.bind(this, index)}
                     >
-                        <img src='images/card.png' alt='' />
+                        <img src='images/card.svg' alt='' />
                         <p>{item.name}</p>
                     </label>
                 </li>

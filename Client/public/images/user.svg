@@ -10,13 +10,13 @@
    aria-hidden="true"
    focusable="false"
    data-prefix="fas"
-   data-icon="times"
-   class="svg-inline--fa fa-times fa-w-11"
+   data-icon="user"
+   class="svg-inline--fa fa-user fa-w-14"
    role="img"
-   viewBox="0 0 352 512"
+   viewBox="0 0 448 512"
    version="1.1"
    id="svg4"
-   sodipodi:docname="times-solid.svg"
+   sodipodi:docname="user-solid.svg"
    inkscape:version="0.92.3 (2405546, 2018-03-11)">
   <metadata
      id="metadata10">
@@ -44,16 +44,16 @@
      inkscape:window-height="713"
      id="namedview6"
      showgrid="false"
-     inkscape:zoom="0.4609375"
-     inkscape:cx="176"
-     inkscape:cy="256"
+     inkscape:zoom="1.3037281"
+     inkscape:cx="227.02427"
+     inkscape:cy="387.25518"
      inkscape:window-x="67"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg4" />
   <path
-     fill="currentColor"
-     d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
+     d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"
      id="path2"
-     style="fill:#2949ff;fill-opacity:1" />
+     fill="currentColor"
+     style="fill:#666666" />
 </svg>

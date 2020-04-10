@@ -76,7 +76,7 @@ class Auth extends React.Component {
 				hTitle='Авторизация'
                 link='Нужен аккаунт? Зарегистрируйтесь!'
                 to='/registration'
-                img='images/user.png'
+                img='images/user.svg'
                 fields={this.state.fields}
                 onChange={this.onChangeHandler}
                 onSubmit={this.onSubmitHandler}
