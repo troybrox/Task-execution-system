@@ -12,7 +12,7 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
             Student
         }
 
-        protected Role()
+        public Role()
         {
         }
 
