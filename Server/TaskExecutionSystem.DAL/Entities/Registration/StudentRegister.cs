@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TaskExecutionSystem.DAL.Entities.Registration
 {
-    class StudentRegister
+    public class StudentRegister
     {
     }
 }

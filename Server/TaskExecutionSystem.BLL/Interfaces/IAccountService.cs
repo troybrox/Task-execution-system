@@ -14,5 +14,7 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO> CreateStudentAsync(StudentRegisterDTO dto);
 
         public Task<OperationDetailDTO<LoginServiceDetailDTO>> SignInAsync(UserLoginDTO dto);
+
+        // todo: Task LogoutAsync()
     }
 }
