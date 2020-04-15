@@ -9,11 +9,17 @@ namespace TaskExecutionSystem.BLL.Interfaces
 {
     public interface IAccountService
     {
+        public Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto);
+
+        public Task<OperationDetailDTO> CreateTeacherRegisterRequestAsync(TeacherRegisterDTO dto);
+
         public Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterDTO dto);
 
         public Task<OperationDetailDTO> CreateStudentAsync(StudentRegisterDTO dto);
 
         public Task<OperationDetailDTO<LoginServiceDetailDTO>> SignInAsync(UserLoginDTO dto);
+
+        public Task<OperationDetailDTO<LoginServiceDetailDTO>> SignOutAsync();
 
         // todo: Task LogoutAsync()
     }

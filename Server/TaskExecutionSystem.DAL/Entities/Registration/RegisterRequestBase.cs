@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TaskExecutionSystem.DAL.Interfaces
+namespace TaskExecutionSystem.DAL.Entities.Registration
 {
-    public class IRegister
+    public class RegisterRequestBase
     {
         public int Id { get; set; }
-         
+
         [Column(TypeName = "varchar(255)")]
         public string Email { get; set; }
 
@@ -17,5 +17,17 @@ namespace TaskExecutionSystem.DAL.Interfaces
         [Required]
         [Column(TypeName = "varchar(255)")]
         public string UserName { get; set; }
+
+        [Required]
+        [Column(TypeName = "varchar(255)")]
+        public string Name { get; set; }
+
+        [Required]
+        [Column(TypeName = "varchar(255)")]
+        public string Surname { get; set; }
+
+        [Required]
+        [Column(TypeName = "varchar(255)")]
+        public string Patronymic { get; set; }
     }
 }

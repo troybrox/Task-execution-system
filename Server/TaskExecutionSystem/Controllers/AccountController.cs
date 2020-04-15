@@ -80,5 +80,18 @@ namespace TaskExecutionSystem.Controllers
                 return Ok(detailResult);
             }
         }
+
+        // todo:
+        [HttpPost]
+        [Route("signout")]
+        public async Task<IActionResult> SignOut([FromBody]UserLoginDTO dto)
+        {
+            OperationDetailDTO<SignInDetailDTO> detailResult;
+            var serviceResult = await _acountService.SignInAsync(dto);
+            if (!serviceResult.Succeeded)
+                return Unauthorized();
+            else
+                return Ok();
+        }
     }
 }

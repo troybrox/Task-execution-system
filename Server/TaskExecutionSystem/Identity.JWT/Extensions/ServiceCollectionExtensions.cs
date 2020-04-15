@@ -22,7 +22,6 @@ namespace TaskExecutionSystem.Identity.JWT.Extensions
                 opt.Password.RequireNonAlphanumeric = false;
                 opt.Password.RequireUppercase = false;
                 opt.Password.RequireLowercase = false;
-                opt.Lockout.MaxFailedAccessAttempts = 5;
             })
                 .AddEntityFrameworkStores<DataContext>()
                 .AddDefaultTokenProviders();

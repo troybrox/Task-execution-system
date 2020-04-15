@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaskExecutionSystem.DAL.Entities.Studies;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
 {
@@ -7,9 +8,6 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
     {
         [Required]
         public int Id { get; set; }
-
-        [Required]
-        public long UserId { get; set; }
 
         [Required]
         [Column(TypeName = "varchar(255)")]
@@ -26,7 +24,15 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         public string StudyGroupNumber { get; set; }
 
 
+        [Required]
+        public long UserId { get; set; }
+
+        public int GroupId { get; set; }
+
+
         [ForeignKey("UserId")]
         public User User { get; set; }
+
+        public Group Group { get; set; }
     }
 }
