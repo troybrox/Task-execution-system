@@ -5,28 +5,30 @@ import { changeCheckedHandler } from '../../store/actions/admin'
 
 class Action extends React.Component {
     renderUsers = () => {
-        const list = this.props.showUsers.map((item, index) => {
-            return (
-                <li
-                    key={index}
-                >
-                    <input 
-                        type='checkbox' 
-                        id={`check-${index}`}
-                        className='check_list_input'
-                        // checked={item.check} 
-                    />
-
-                    <label 
-                        htmlFor={`check-${index}`} 
-                        className='user_list_admin check_list_label'
-                        onClick={this.props.changeChecked.bind(this, index)}
+        const list = this.props.users.map((item, index) => {
+            if (item.show)
+                return (
+                    <li
+                        key={index}
                     >
-                        <img src='images/card.svg' alt='' />
-                        <p>{item.name}</p>
-                    </label>
-                </li>
-            )
+                        <input 
+                            type='checkbox' 
+                            id={`check-${index}`}
+                            className='check_list_input'
+                            // checked={item.check} 
+                        />
+
+                        <label 
+                            htmlFor={`check-${index}`} 
+                            className='user_list_admin check_list_label'
+                            onClick={this.props.changeChecked.bind(this, index)}
+                        >
+                            <img src='images/card.svg' alt='' />
+                            <p>{item.name}</p>
+                        </label>
+                    </li>
+                )
+            else return null
         })
         return <ul>{list}</ul>
     }
@@ -40,11 +42,11 @@ class Action extends React.Component {
     }
 }
 
-// function mapStateToProps(state) {
-//     return {
-//         users: state.admin.users
-//     }
-// }
+function mapStateToProps(state) {
+    return {
+        users: state.admin.users
+    }
+}
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -52,4 +54,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Action)
+export default connect(mapStateToProps, mapDispatchToProps)(Action)

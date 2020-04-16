@@ -3,6 +3,7 @@ import './Admin.scss'
 import Action from '../../components/Action/Action'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { loadingUsers, loadingLists, searchUsers } from '../../store/actions/admin'
 
 class Admin extends React.Component {
     state = {
@@ -15,60 +16,17 @@ class Admin extends React.Component {
             {title: 'Существующие', active: true}, 
             {title: 'Заявки', active: false}
         ],
-        
-        selects: [
-            {
-                title: 'Факультет', 
-                options: ['Все', 'Информатики', 'Политологии'], 
-                show: true
-            },
-            {
-                title: 'Кафедра',  
-                options: ['Все', 'Институт ракетно-космической техники', 'Институт двигателей и энергетических установок'], 
-                show: true
-            },
-            {
-                title: 'Группа',  
-                options: ['Все', '6213-010201D', '2402-020502A'], 
-                show: false
-            }
-        ],
 
         showButton: false,
         buttonAction: false,
 
-        showUsers: this.props.users
-    }
-    // https://localhost:44303/api/admin/student/regrequest
-    // https://localhost:44303/api/admin/student/add
-    // https://localhost:44303/api/admin/student/delete
-
-    renderSideBar() {
-        const side = this.state.aside.map((item, index) => {
-            const cls = ['list']
-            if (item.active) cls.push('active')
-            return (
-                <li 
-                    key={index}
-                    className={cls.join(' ')}
-                    onClick={this.chooseHandler.bind(this, index)}
-                >
-                    { item.value }
-                </li>
-            )
-        })
-
-        return (
-            <ul>
-                { side }
-            </ul>
-        )
+        search: ''
     }
 
     chooseHandler = index => {
         const showButton = false
         const aside = [...this.state.aside]
-        const selects = [...this.state.selects]
+        const selects = [...this.props.selects]
 
         aside.forEach(el => {
             el.active = false
@@ -85,29 +43,10 @@ class Admin extends React.Component {
         this.setState({
             aside,
             hTitle,
-            selects,
             showButton
         })
 
-        // let url = 'https://localhost:44303/api/admin/teacher'
-        // if (aside[index].value === 'Студент') url = 'https://localhost:44303/api/admin/student'
-        // const response = axios.get(url)
-    }
 
-    renderTab() {
-        return this.state.tabTitles.map((item, index) => {
-            const cls = ['tab']
-            if (item.active) cls.push('active_tab')
-            return (
-                <h4
-                    key={index}
-                    className={cls.join(' ')}
-                    onClick={this.changeTab.bind(this, index)}
-                >
-                    {item.title}
-                </h4>
-            )
-        })
     }
 
     changeTab = index => {
@@ -138,8 +77,79 @@ class Admin extends React.Component {
         })
     }
 
+    searchChange = event => {
+        const search = event.target.value
+
+        this.setState({
+            search
+        })
+    }
+
+    searchUsersHandler = () => {   
+        const search = this.state.search     
+        if (search.trim() !== '') {
+            this.props.searchUsers(search)
+        }
+    }
+
+    componentDidMount() {
+        // let roleForURL = 'teachers'
+        // let typeForURL = 'exist'
+        
+        // if (this.state.hTitle === 'Студенты') {
+        //     roleForURL = 'students'
+        // }
+        // if (this.state.tabTitles[1].active) {
+        //     typeForURL = 'reg'
+        // }
+
+        // const urlUser = `https://localhost:44303/api/admin/${typeForURL}_${roleForURL}`
+        // this.props.loadingUsers(urlUser)
+        
+        // const urlList = `https://localhost:44303/api/admin/filters/${typeForURL}_${roleForURL}`
+        // this.props.loadingLists(urlList)
+    }
+
+    renderSideBar() {
+        const side = this.state.aside.map((item, index) => {
+            const cls = ['list']
+            if (item.active) cls.push('active')
+            return (
+                <li 
+                    key={index}
+                    className={cls.join(' ')}
+                    onClick={this.chooseHandler.bind(this, index)}
+                >
+                    { item.value }
+                </li>
+            )
+        })
+
+        return (
+            <ul>
+                { side }
+            </ul>
+        )
+    }
+
+    renderTab() {
+        return this.state.tabTitles.map((item, index) => {
+            const cls = ['tab']
+            if (item.active) cls.push('active_tab')
+            return (
+                <h4
+                    key={index}
+                    className={cls.join(' ')}
+                    onClick={this.changeTab.bind(this, index)}
+                >
+                    {item.title}
+                </h4>
+            )
+        })
+    }
+
     renderSelect() {
-        return this.state.selects.map((item, index) => {
+        return this.props.selects.map((item, index) => {
             if (item.show)
                 return (
                     <div key={index} className='sort_item'>
@@ -164,37 +174,6 @@ class Admin extends React.Component {
             )
         })
     }
-
-    componentDidMount() {
-        // запрос на сервер для получения данных
-    }
-
-    searchHandler = () => {
-        const showUsers = [...this.props.users]
-        // const find
-        // if (find.trim() !== '') {
-            // сделать map'ом
-            // showUsers.forEach(el => {
-                // if (el.name.indexOf(find) === -1)
-                // удаляем из showUsers
-            // })
-        // }
-
-        this.setState({
-            showUsers
-        })
-    }
-
-    // ДЛЯ ПОДСВЕТКИ ЭЛЕМЕНТОВ ПОИСКА(В LOCAL STATE ХРАНИТЬ СТРОКУ ПОИСКА)
-    // И ФУНКЦИЮ ИСПОЛЬЗОВАТЬ ДЛЯ ACTION(ТАК ЖЕ СДЕЛАТЬ ПРОВЕРКУ НА ПУСТУЮ СТРОКУ)
-    // highlight = text => {
-    //     return text.id + 
-    //     '. <b>' + 
-    //     text.name.replace(new RegExp(this.query, 'gi'), '<span class="highlighted">$&</span>') + 
-    //     '</b> - <em>' + 
-    //     text.city.replace(new RegExp(this.query, 'gi'), '<span class="highlighted">$&</span>') + 
-    //     '</em>';
-    // }
 
     render() {
         return (
@@ -229,17 +208,19 @@ class Admin extends React.Component {
                         </div>
 
                         <div className='search'>
-                            <input type='search' placeholder='Поиск...' />
+                            <input 
+                                type='search' 
+                                placeholder='Поиск...' 
+                                onChange={event => this.searchChange(event)}
+                            />
                             <button 
-                                // onClick={this.searchHandler}
+                                onClick={this.searchUsersHandler}
                             >
                                 Поиск
                             </button>
                         </div>
 
-                        <Action
-                            showUsers={this.state.showUsers}
-                        />
+                        <Action />
                         <button className='rm_button bottom_button'>Удалить выбранные</button>
                         {this.state.buttonAction ? <button className='rm_button bottom_button'>Добавить выбранные</button> : null}
                     </div>
@@ -252,13 +233,15 @@ class Admin extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        users: state.admin.users
+        selects: state.admin.selects
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        
+        loadingUsers: url => dispatch(loadingUsers(url)),
+        loadingLists: url => dispatch(loadingLists(url)),
+        searchUsers: search => dispatch(searchUsers(search))
     }
 }
 
