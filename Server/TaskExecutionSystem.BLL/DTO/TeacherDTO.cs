@@ -8,6 +8,6 @@ namespace TaskExecutionSystem.BLL.DTO
     {
         public string Position { get; set; }
 
-        public string Department { get; set; }
+        public int DepartmentId { get; set; }
     }
 }

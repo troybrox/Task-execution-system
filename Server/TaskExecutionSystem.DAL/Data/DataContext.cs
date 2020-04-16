@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using TaskExecutionSystem.DAL.Configurations;
 using TaskExecutionSystem.DAL.Entities.Identity;
+using TaskExecutionSystem.DAL.Entities.Elements;
+using TaskExecutionSystem.DAL.Entities.Registration;
+using TaskExecutionSystem.DAL.Entities.Studies;
+using TaskExecutionSystem.DAL.Entities.Relations;
 
 namespace TaskExecutionSystem.DAL.Data
 {
@@ -10,6 +15,13 @@ namespace TaskExecutionSystem.DAL.Data
 
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Student> Students { get; set; }
+        public DbSet<TeacherRegisterRequest> TeacherRegisterRequests { get; set; }
+        public DbSet<StudentRegisterRequest> StudentRegisterRequests { get; set; }
+        public DbSet<Faculty> Faculties { get; set; }
+        public DbSet<Group> Groups { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -25,9 +37,18 @@ namespace TaskExecutionSystem.DAL.Data
             modelBuilder.Entity<IdentityUserClaim<long>>()
                 .ToTable("UserClaims");
 
+            modelBuilder.ApplyConfiguration(new FacultyConfiguration());
+            modelBuilder.ApplyConfiguration(new GroupConfiguration());
+            modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
+            modelBuilder.ApplyConfiguration(new SubjectConfiguration());
+            modelBuilder.ApplyConfiguration(new TeacherConfiguration());
+            modelBuilder.ApplyConfiguration(new StudentConfiguration());
+            modelBuilder.ApplyConfiguration(new GroupTeacherSubjectConfiguration());
+
             base.OnModelCreating(modelBuilder);
         }
     }
+
 
     public partial class DataContext
     {

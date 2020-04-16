@@ -149,9 +149,8 @@ namespace TaskExecutionSystem.BLL.Services
                     Name = dto.Name,
                     Surname = dto.Surname,
                     Patronymic = dto.Patronymic,
-                    Department = dto.Department,
                     Position = dto.Position,
-                    MainSubject = dto.Discipline,
+                    DepartmentId = dto.DepartmentId,
                 };
 
                 var user = new User
@@ -195,5 +194,19 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        public async Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateTeacherRegisterRequestAsync(TeacherRegisterDTO dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO<LoginServiceDetailDTO>> SignOutAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

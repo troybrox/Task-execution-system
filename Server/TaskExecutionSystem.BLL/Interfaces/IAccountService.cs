@@ -20,7 +20,5 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO<LoginServiceDetailDTO>> SignInAsync(UserLoginDTO dto);
 
         public Task<OperationDetailDTO<LoginServiceDetailDTO>> SignOutAsync();
-
-        // todo: Task LogoutAsync()
     }
 }

@@ -10,6 +10,6 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
 
         public string Name { get; set; }
 
-        public int SpecialtyId { get; set; }
+        public int FacultyId { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string NumberName { get; set; }
 
         public List<Student> Students { get; set; }
 

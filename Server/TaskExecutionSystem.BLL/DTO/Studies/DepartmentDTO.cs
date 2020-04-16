@@ -4,7 +4,12 @@ using System.Text;
 
 namespace TaskExecutionSystem.BLL.DTO.Studies
 {
-    class DepartmentDTO
+    public class DepartmentDTO
     {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public int FacultyId { get; set; }
     }
 }
