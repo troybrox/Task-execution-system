@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TaskExecutionSystem.DAL.Entities.Elements
 {
-    class Comment
+    public class Comment
     {
     }
 }

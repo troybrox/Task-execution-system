@@ -34,25 +34,11 @@ namespace TaskExecutionSystem.Controllers
 
         [HttpPost]
         [Route("reg_students")]
-        public async Task<IActionResult> Login([FromBody] dto)
+        public async Task<IActionResult> GetExistTeachers()
         {
             OperationDetailDTO<SignInDetailDTO> detailResult;
-            var serviceResult = await _acountService.SignInAsync(dto);
-            if (!serviceResult.Succeeded)
-                return Unauthorized();
-            else
-            {
-                detailResult = new OperationDetailDTO<SignInDetailDTO>
-                {
-                    Succeeded = true,
-                    Data = new SignInDetailDTO
-                    {
-                        Role = serviceResult.Data.UserRoles.FirstOrDefault().ToLowerInvariant(),
-                        IdToken = "server_token"
-                    },
-                };
-                return Ok(detailResult);
-            }
+            return Ok();
+
         }
 
 

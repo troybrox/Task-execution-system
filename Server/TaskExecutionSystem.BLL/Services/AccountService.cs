@@ -93,7 +93,7 @@ namespace TaskExecutionSystem.BLL.Services
                     Name = dto.Name,
                     Surname = dto.Surname,
                     Patronymic = dto.Patronymic,
-                    StudyGroupNumber = dto.Group,
+                    GroupId = dto.GroupId
                 };
 
                 var user = new User
@@ -194,7 +194,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public async Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto)
+        public Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto)
         {
             throw new NotImplementedException();
         }

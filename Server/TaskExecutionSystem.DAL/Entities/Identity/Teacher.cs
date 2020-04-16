@@ -34,6 +34,7 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Required]
         public long UserId { get; set; }
 
+        [Required]
         public int DepartmentId { get; set; }
 
 

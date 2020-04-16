@@ -11,19 +11,19 @@ namespace TaskExecutionSystem.DAL.Configurations
             builder.HasOne(i => i.Group)
                 .WithMany(g => g.GroupTeacherSubjectItems)
                 .HasForeignKey(i => i.GroupId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.HasOne(i => i.Teacher)
                 .WithMany(t => t.GroupTeacherSubjectItems)
                 .HasForeignKey(i => i.TeacherId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
             builder.HasOne(i => i.Subject)
                 .WithMany(s => s.GroupTeacherSubjectItems)
                 .HasForeignKey(i => i.SubjectId)
-                .OnDelete(DeleteBehavior.Cascade)
+                .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
         }
     }

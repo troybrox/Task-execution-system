@@ -19,6 +19,12 @@ namespace TaskExecutionSystem.DAL.Configurations
             builder.Property(t => t.Patronymic)
                 .HasMaxLength(50)
                 .IsRequired();
+
+            builder.HasMany(t => t.GroupTeacherSubjectItems)
+                .WithOne(gts => gts.Teacher)
+                .HasForeignKey(gts => gts.TeacherId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
     }
 }

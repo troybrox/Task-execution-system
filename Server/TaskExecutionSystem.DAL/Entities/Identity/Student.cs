@@ -21,12 +21,11 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Column(TypeName = "varchar(255)")]
         public string Patronymic { get; set; }
 
-        public string StudyGroupNumber { get; set; }
-
 
         [Required]
         public long UserId { get; set; }
 
+        [Required]
         public int GroupId { get; set; }
 
 
