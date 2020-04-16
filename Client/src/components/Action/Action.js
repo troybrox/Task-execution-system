@@ -24,7 +24,10 @@ class Action extends React.Component {
                             onClick={this.props.changeChecked.bind(this, index)}
                         >
                             <img src='images/card.svg' alt='' />
-                            <p>{item.name}</p>
+                            <p className='name'>
+                                {item.name}
+                                <span className='additional'>{item.position}</span>
+                            </p>
                         </label>
                     </li>
                 )

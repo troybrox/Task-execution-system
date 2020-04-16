@@ -2,26 +2,25 @@ import { PUSH_USERS, PUSH_SELECTS } from "../actions/actionTypes"
 
 const initialState = {
     users: [
-        {name: 'Студент 1', department: '', faculty: '', check: false, show: true},
-        {name: 'Студент 2', department: '', faculty: '', check: false, show: true},
-        {name: 'Студент 3', department: '', faculty: '', check: true, show: true},
-        {name: 'Студент 4', department: '', faculty: '', check: false, show: true}
+        {name: 'Преподаватель 1', position: 'Должность', check: false, show: true},
+        {name: 'Преподаватель 2', position: 'Должность', check: false, show: true},
+        {name: 'Преподаватель 3', position: 'Должность', check: true, show: true},
+        {name: 'Преподаватель 4', position: 'Должность', check: false, show: true}
     ],
-
     selects: [
         {
             title: 'Факультет', 
-            options: ['Все', 'Информатики', 'Политологии'], 
+            options: [{id: null, name: 'Все'}, {id: 0, name: 'Информатики'}, {id: 1, name: 'Политологии'}], 
             show: true
         },
         {
             title: 'Кафедра',  
-            options: ['Все', 'Институт ракетно-космической техники', 'Институт двигателей и энергетических установок'], 
+            options: [{id: null, name: 'Все'}, {id: 0, name: 'Институт ракетно-космической техники'}, {id: 1, name: 'Институт двигателей и энергетических установок'}], 
             show: true
         },
         {
             title: 'Группа',  
-            options: ['Все', '6213-010201D', '2402-020502A'], 
+            options: [{id: null, name: 'Все'}, {id: 0, name: '6213-010201D'}, {id: 1, name: '2402-020502A'}], 
             show: false
         }
     ]

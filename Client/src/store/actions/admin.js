@@ -11,10 +11,16 @@ export function changeCheckedHandler(index) {
     }
 }
 
-export function loadingUsers(url) {
+export function loadingUsers(url, idFaculty, idGroup, idDepartment, search) {
     return async dispatch => {
         try {
-            const response = await axios.get(url)
+            const data = {
+                idGroup,
+                idFaculty,
+                idDepartment,
+                search
+            }
+            const response = await axios.post(url, data)
             const users = response.data.users
 
             dispatch(pushUsers(users))
@@ -30,22 +36,17 @@ export function loadingLists(url) {
             const response = await axios.get(url)
             const selects = response.data.selects
 
+            // преобразовать в нужный объект
+
+            // selects: {
+                // '': {id: 0, groups: [{id: 0, name: ''}, {id: 0, name: ''}], departments: [{id: 0, name: ''}, {id: 0, name: ''}]}
+                // '': {id: 1, groups: [{id: 0, name: ''}, {id: 0, name: ''}], departments: [{id: 0, name: ''}, {id: 0, name: ''}]}
+            // }
+
             dispatch(pushLists(selects))
         } catch (e) {
             console.log(e)
         }
-    }
-}
-
-export function searchUsers(search) {
-    return (dispatch, getState) => {
-        const state = getState().admin
-        const users = [...state.users]
-        users.forEach(item => {
-            if (item.name.indexOf(search) > -1) item.show = true 
-            else item.show = false
-        })
-        dispatch(pushUsers(users))
     }
 }
 

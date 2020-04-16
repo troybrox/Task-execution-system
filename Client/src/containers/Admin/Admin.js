@@ -3,7 +3,7 @@ import './Admin.scss'
 import Action from '../../components/Action/Action'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { loadingUsers, loadingLists, searchUsers } from '../../store/actions/admin'
+import { loadingUsers, loadingLists } from '../../store/actions/admin'
 
 class Admin extends React.Component {
     state = {
@@ -11,15 +11,18 @@ class Admin extends React.Component {
             {value: 'Преподаватели', forSelect: 'Кафедра', active: true}, 
             {value: 'Студенты', forSelect: 'Группа', active: false},
         ],
-        hTitle: 'Преподаватели',
         tabTitles: [
             {title: 'Существующие', active: true}, 
             {title: 'Заявки', active: false}
         ],
+        hTitle: 'Преподаватели',
 
         showButton: false,
         buttonAction: false,
 
+        idGroup: null,
+        idFaculty: null,
+        idDepartment: null,
         search: ''
     }
 
@@ -46,13 +49,12 @@ class Admin extends React.Component {
             showButton
         })
 
-
+        this.requestUserHandler()
+        this.requestListHandler()
     }
 
     changeTab = index => {
         const showButton = false
-        // запрос на сервер для юзеров нужных
-        // const response = axios.get('https://localhost:44303/api/admin/student/reqrequest')
         const tabTitles = [...this.state.tabTitles]
         let buttonAction = false
         tabTitles.forEach(el => {
@@ -66,14 +68,42 @@ class Admin extends React.Component {
             buttonAction,
             showButton
         })
+
+        this.requestUserHandler()
+        this.requestListHandler()
     }
 
-    checkSelect = event => {
-        let showButton = false
-        if (event.target.value !== 'Все') showButton = true && !this.state.buttonAction
+    checkSelect = (event, title) => {
+        // const index = event.target.options.selectedIndex
+        // const id = event.target.options[index].getAttribute('index')
+
+        let showButton
+        if (title === 'Группа') {
+            showButton = false
+            if (event.target.value !== 'Все') showButton = true && !this.state.buttonAction
+        }
+        // const idFaculty = this.state.idFaculty
+        // const idGroup = this.state.idGroup
+        // const idDepartment = this.state.idDepartment
+        // switch (title) {
+        //     case 'Факультет':
+        //         idFaculty = event.target.key
+        //         break;
+        //     case 'Группа':
+        //         idGroup = event.target.key
+        //         break;
+        //     case 'Кафедра':
+        //         idDepartment = event.target.key
+        //         break;
+        //     default:
+        //         break;
+        // }
 
         this.setState({
-            showButton
+            showButton,
+            // idFaculty,
+            // idGroup,
+            // idDepartment
         })
     }
 
@@ -88,26 +118,46 @@ class Admin extends React.Component {
     searchUsersHandler = () => {   
         const search = this.state.search     
         if (search.trim() !== '') {
-            this.props.searchUsers(search)
+            this.requestUserHandler()
         }
     }
 
-    componentDidMount() {
-        // let roleForURL = 'teachers'
-        // let typeForURL = 'exist'
+    pathHandler = () => {
+        let roleForURL = 'teachers'
+        let typeForURL = 'exist'
         
-        // if (this.state.hTitle === 'Студенты') {
-        //     roleForURL = 'students'
-        // }
-        // if (this.state.tabTitles[1].active) {
-        //     typeForURL = 'reg'
-        // }
+        if (this.state.aside[1].active) {
+            roleForURL = 'students'
+        }
+        if (this.state.tabTitles[1].active) {
+            typeForURL = 'reg'
+        }
 
-        // const urlUser = `https://localhost:44303/api/admin/${typeForURL}_${roleForURL}`
-        // this.props.loadingUsers(urlUser)
-        
-        // const urlList = `https://localhost:44303/api/admin/filters/${typeForURL}_${roleForURL}`
-        // this.props.loadingLists(urlList)
+        return typeForURL + '_' + roleForURL
+    }
+
+    requestUserHandler = () => {
+        const path = this.pathHandler()
+
+        const idFaculty = this.state.idFaculty
+        const idGroup = this.state.idGroup
+        const idDepartment = this.state.idDepartment
+        const search = this.state.search
+
+        const urlUser = `https://localhost:44303/api/admin/${path}`
+        this.props.loadingUsers(urlUser, idFaculty, idGroup, idDepartment, search)
+    }
+
+    requestListHandler = () => {
+        const path = this.pathHandler()
+
+        const urlList = `https://localhost:44303/api/admin/filters/${path}`
+        this.props.loadingLists(urlList)
+    }
+
+    componentDidMount() {
+        this.requestUserHandler()
+        this.requestListHandler()
     }
 
     renderSideBar() {
@@ -155,7 +205,7 @@ class Admin extends React.Component {
                     <div key={index} className='sort_item'>
                         <p>{item.title}</p>
                         <select
-                            onChange = {item.title === 'Группа' ? event => this.checkSelect(event) : null }
+                            onChange = {event => this.checkSelect(event, item.title) }
                         >
                             { this.renderOptions(item.options) }
                         </select>
@@ -166,10 +216,13 @@ class Admin extends React.Component {
     }
 
     renderOptions(options) {
-        return options.map((item, index) => {
+        return options.map((item) => {
             return (
-                <option key={index}>
-                    {item}
+                <option 
+                    key={item.id}
+                    index={item.id}
+                >
+                    {item.name}
                 </option>
             )
         })
@@ -240,8 +293,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         loadingUsers: url => dispatch(loadingUsers(url)),
-        loadingLists: url => dispatch(loadingLists(url)),
-        searchUsers: search => dispatch(searchUsers(search))
+        loadingLists: url => dispatch(loadingLists(url))
     }
 }
 

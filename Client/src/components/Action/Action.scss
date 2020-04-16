@@ -31,8 +31,14 @@
                     margin-bottom: 2px;
                 }
 
-                p {
+                .name {
                     margin: 0 0 7px 10px;
+                }
+
+                .additional {
+                    font-size: 14px;
+                    color: rgb(136, 136, 136);
+                    margin-left: 5px;
                 }
 
                 &:after {
