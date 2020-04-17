@@ -7,3 +7,4 @@ export const ERROR_MESSAGE_AUTH = 'ERROR_MESSAGE_AUTH'
 // Для admin
 export const PUSH_USERS = 'PUSH_USERS'
 export const PUSH_SELECTS = 'PUSH_SELECTS'
+export const ERROR_WINDOW = 'ERROR_WINDOW'

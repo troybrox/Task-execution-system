@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { PUSH_USERS, PUSH_SELECTS } from './actionTypes'
+import { PUSH_USERS, PUSH_SELECTS, ERROR_WINDOW } from './actionTypes'
 
 export function changeCheckedHandler(index) {
     return (dispatch, getState) => {
@@ -11,41 +11,82 @@ export function changeCheckedHandler(index) {
     }
 }
 
-export function loadingUsers(url, idFaculty, idGroup, idDepartment, search) {
+export function loadingUsers(url, facultyId, groupId, departmentId, searchString) {
     return async dispatch => {
         try {
-            const data = {
-                idGroup,
-                idFaculty,
-                idDepartment,
-                search
-            }
-            const response = await axios.post(url, data)
-            const users = response.data.users
+            const data = []
 
-            dispatch(pushUsers(users))
+            if (searchString.trim() !== '') data.push({name: 'searchString', value: searchString})
+            if (groupId !== null || departmentId !== null) {
+                if (groupId !== null) data.push({name: 'groupId', value: groupId})
+                else data.push({name: 'departmentId', value: departmentId})
+            } else {
+                if (facultyId !== null) data.push({name: 'facultyId', value: facultyId})
+            }
+
+            const response = await axios.post(url, data)
+            
+            if (response.data.succeeded) {
+                const users = response.data.users
+
+                dispatch(pushUsers(users))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
         } catch (e) {
-            console.log(e)
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
         }
     }
 }
 
-export function loadingLists(url) {
+export function loadingLists(url, roleActive) {
     return async dispatch => {
         try {
             const response = await axios.get(url)
-            const selects = response.data.selects
-
-            // преобразовать в нужный объект
-
-            // selects: {
-                // '': {id: 0, groups: [{id: 0, name: ''}, {id: 0, name: ''}], departments: [{id: 0, name: ''}, {id: 0, name: ''}]}
-                // '': {id: 1, groups: [{id: 0, name: ''}, {id: 0, name: ''}], departments: [{id: 0, name: ''}, {id: 0, name: ''}]}
-            // }
-
-            dispatch(pushLists(selects))
+            const data = response.data
+            if (data.succeeded) {
+                const selects = [
+                    {
+                        title: 'Факультет', 
+                        options: [{id: null, name: 'Все'}], 
+                        show: true
+                    },
+                    {
+                        title: 'Кафедра',  
+                        options: [{id: null, name: 'Все'}], 
+                        show: true && roleActive
+                    },
+                    {
+                        title: 'Группа',  
+                        options: [{id: null, name: 'Все'}], 
+                        show: true && !roleActive 
+                    }
+                ]
+    
+                data.data.forEach(el => {
+                    selects[0].options.push({id: el.id, name: el.name})
+                    el.groups.forEach(item => {
+                        selects[1].options.push({id: item.id, name: item.name, facultyId: el.id})
+                    })
+                    el.departments.forEach(item => {
+                        selects[2].options.push({id: item.id, name: item.name, facultyId: el.id})
+                    })
+                })
+    
+                dispatch(pushLists(selects))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
         } catch (e) {
-            console.log(e)
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
         }
     }
 }
@@ -61,5 +102,12 @@ export function pushLists(selects) {
     return {
         type: PUSH_SELECTS,
         selects
+    }
+}
+
+export function errorWindow(errorShow, errorMessage) {
+    return {
+        type: ERROR_WINDOW,
+        errorShow, errorMessage
     }
 }

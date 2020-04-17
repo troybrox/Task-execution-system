@@ -1,6 +1,7 @@
 import React from 'react'
 import './Admin.scss'
 import Action from '../../components/Action/Action'
+import Error from '../../components/Error/Error'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { loadingUsers, loadingLists } from '../../store/actions/admin'
@@ -20,9 +21,9 @@ class Admin extends React.Component {
         showButton: false,
         buttonAction: false,
 
-        idGroup: null,
-        idFaculty: null,
-        idDepartment: null,
+        groupId: null,
+        facultyId: null,
+        departmentId: null,
         search: ''
     }
 
@@ -47,10 +48,10 @@ class Admin extends React.Component {
             aside,
             hTitle,
             showButton
+        }, () => {
+            this.requestUserHandler()
+            this.requestListHandler()
         })
-
-        this.requestUserHandler()
-        this.requestListHandler()
     }
 
     changeTab = index => {
@@ -67,44 +68,45 @@ class Admin extends React.Component {
             tabTitles,
             buttonAction,
             showButton
+        }, () => {
+            this.requestUserHandler()
+            this.requestListHandler()
         })
-
-        this.requestUserHandler()
-        this.requestListHandler()
     }
 
     checkSelect = (event, title) => {
-        // const index = event.target.options.selectedIndex
-        // const id = event.target.options[index].getAttribute('index')
+        const index = event.target.options.selectedIndex
+        const id = event.target.options[index].getAttribute('index')
 
-        let showButton
+        let showButton = this.state.showButton
         if (title === 'Группа') {
             showButton = false
-            if (event.target.value !== 'Все') showButton = true && !this.state.buttonAction
+            if (id !== null) showButton = true && !this.state.buttonAction
         }
-        // const idFaculty = this.state.idFaculty
-        // const idGroup = this.state.idGroup
-        // const idDepartment = this.state.idDepartment
-        // switch (title) {
-        //     case 'Факультет':
-        //         idFaculty = event.target.key
-        //         break;
-        //     case 'Группа':
-        //         idGroup = event.target.key
-        //         break;
-        //     case 'Кафедра':
-        //         idDepartment = event.target.key
-        //         break;
-        //     default:
-        //         break;
-        // }
+
+        let facultyId = this.state.facultyId
+        let groupId = this.state.groupId
+        let departmentId = this.state.departmentId
+        switch (title) {
+            case 'Факультет':
+                facultyId = id
+                break;
+            case 'Группа':
+                groupId = id
+                break;
+            case 'Кафедра':
+                departmentId = id
+                break;
+            default:
+                break;
+        }
 
         this.setState({
             showButton,
-            // idFaculty,
-            // idGroup,
-            // idDepartment
-        })
+            facultyId,
+            groupId,
+            departmentId
+        }, () => {this.requestUserHandler()})
     }
 
     searchChange = event => {
@@ -139,20 +141,21 @@ class Admin extends React.Component {
     requestUserHandler = () => {
         const path = this.pathHandler()
 
-        const idFaculty = this.state.idFaculty
-        const idGroup = this.state.idGroup
-        const idDepartment = this.state.idDepartment
+        const facultyId = this.state.facultyId
+        const groupId = this.state.groupId
+        const departmentId = this.state.departmentId
         const search = this.state.search
 
         const urlUser = `https://localhost:44303/api/admin/${path}`
-        this.props.loadingUsers(urlUser, idFaculty, idGroup, idDepartment, search)
+        this.props.loadingUsers(urlUser, facultyId, groupId, departmentId, search)
     }
 
     requestListHandler = () => {
         const path = this.pathHandler()
+        const roleActive = this.state.aside[0].active
 
         const urlList = `https://localhost:44303/api/admin/filters/${path}`
-        this.props.loadingLists(urlList)
+        this.props.loadingLists(urlList, roleActive)
     }
 
     componentDidMount() {
@@ -207,7 +210,7 @@ class Admin extends React.Component {
                         <select
                             onChange = {event => this.checkSelect(event, item.title) }
                         >
-                            { this.renderOptions(item.options) }
+                            { this.renderOptions(item.options, item.title) }
                         </select>
                     </div>
                 )
@@ -215,9 +218,9 @@ class Admin extends React.Component {
         })
     }
 
-    renderOptions(options) {
+    renderOptions(options, title) {
         return options.map((item) => {
-            return (
+            const option  = (
                 <option 
                     key={item.id}
                     index={item.id}
@@ -225,12 +228,22 @@ class Admin extends React.Component {
                     {item.name}
                 </option>
             )
+            if (this.state.facultyId === null || item.id === null || title === 'Факультет') {
+                return option
+            } else {
+                if (item.facultyId === +this.state.facultyId) {
+                    return option
+                } else {
+                    return null
+                }
+            }
         })
     }
 
     render() {
         return (
             <div className='admin'>
+                {this.props.errorShow ? <Error /> : null}
 
                 <header>
                     <span className='header_items admin'>
@@ -286,14 +299,17 @@ class Admin extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        selects: state.admin.selects
+        selects: state.admin.selects,
+        errorShow: state.admin.errorShow
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        loadingUsers: url => dispatch(loadingUsers(url)),
-        loadingLists: url => dispatch(loadingLists(url))
+        loadingUsers: (url, facultyId, groupId, departmentId, searchString) => 
+            dispatch(loadingUsers(url, facultyId, groupId, departmentId, searchString)),
+        loadingLists: (url, facultyId, groupId, departmentId, searchString) => 
+            dispatch(loadingLists(url, facultyId, groupId, departmentId, searchString))
     }
 }
 

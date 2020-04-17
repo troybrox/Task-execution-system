@@ -1,11 +1,11 @@
-import { PUSH_USERS, PUSH_SELECTS } from "../actions/actionTypes"
+import { PUSH_USERS, PUSH_SELECTS, ERROR_WINDOW } from "../actions/actionTypes"
 
 const initialState = {
     users: [
-        {name: 'Преподаватель 1', position: 'Должность', check: false, show: true},
-        {name: 'Преподаватель 2', position: 'Должность', check: false, show: true},
-        {name: 'Преподаватель 3', position: 'Должность', check: true, show: true},
-        {name: 'Преподаватель 4', position: 'Должность', check: false, show: true}
+        {name: 'Преподаватель 1', position: 'Должность', check: false},
+        {name: 'Преподаватель 2', position: 'Должность', check: false},
+        {name: 'Преподаватель 3', position: 'Должность', check: true},
+        {name: 'Преподаватель 4', position: 'Должность', check: false}
     ],
     selects: [
         {
@@ -15,15 +15,17 @@ const initialState = {
         },
         {
             title: 'Кафедра',  
-            options: [{id: null, name: 'Все'}, {id: 0, name: 'Институт ракетно-космической техники'}, {id: 1, name: 'Институт двигателей и энергетических установок'}], 
+            options: [{id: null, name: 'Все'}, {id: 0, name: 'Институт ракетно-космической техники', facultyId: 0}, {id: 1, name: 'Институт двигателей и энергетических установок', facultyId: 0}, {id: 2, name: 'Что-то о политике', facultyId: 1}], 
             show: true
         },
         {
             title: 'Группа',  
-            options: [{id: null, name: 'Все'}, {id: 0, name: '6213-010201D'}, {id: 1, name: '2402-020502A'}], 
+            options: [{id: null, name: 'Все'}, {id: 0, name: '6213-010201D', facultyId: 0}, {id: 1, name: '2402-020502A', facultyId: 0}, {id: 2, name: '2121-090909Z', facultyId: 1}], 
             show: false
         }
-    ]
+    ],
+    errorShow: false,
+    errorMessage: []
 }
 
 export default function adminReducer(state = initialState, action) {
@@ -35,6 +37,10 @@ export default function adminReducer(state = initialState, action) {
         case PUSH_SELECTS:
             return {
                 ...state, selects: action.selects
+            }
+        case ERROR_WINDOW:
+            return {
+                ...state, errorShow: action.errorShow, errorMessage: action.errorMessage
             }
         default:
             return state

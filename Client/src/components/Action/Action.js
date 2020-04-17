@@ -6,32 +6,30 @@ import { changeCheckedHandler } from '../../store/actions/admin'
 class Action extends React.Component {
     renderUsers = () => {
         const list = this.props.users.map((item, index) => {
-            if (item.show)
-                return (
-                    <li
-                        key={index}
+            return (
+                <li
+                    key={index}
+                >
+                    <input 
+                        type='checkbox' 
+                        id={`check-${index}`}
+                        className='check_list_input'
+                        // checked={item.check} 
+                    />
+                    
+                    <label 
+                        htmlFor={`check-${index}`} 
+                        className='user_list_admin check_list_label'
+                        onClick={this.props.changeChecked.bind(this, index)}
                     >
-                        <input 
-                            type='checkbox' 
-                            id={`check-${index}`}
-                            className='check_list_input'
-                            // checked={item.check} 
-                        />
-
-                        <label 
-                            htmlFor={`check-${index}`} 
-                            className='user_list_admin check_list_label'
-                            onClick={this.props.changeChecked.bind(this, index)}
-                        >
-                            <img src='images/card.svg' alt='' />
-                            <p className='name'>
-                                {item.name}
-                                <span className='additional'>{item.position}</span>
-                            </p>
-                        </label>
-                    </li>
-                )
-            else return null
+                        <img src='images/card.svg' alt='' />
+                        <p className='name'>
+                            {item.name}
+                            <span className='additional'>{item.position}</span>
+                        </p>
+                    </label>
+                </li>
+            )
         })
         return <ul>{list}</ul>
     }
