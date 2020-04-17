@@ -27,5 +27,13 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
             Students = new List<Student>();
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
         }
+
+        public Group(string numberName, int facultyId)
+        {
+            NumberName = numberName;
+            FacultyId = facultyId;
+            Students = new List<Student>();
+            GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
+        }
     }
 }

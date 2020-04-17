@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DTO\Result\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Validation\" />
   </ItemGroup>

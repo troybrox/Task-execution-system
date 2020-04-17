@@ -34,7 +34,8 @@ namespace TaskExecutionSystem
 
             services.AddApiJwtAuthentication();
             services.Configure<SeedOptions>(Configuration.GetSection("Seed"));
-            services.AddAsyncInitializer<IdentityInitializer>();
+            services.AddAsyncInitializer<IdentityInitializer>()
+                .AddAsyncInitializer<StudyDataInitializer>();
 
             services.AddCors(options =>
             {
@@ -50,7 +51,8 @@ namespace TaskExecutionSystem
 
             services.AddControllers();
 
-            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IAccountService, AccountService>()
+                .AddTransient<IAdminService, AdminService>();
         }
 
 

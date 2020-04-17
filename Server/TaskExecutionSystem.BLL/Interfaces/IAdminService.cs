@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Text;
 using System.Threading.Tasks;
 using TaskExecutionSystem.BLL.DTO;
+using TaskExecutionSystem.BLL.DTO.Studies;
 
 namespace TaskExecutionSystem.BLL.Interfaces
 {
@@ -15,5 +16,6 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO<List<TeacherDTO>>> GetExistTeachersAsync();
         public Task<OperationDetailDTO> RejectRequstsAsync();
         public Task<OperationDetailDTO> AcceptRequestsAsync();
+        public Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudyFiletrsAsync();
     }
 }

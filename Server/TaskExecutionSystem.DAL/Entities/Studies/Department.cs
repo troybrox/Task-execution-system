@@ -23,5 +23,12 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
         {
             Teachers = new List<Teacher>();
         }
+
+        public Department(string name, int facultyId)
+        {
+            Name = name;
+            FacultyId = facultyId;
+            Teachers = new List<Teacher>();
+        }
     }
 }

@@ -29,7 +29,7 @@ namespace TaskExecutionSystem.Application.Initialization
             await InitializeAdmin(context);
         }
 
-        public async Task InitializeRoles(DataContext context)
+        private async Task InitializeRoles(DataContext context)
         {
             var roleNames = Enum
                 .GetNames(typeof(Role.Types));
@@ -57,7 +57,7 @@ namespace TaskExecutionSystem.Application.Initialization
 
         // инициализация адиминистратора | при запуске приложения проверяется его существование, если нет - добавляется в систему;
         // пароль и логин админа в файле appsettings.json
-        public async Task InitializeAdmin(DataContext context)
+        private async Task InitializeAdmin(DataContext context)
         {
             var adminUserName = Configuration.GetSection("AdminAuthOptions")["UserName"];
             var user = await _userManager.FindByNameAsync(adminUserName);

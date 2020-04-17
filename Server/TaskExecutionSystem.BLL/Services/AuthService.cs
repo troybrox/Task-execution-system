@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using TaskExecutionSystem.BLL.DTO;
+using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities;
@@ -13,7 +14,7 @@ using TaskExecutionSystem.DAL.Entities.Identity;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    public class AccountService : IAccountService
+    public class AuthService : IAccountService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -23,7 +24,7 @@ namespace TaskExecutionSystem.BLL.Services
         private const string _serverErrorMessage = "Ошибка, произошло исключение на сервере. Подробнее: ";
         private const string _signInErrorMessage = "Ошибка при авторизации. Неверное имя пользователя/электронная почта или пароль. Проверьте правильность ввода и повторите попытку.";
 
-        public AccountService(UserManager<User> userManager, SignInManager<User> signInManager,
+        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager,
             IHttpContextAccessor httpContextAccessor, DataContext context)
         {
             _context = context;
@@ -36,12 +37,11 @@ namespace TaskExecutionSystem.BLL.Services
         public async Task<OperationDetailDTO<SignInUserDetailDTO>> SignInAsync(UserLoginDTO dto)
         {
             List<string> errors = new List<string>();
-            
+
             try
             {
                 if (!String.IsNullOrEmpty(dto.UserName))
                 {
-                    // try username
                     var userNameRes = await _signInManager.PasswordSignInAsync(dto.UserName, dto.Password, true, true);
                     if (userNameRes.Succeeded)
                     {
@@ -52,7 +52,6 @@ namespace TaskExecutionSystem.BLL.Services
 
                     else
                     {
-                        // try email
                         var user = await _userManager.FindByEmailAsync(dto.UserName);
                         var emailRes = await _signInManager.PasswordSignInAsync(user, user.PasswordHash, true, true);
                         if (emailRes.Succeeded)

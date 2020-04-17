@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using TaskExecutionSystem.BLL.DTO;
+using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TaskExecutionSystem.Controllers
 {
+
     //api/admin/filters
 
     //api/admin/reg_students
@@ -29,8 +31,15 @@ namespace TaskExecutionSystem.Controllers
 
 
     [Route("api/[controller]")]
-    public class AdminCintroller : Controller
+    public class AdminController : Controller
     {
+        private readonly IAdminService _adminService;
+
+        public AdminController(IAdminService adminService)
+        {
+            _adminService = adminService;
+        }
+
 
         [HttpPost]
         [Route("reg_students")]
@@ -39,6 +48,14 @@ namespace TaskExecutionSystem.Controllers
             OperationDetailDTO<SignInDetailDTO> detailResult;
             return Ok();
 
+        }
+
+        // GET: api/<controller>
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetFilterLists()
+        {
+            var resultList = await _adminService.GetAllStudyFiletrsAsync();
+            return Ok(resultList);
         }
 
 

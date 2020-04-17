@@ -11,24 +11,43 @@ namespace TaskExecutionSystem.Controllers
     [Route("api/account")]
     public class AccountController : ControllerBase
     {
-        private readonly IAccountService _acountService;
+        private readonly IAccountService _accountService;
 
         public AccountController(IAccountService accountService)
         {
-            _acountService = accountService;
+            _accountService = accountService;
         }
 
-        // POST api/<controller>
+        // todo: edit method
+        [HttpPost]
+        [Route("register/teacherUser")] // url edited
+        public async Task<IActionResult> RegisterTeacherAsync([FromBody]TeacherRegisterDTO dto)
+        {
+            var test = JsonConvert.SerializeObject(dto);
+            var detail = new OperationDetailDTO();
+
+            if (dto != null)
+            {
+                var res = await _accountService.CreateTeacherAsync(dto);
+                detail = res;
+            }
+            else
+                detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
+
+            return Ok(detail);
+        }
+
+        // todo: edit method
         [HttpPost]
         [Route("register/teacher")]
-        public async Task<IActionResult> RegisterTeacher([FromBody]TeacherRegisterDTO dto)
+        public async Task<IActionResult> AddTeacherRegisterRequestAsync([FromBody]TeacherRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
             var detail = new OperationDetailDTO();
 
             if (dto != null)
             {
-                var res = await _acountService.CreateTeacherAsync(dto);
+                var res = await _accountService.CreateTeacherRegisterRequestAsync(dto);
                 detail = res;
             }
             else
@@ -37,16 +56,17 @@ namespace TaskExecutionSystem.Controllers
             return Ok(detail);
         }
 
+        // todo: edit method
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> RegisterStudent([FromBody]StudentRegisterDTO dto)
+        public async Task<IActionResult> RegisterStudentAsync([FromBody]StudentRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
             var detail = new OperationDetailDTO();
 
             if (dto != null)
             {
-                var res = await _acountService.CreateStudentAsync(dto);
+                var res = await _accountService.CreateStudentAsync(dto);
                 detail = res;
             }
             else
@@ -58,14 +78,18 @@ namespace TaskExecutionSystem.Controllers
             return Ok(detail);
         }
 
+        // Todo: add tokenGenerator
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody]UserLoginDTO dto)
+        public async Task<IActionResult> SignInAsync([FromBody]UserLoginDTO dto)
         {
             OperationDetailDTO<SignInDetailDTO> detailResult;
-            var serviceResult = await _acountService.SignInAsync(dto);
+            var serviceResult = await _accountService.SignInAsync(dto);
             if (!serviceResult.Succeeded)
-                return Unauthorized();
+            {
+                detailResult = new OperationDetailDTO<SignInDetailDTO> { Succeeded = false, ErrorMessages = serviceResult.ErrorMessages };
+            }
+                
             else
             {
                 detailResult = new OperationDetailDTO<SignInDetailDTO>
@@ -77,20 +101,15 @@ namespace TaskExecutionSystem.Controllers
                         IdToken = "server_token"
                     },
                 };
-                return Ok(detailResult);
             }
+            return Ok(detailResult);
         }
 
-        // todo:
+        // todo: method
         [HttpPost]
         [Route("signout")]
-        public async Task<IActionResult> SignOut([FromBody]UserLoginDTO dto)
+        public async Task<IActionResult> SignOutAsync([FromBody]UserLoginDTO dto)
         {
-            OperationDetailDTO<SignInDetailDTO> detailResult;
-            var serviceResult = await _acountService.SignInAsync(dto);
-            if (!serviceResult.Succeeded)
-                return Unauthorized();
-            else
                 return Ok();
         }
     }

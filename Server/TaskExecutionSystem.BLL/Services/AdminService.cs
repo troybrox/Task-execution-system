@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using TaskExecutionSystem.BLL.DTO;
@@ -10,6 +11,7 @@ using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities;
 using TaskExecutionSystem.DAL.Entities.Identity;
+using TaskExecutionSystem.BLL.DTO.Studies;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -18,8 +20,8 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly DataContext _context;
 
-        private const string _serverErrorMessage = "Ошибка, произошло исключение на сервере. Подробнее: ";
-        private const string _signInErrorMessage = "Ошибка при авторизации. Неверное имя пользователя/электронная почта или пароль. Проверьте правильность ввода и повторите попытку.";
+        private const string _serverExceptionErrorHeader = "Произошло исключение на сервере. Подробнее: \n";
+        private const string _filtersErrorHeader = "Ошибка при получении списков для фильтрации по учебным подразделениям. ";
 
         public AdminService(UserManager<User> userManager, DataContext context)
         {
@@ -55,6 +57,28 @@ namespace TaskExecutionSystem.BLL.Services
         public Task<OperationDetailDTO> AcceptRequestsAsync()
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudyFiletrsAsync()
+        {
+            var resFacultyDTOList = new List<FacultyDTO>();
+            try
+            {
+                var entityList = await _context.Faculties
+                    .Include(f => f.Groups)
+                    .Include(f => f.Departments)
+                    .AsNoTracking()
+                    .ToListAsync();
+                foreach(var entity in entityList)
+                {
+                    resFacultyDTOList.Add(FacultyDTO.Map(entity));
+                }
+                return new OperationDetailDTO<List<FacultyDTO>> { Succeeded = true, Data = resFacultyDTOList, ErrorMessages = null };
+            }
+            catch (Exception e)
+            {
+                return new OperationDetailDTO<List<FacultyDTO>> { Succeeded = false, ErrorMessages = { _filtersErrorHeader + _serverExceptionErrorHeader +  e.Message } };
+            }
         }
     }
 }

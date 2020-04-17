@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using TaskExecutionSystem.DAL.Entities.Studies;
 
 namespace TaskExecutionSystem.BLL.DTO.Studies
 {
@@ -11,5 +11,23 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
         public string Name { get; set; }
 
         public int FacultyId { get; set; }
+
+
+        public static GroupDTO Map(Group entity) => new GroupDTO
+        {
+            Id = entity.Id,
+            Name = entity.NumberName,
+            FacultyId = entity.FacultyId
+        };
+
+        public static List<GroupDTO> Map(List<Group> entities)
+        {
+            var res = new List<GroupDTO>();
+            foreach (var entity in entities)
+            {
+                res.Add(GroupDTO.Map(entity));
+            }
+            return res;
+        }
     }
 }

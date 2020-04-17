@@ -19,5 +19,11 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
         {
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
         }
+
+        public Subject(string name)
+        {
+            Name = name;
+            GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
+        }
     }
 }

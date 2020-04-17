@@ -20,5 +20,12 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
             Groups = new List<Group>();
             Departments = new List<Department>();
         }
+
+        public Faculty(string name)
+        {
+            Name = name;
+            Groups = new List<Group>();
+            Departments = new List<Department>();
+        }
     }
 }
