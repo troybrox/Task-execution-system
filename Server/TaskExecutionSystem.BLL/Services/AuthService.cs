@@ -5,12 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.Interfaces;
+using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities;
 using TaskExecutionSystem.DAL.Entities.Identity;
+using TaskExecutionSystem.DAL.Entities.Registration;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -81,30 +84,16 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         // создание сущности студента и добавление в БД
-        public async Task<OperationDetailDTO> CreateStudentAsync(StudentRegisterDTO dto)
+        //todo: delete regRequest
+        // todo: getAddingEntityById()
+        public async Task<OperationDetailDTO> CreateStudentAsync(StudentRegisterRequest registerEntity)
         {
             OperationDetailDTO resultDetail;
             List<string> errors = new List<string>();
             try
             {
-                var student = new Student
-                {
-                    Name = dto.Name,
-                    Surname = dto.Surname,
-                    Patronymic = dto.Patronymic,
-                    GroupId = dto.GroupId
-                };
-
-                var user = new User
-                {
-                    Student = student,
-                    Email = dto.Email,
-                    PasswordHash = dto.Password,
-                    UserName = dto.UserName,
-                    EntityId = student.Id
-                };
-
-                var userResult = await _userManager.CreateAsync(user, dto.Password);
+                var user = GetStudentUserFromRegEntity(registerEntity);
+                var userResult = await _userManager.CreateAsync(user, registerEntity.PasswordHash);
                 if (userResult.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(user, Role.Types.Student.ToString());
@@ -137,31 +126,14 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         // создание сущности преподавтеля и добавление в БД
-        public async Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterDTO dto)
+        public async Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterRequest registerEntity)
         {
             OperationDetailDTO resultDetail;
             List<string> errors = new List<string>();
             try
             {
-                var teacher = new Teacher
-                {
-                    Name = dto.Name,
-                    Surname = dto.Surname,
-                    Patronymic = dto.Patronymic,
-                    Position = dto.Position,
-                    DepartmentId = dto.DepartmentId,
-                };
-
-                var user = new User
-                {
-                    Teacher = teacher,
-                    Email = dto.Email,
-                    PasswordHash = dto.Password,
-                    UserName = dto.UserName,
-                    EntityId = teacher.Id
-                };
-
-                var userResult = await _userManager.CreateAsync(user, dto.Password);
+                var user = GetTeacherUserFromRegEntity(registerEntity);
+                var userResult = await _userManager.CreateAsync(user, registerEntity.PasswordHash);
                 if (userResult.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(user, Role.Types.Teacher.ToString());
@@ -193,17 +165,125 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto)
+
+        public async Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto)
         {
-            throw new NotImplementedException();
+            List<string> errorMessages = new List<string>();
+            try
+            {
+                if(!UserValidator.Validate(dto, out errorMessages))
+                {
+                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
+                }
+                if(await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                    || await _userManager.FindByNameAsync(dto.UserName) != null)
+                {
+                    errorMessages.Add("Пользователь с таким имененем пользователем уже существует. Пожалуйста, выберите другое.");
+                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
+                }
+
+                await _context.StudentRegisterRequests.AddAsync(GetStudentRegEntityFromDTO(dto));
+                await _context.SaveChangesAsync();
+                return new OperationDetailDTO { Succeeded = true };
+            }
+            catch(Exception e)
+            {
+                return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _serverErrorMessage + e.Message } };
+            }
         }
 
-        public Task<OperationDetailDTO> CreateTeacherRegisterRequestAsync(TeacherRegisterDTO dto)
+        public async Task<OperationDetailDTO> CreateTeacherRegisterRequestAsync(TeacherRegisterDTO dto)
         {
-            throw new NotImplementedException();
+            List<string> errorMessages = new List<string>();
+            try
+            {
+                if (!UserValidator.Validate(dto, out errorMessages))
+                {
+                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
+                }
+                if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                    || await _userManager.FindByNameAsync(dto.UserName) != null)
+                {
+                    errorMessages.Add("Пользователь с таким имененем пользователем уже существует. Пожалуйста, выберите другое.");
+                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
+                }
+
+                await _context.TeacherRegisterRequests.AddAsync(GetTeacherRegEntityFromDTO(dto));
+                await _context.SaveChangesAsync();
+                return new OperationDetailDTO { Succeeded = true };
+            }
+            catch (Exception e)
+            {
+                return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _serverErrorMessage + e.Message } };
+            }
         }
 
         public Task<OperationDetailDTO<SignInUserDetailDTO>> SignOutAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        private StudentRegisterRequest GetStudentRegEntityFromDTO(StudentRegisterDTO dto) => new StudentRegisterRequest
+        {
+            GroupId = dto.GroupId,
+            Name = dto.Name,
+            Surname = dto.Surname,
+            Patronymic = dto.Patronymic,
+            Email = dto.Email,
+            PasswordHash = dto.Password,
+            UserName = dto.UserName,
+        };
+
+        private TeacherRegisterRequest GetTeacherRegEntityFromDTO(TeacherRegisterDTO dto) => new TeacherRegisterRequest
+        {
+            DepartmentId = dto.DepartmentId,
+            Name = dto.Name,
+            Surname = dto.Surname,
+            Patronymic = dto.Patronymic,
+            Position = dto.Position,
+            Email = dto.Email,
+            PasswordHash = dto.Password,
+            UserName = dto.UserName,
+        };
+
+        private User GetTeacherUserFromRegEntity(TeacherRegisterRequest teacherRegister) => new User
+        {
+            Teacher = new Teacher
+            {
+                DepartmentId = teacherRegister.DepartmentId,
+                Name = teacherRegister.Name,
+                Surname = teacherRegister.Surname,
+                Patronymic = teacherRegister.Patronymic,
+                Position = teacherRegister.Position,
+            },
+            UserName = teacherRegister.UserName,
+            Email = teacherRegister.Email
+        };
+
+        private User GetStudentUserFromRegEntity(StudentRegisterRequest teacherRegister) => new User
+        {
+            Student = new Student
+            {
+                GroupId = teacherRegister.GroupId,
+                Name = teacherRegister.Name,
+                Surname = teacherRegister.Surname,
+                Patronymic = teacherRegister.Patronymic
+            },
+            UserName = teacherRegister.UserName,
+            Email = teacherRegister.Email
+        };
+
+
+
+        public Task<OperationDetailDTO> CreateStudentAsync(StudentRegisterDTO registerEntity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterDTO registerEntity)
         {
             throw new NotImplementedException();
         }

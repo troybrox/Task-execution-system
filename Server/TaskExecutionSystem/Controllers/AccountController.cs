@@ -20,7 +20,7 @@ namespace TaskExecutionSystem.Controllers
 
         // todo: edit method
         [HttpPost]
-        [Route("register/teacherUser")] // url edited
+        [Route("register_/teacherUser")] // url edited
         public async Task<IActionResult> RegisterTeacherAsync([FromBody]TeacherRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
@@ -40,25 +40,30 @@ namespace TaskExecutionSystem.Controllers
         // todo: edit method
         [HttpPost]
         [Route("register/teacher")]
-        public async Task<IActionResult> AddTeacherRegisterRequestAsync([FromBody]TeacherRegisterDTO dto)
+        public async Task<IActionResult> AddTeacherRegRequestAsync(TeacherRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
             var detail = new OperationDetailDTO();
-
-            if (dto != null)
-            {
-                var res = await _accountService.CreateTeacherRegisterRequestAsync(dto);
-                detail = res;
-            }
-            else
-                detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
+            var res = await _accountService.CreateTeacherRegisterRequestAsync(dto);
+            detail = res;
 
             return Ok(detail);
         }
 
-        // todo: edit method
         [HttpPost]
         [Route("register/student")]
+        public async Task<IActionResult> AddStudentRegRequestAsync(StudentRegisterDTO dto)
+        {
+            var test = JsonConvert.SerializeObject(dto);
+            var detail = new OperationDetailDTO();
+            var res = await _accountService.CreateStudentRegisterRequestAsync(dto);
+            detail = res;
+            return Ok(detail);
+        }
+
+        // todo: edit method
+        // [HttpPost]
+        [Route("register_/student")]
         public async Task<IActionResult> RegisterStudentAsync([FromBody]StudentRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
@@ -77,6 +82,9 @@ namespace TaskExecutionSystem.Controllers
 
             return Ok(detail);
         }
+
+
+        
 
         // Todo: add tokenGenerator
         [HttpPost]

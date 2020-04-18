@@ -10,6 +10,7 @@ namespace TaskExecutionSystem.DAL.Entities.Registration
 {
     public class StudentRegisterRequest : RegisterRequestBase
     {
+        [Required]
         public int GroupId { get; set; }
     }
 }

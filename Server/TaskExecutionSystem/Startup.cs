@@ -51,7 +51,7 @@ namespace TaskExecutionSystem
 
             services.AddControllers();
 
-            services.AddTransient<IAccountService, AccountService>()
+            services.AddTransient<IAccountService, AuthService>()
                 .AddTransient<IAdminService, AdminService>();
         }
 

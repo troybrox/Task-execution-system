@@ -7,6 +7,7 @@ namespace TaskExecutionSystem.DAL.Entities.Registration
     {
         public int Id { get; set; }
 
+        [Required]
         [Column(TypeName = "varchar(255)")]
         public string Email { get; set; }
 

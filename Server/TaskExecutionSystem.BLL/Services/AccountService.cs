@@ -10,6 +10,7 @@ using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities;
 using TaskExecutionSystem.DAL.Entities.Identity;
+using TaskExecutionSystem.DAL.Entities.Registration;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -208,5 +209,17 @@ namespace TaskExecutionSystem.BLL.Services
         {
             throw new NotImplementedException();
         }
+
+
+        public Task<OperationDetailDTO> CreateStudentAsync(StudentRegisterRequest registerEntity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterRequest registerEntity)
+        {
+            throw new NotImplementedException();
+        }
     }
+
 }
