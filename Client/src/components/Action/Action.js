@@ -4,23 +4,28 @@ import { connect } from 'react-redux'
 import { changeCheckedHandler } from '../../store/actions/admin'
 
 class Action extends React.Component {
+    changeCheckedHandler = index => {
+        this.props.changeChecked(index)
+        this.props.onChangeCheck()
+    }
+
     renderUsers = () => {
         const list = this.props.users.map((item, index) => {
             return (
                 <li
-                    key={index}
+                    key={item.id}
                 >
                     <input 
                         type='checkbox' 
                         id={`check-${index}`}
                         className='check_list_input'
-                        // checked={item.check} 
+                        defaultChecked={item.check} 
                     />
                     
                     <label 
                         htmlFor={`check-${index}`} 
                         className='user_list_admin check_list_label'
-                        onClick={this.props.changeChecked.bind(this, index)}
+                        onClick={this.changeCheckedHandler.bind(this, index)}
                     >
                         <img src='images/card.svg' alt='' />
                         <p className='name'>

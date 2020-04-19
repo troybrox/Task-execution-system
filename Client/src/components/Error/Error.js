@@ -1,7 +1,5 @@
 import React from 'react'
 import './Error.scss'
-import { connect } from 'react-redux'
-import { errorWindow } from '../../store/actions/admin'
 
 class Error extends React.Component {
     renderMessage() {
@@ -18,23 +16,11 @@ class Error extends React.Component {
                     <div>
                         {this.renderMessage()}
                     </div>
-                    <button onClick={() => this.props.errorWindow(false, [])}>Закрыть</button>
+                    <button onClick={this.props.errorWindow}>Закрыть</button>
                 </div>
             </div>
         )
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        errorMessage: state.admin.errorMessage
-    }
-}
-
-function mapDispatchToProps(dispatch) {
-    return {
-        errorWindow: (errorShow, errorMessage) => dispatch(errorWindow(errorShow, errorMessage))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Error)
+export default Error

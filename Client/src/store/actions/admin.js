@@ -6,7 +6,7 @@ export function changeCheckedHandler(index) {
         const state = getState().admin
         const users = state.users
         users[index].check = !users[index].check
-        
+
         dispatch(pushUsers(users))
     }
 }
@@ -78,6 +78,66 @@ export function loadingLists(url, roleActive) {
                 })
     
                 dispatch(pushLists(selects))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function actionUsersHandler(url) {
+    return async (dispatch, getState) => {
+        const idList = []
+        const newList = []
+        const state = getState().admin
+
+        state.users.forEach(el => {
+            if (el.check) idList.push(el.id)
+            else newList.push(el)
+        })
+
+        try {
+            console.log(url)
+            console.log(idList)
+            const response = await axios.post(url, idList)
+            const data = response.data
+            if (data.succeeded) {
+                dispatch(pushUsers(newList))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err)) 
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function deleteGroupHandler(url) {
+    return async (dispatch, getState) => {
+        const idList = []
+        const state = getState().admin
+
+        state.users.forEach(el => {
+            idList.push(el.id)
+        })
+
+        try {
+            console.log(url)
+            console.log(idList)
+            const response = await axios.post(url, idList)
+            const data = response.data
+            if (data.succeeded) {
+                dispatch(pushUsers([]))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

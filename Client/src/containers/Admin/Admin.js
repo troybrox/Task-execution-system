@@ -2,9 +2,10 @@ import React from 'react'
 import './Admin.scss'
 import Action from '../../components/Action/Action'
 import Error from '../../components/Error/Error'
+import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import { loadingUsers, loadingLists } from '../../store/actions/admin'
+import { loadingUsers, loadingLists, errorWindow, actionUsersHandler, deleteGroupHandler } from '../../store/actions/admin'
 
 class Admin extends React.Component {
     state = {
@@ -18,8 +19,9 @@ class Admin extends React.Component {
         ],
         hTitle: 'Преподаватели',
 
-        showButton: false,
-        buttonAction: false,
+        showButtonAdd: false,
+        buttonRemoveGroup: false,
+        buttonActiveAction: false,
 
         groupId: null,
         facultyId: null,
@@ -28,7 +30,7 @@ class Admin extends React.Component {
     }
 
     chooseHandler = index => {
-        const showButton = false
+        const showButtonAdd = false
         const aside = [...this.state.aside]
         const selects = [...this.props.selects]
 
@@ -47,7 +49,7 @@ class Admin extends React.Component {
         this.setState({
             aside,
             hTitle,
-            showButton
+            showButtonAdd
         }, () => {
             this.requestUserHandler()
             this.requestListHandler()
@@ -55,19 +57,19 @@ class Admin extends React.Component {
     }
 
     changeTab = index => {
-        const showButton = false
+        const showButtonAdd = false
         const tabTitles = [...this.state.tabTitles]
-        let buttonAction = false
+        let buttonRemoveGroup = false
         tabTitles.forEach(el => {
             el.active = false
         })
         tabTitles[index].active = true
-        if (tabTitles[index].title === 'Заявки') buttonAction = true
+        if (tabTitles[index].title === 'Заявки') buttonRemoveGroup = true
 
         this.setState({
             tabTitles,
-            buttonAction,
-            showButton
+            buttonRemoveGroup,
+            showButtonAdd
         }, () => {
             this.requestUserHandler()
             this.requestListHandler()
@@ -78,10 +80,10 @@ class Admin extends React.Component {
         const index = event.target.options.selectedIndex
         const id = event.target.options[index].getAttribute('index')
 
-        let showButton = this.state.showButton
+        let showButtonAdd = this.state.showButtonAdd
         if (title === 'Группа') {
-            showButton = false
-            if (id !== null) showButton = true && !this.state.buttonAction
+            showButtonAdd = false
+            if (id !== null) showButtonAdd = true && !this.state.buttonRemoveGroup
         }
 
         let facultyId = this.state.facultyId
@@ -102,7 +104,7 @@ class Admin extends React.Component {
         }
 
         this.setState({
-            showButton,
+            showButtonAdd,
             facultyId,
             groupId,
             departmentId
@@ -146,16 +148,56 @@ class Admin extends React.Component {
         const departmentId = this.state.departmentId
         const search = this.state.search
 
-        const urlUser = `https://localhost:44303/api/admin/${path}`
-        this.props.loadingUsers(urlUser, facultyId, groupId, departmentId, search)
+        const url = `https://localhost:44303/api/admin/${path}`
+        this.props.loadingUsers(url, facultyId, groupId, departmentId, search)
     }
 
     requestListHandler = () => {
         const path = this.pathHandler()
         const roleActive = this.state.aside[0].active
 
-        const urlList = `https://localhost:44303/api/admin/filters/${path}`
-        this.props.loadingLists(urlList, roleActive)
+        const url = `https://localhost:44303/api/admin/filters/${path}`
+        this.props.loadingLists(url, roleActive)
+    }
+
+    removeUsers = () => {
+        let success = window.confirm('Подтвердите ваше действие!');
+        if (success) {
+            const path = this.pathHandler()
+            const url = `https://localhost:44303/api/admin/delete_${path}`
+
+            this.props.actionUsersHandler(url)
+        }
+    }
+
+    addUsers = () => {
+        const success = window.confirm('Подтвердите ваше действие!')
+        if (success) {       
+            const path = this.pathHandler()
+            const url = `https://localhost:44303/api/admin/add_${path}`
+
+            this.props.actionUsersHandler(url)
+        }
+    }
+
+    removeGroup = () => {
+        const success = window.confirm('Подтвердите ваше действие!')
+        if (success) {
+            const url = 'https://localhost:44303/api/admin/delete_group'
+
+            this.props.deleteGroupHandler(url)
+        }
+    }
+
+    onChangeCheck = () => {
+        let buttonActiveAction = false
+        this.props.users.forEach((el) => {
+            if (el.check) buttonActiveAction = true
+        })
+
+        this.setState({
+            buttonActiveAction
+        })
     }
 
     componentDidMount() {
@@ -240,10 +282,42 @@ class Admin extends React.Component {
         })
     }
 
+    renderButtons() {
+        const cls = ['rm_button', 'bottom_button']
+        const active = this.state.buttonActiveAction
+        if (!active) cls.push('disabled')
+
+        return (
+            <Auxiliary>
+                <button 
+                    className={cls.join(' ')}
+                    disabled={!active}
+                    onClick={this.removeUsers}
+                >
+                    Удалить выбранные
+                </button>
+
+                {this.state.buttonRemoveGroup ? 
+                    <button 
+                        className={cls.join(' ')}
+                        disabled={!active}
+                        onClick={this.addUsers}
+                    >
+                        Добавить выбранные
+                    </button> : null}
+            </Auxiliary>
+        )
+    }
+
     render() {
         return (
             <div className='admin'>
-                {this.props.errorShow ? <Error /> : null}
+                {this.props.errorShow ? 
+                    <Error 
+                        errorMessage={this.props.errorMessage}
+                        errorWindow={() => this.props.errorWindow(false, [])}
+                        /> : 
+                    null}
 
                 <header>
                     <span className='header_items admin'>
@@ -270,7 +344,13 @@ class Admin extends React.Component {
 
                         <div className='sort'>
                             { this.renderSelect() }
-                            { this.state.showButton ? <button className='rm_button'>Удалить группу</button> : null}
+                            { this.state.showButtonAdd ? 
+                                <button 
+                                    className='rm_button'
+                                    onClick={this.removeGroup}
+                                >
+                                    Удалить группу
+                                </button> : null}
                         </div>
 
                         <div className='search'>
@@ -286,9 +366,10 @@ class Admin extends React.Component {
                             </button>
                         </div>
 
-                        <Action />
-                        <button className='rm_button bottom_button'>Удалить выбранные</button>
-                        {this.state.buttonAction ? <button className='rm_button bottom_button'>Добавить выбранные</button> : null}
+                        <Action 
+                            onChangeCheck={this.onChangeCheck}
+                        />
+                        { this.renderButtons() }
                     </div>
                 </main>
 
@@ -299,8 +380,10 @@ class Admin extends React.Component {
 
 function mapStateToProps(state) {
     return {
+        users: state.admin.users,
         selects: state.admin.selects,
-        errorShow: state.admin.errorShow
+        errorShow: state.admin.errorShow,
+        errorMessage: state.admin.errorMessage
     }
 }
 
@@ -309,7 +392,13 @@ function mapDispatchToProps(dispatch) {
         loadingUsers: (url, facultyId, groupId, departmentId, searchString) => 
             dispatch(loadingUsers(url, facultyId, groupId, departmentId, searchString)),
         loadingLists: (url, facultyId, groupId, departmentId, searchString) => 
-            dispatch(loadingLists(url, facultyId, groupId, departmentId, searchString))
+            dispatch(loadingLists(url, facultyId, groupId, departmentId, searchString)),
+        errorWindow: (errorShow, errorMessage) => 
+            dispatch(errorWindow(errorShow, errorMessage)),
+        actionUsersHandler: (url) => 
+            dispatch(actionUsersHandler(url)),
+        deleteGroupHandler: (url) =>
+            dispatch(deleteGroupHandler(url))
     }
 }
 

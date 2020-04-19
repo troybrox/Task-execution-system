@@ -2,10 +2,10 @@ import { PUSH_USERS, PUSH_SELECTS, ERROR_WINDOW } from "../actions/actionTypes"
 
 const initialState = {
     users: [
-        {name: 'Преподаватель 1', position: 'Должность', check: false},
-        {name: 'Преподаватель 2', position: 'Должность', check: false},
-        {name: 'Преподаватель 3', position: 'Должность', check: true},
-        {name: 'Преподаватель 4', position: 'Должность', check: false}
+        {id: 0, name: 'Преподаватель 1', position: 'Должность', check: false},
+        {id: 1, name: 'Преподаватель 2', position: 'Должность', check: false},
+        {id: 2, name: 'Преподаватель 3', position: 'Должность', check: false},
+        {id: 3, name: 'Преподаватель 4', position: 'Должность', check: false}
     ],
     selects: [
         {
