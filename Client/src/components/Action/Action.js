@@ -30,7 +30,7 @@ class Action extends React.Component {
                         <img src='images/card.svg' alt='' />
                         <p className='name'>
                             {item.name}
-                            <span className='additional'>{item.position}</span>
+                            <span className='additional'>{item.additional}</span>
                         </p>
                     </label>
                 </li>
