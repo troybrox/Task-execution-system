@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using TaskExecutionSystem.DAL.Entities.Relations;
+using TaskExecutionSystem.DAL.Entities.Registration;
 
 namespace TaskExecutionSystem.DAL.Entities.Studies
 {
@@ -13,6 +14,8 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
         public string NumberName { get; set; }
 
         public List<Student> Students { get; set; }
+
+        public List<StudentRegisterRequest> StudentRegisterRequests { get; set; }
 
         public List<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 
@@ -25,6 +28,7 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
         public Group()
         {
             Students = new List<Student>();
+            StudentRegisterRequests = new List<StudentRegisterRequest>();
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
         }
 

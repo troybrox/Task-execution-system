@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TaskExecutionSystem.DAL.Entities.Identity;
+using TaskExecutionSystem.DAL.Entities.Registration;
 
 namespace TaskExecutionSystem.DAL.Entities.Studies
 {
@@ -13,6 +14,8 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
 
         public List<Teacher> Teachers { get; set; }
 
+        public List<TeacherRegisterRequest> TeacherRegisterRequests { get; set; }
+
 
         public int FacultyId { get; set; }
 
@@ -22,6 +25,7 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
         public Department()
         {
             Teachers = new List<Teacher>();
+            TeacherRegisterRequests = new List<TeacherRegisterRequest>();
         }
 
         public Department(string name, int facultyId)

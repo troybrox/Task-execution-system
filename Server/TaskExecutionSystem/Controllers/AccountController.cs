@@ -18,26 +18,7 @@ namespace TaskExecutionSystem.Controllers
             _accountService = accountService;
         }
 
-        // todo: edit method
-        [HttpPost]
-        [Route("register_/teacherUser")] // url edited
-        public async Task<IActionResult> RegisterTeacherAsync([FromBody]TeacherRegisterDTO dto)
-        {
-            var test = JsonConvert.SerializeObject(dto);
-            var detail = new OperationDetailDTO();
 
-            if (dto != null)
-            {
-                var res = await _accountService.CreateTeacherAsync(dto);
-                detail = res;
-            }
-            else
-                detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
-
-            return Ok(detail);
-        }
-
-        // todo: edit method
         [HttpPost]
         [Route("register/teacher")]
         public async Task<IActionResult> AddTeacherRegRequestAsync(TeacherRegisterDTO dto)
@@ -61,30 +42,6 @@ namespace TaskExecutionSystem.Controllers
             return Ok(detail);
         }
 
-        // todo: edit method
-        // [HttpPost]
-        [Route("register_/student")]
-        public async Task<IActionResult> RegisterStudentAsync([FromBody]StudentRegisterDTO dto)
-        {
-            var test = JsonConvert.SerializeObject(dto);
-            var detail = new OperationDetailDTO();
-
-            if (dto != null)
-            {
-                var res = await _accountService.CreateStudentAsync(dto);
-                detail = res;
-            }
-            else
-            {
-                detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
-            }
-
-
-            return Ok(detail);
-        }
-
-
-        
 
         // Todo: add tokenGenerator
         [HttpPost]
@@ -122,3 +79,25 @@ namespace TaskExecutionSystem.Controllers
         }
     }
 }
+
+
+// todo: edit method
+//[HttpPost]
+//[Route("register_/teacherUser")] // url edited
+//public async Task<IActionResult> RegisterTeacherAsync([FromBody]TeacherRegisterDTO dto)
+//{
+//    var test = JsonConvert.SerializeObject(dto);
+//    var detail = new OperationDetailDTO();
+
+//    if (dto != null)
+//    {
+//        var res = await _accountService.CreateTeacherAsync(dto);
+//        detail = res;
+//    }
+//    else
+//        detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
+
+//    return Ok(detail);
+//}
+
+// todo: edit method

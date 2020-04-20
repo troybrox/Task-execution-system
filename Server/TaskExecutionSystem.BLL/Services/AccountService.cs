@@ -14,7 +14,7 @@ using TaskExecutionSystem.DAL.Entities.Registration;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    public class AccountService : IAccountService
+    public class AccountService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -217,6 +217,16 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         public Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterRequest registerEntity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateStudentAsync(int registerEntityId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateStudentAsync(List<int> registerEntityIdList)
         {
             throw new NotImplementedException();
         }

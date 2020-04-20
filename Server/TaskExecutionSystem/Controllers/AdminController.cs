@@ -11,7 +11,6 @@ using TaskExecutionSystem.BLL.Interfaces;
 
 namespace TaskExecutionSystem.Controllers
 {
-
     //api/admin/filters
 
     //api/admin/reg_students
@@ -30,66 +29,115 @@ namespace TaskExecutionSystem.Controllers
     //api/admin/delete_group
 
 
+    // TODO: test accept methods
+    
+
     [Route("api/[controller]")]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
+        private readonly IAccountService _accountService;
 
-        public AdminController(IAdminService adminService)
+        public AdminController(IAdminService adminService, IAccountService accountService)
         {
             _adminService = adminService;
-        }
-
-
-        [HttpPost]
-        [Route("reg_students")]
-        public async Task<IActionResult> GetExistTeachers()
-        {
-            OperationDetailDTO<SignInDetailDTO> detailResult;
-            return Ok();
-
+            _accountService = accountService;
         }
 
         // GET: api/<controller>
         [HttpGet("filters")]
-        public async Task<IActionResult> GetFilterLists()
+        public async Task<IActionResult> GetFilterListsAsync()
         {
             var resultList = await _adminService.GetAllStudyFiletrsAsync();
             return Ok(resultList);
         }
 
-
-        // GET: api/<controller>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("exist_teachers")]
+        public async Task<IActionResult> GetExistTeachersAsync()
         {
-            return new string[] { "value1", "value2" };
+            var res = await _adminService.GetExistTeachersAsync();
+            return Ok(res);
+        }
+
+        [HttpGet("exist_students")]
+        public async Task<IActionResult> GetExistStudentsAsync()
+        {
+            var res = await _adminService.GetExistStudentsAsync();
+            return Ok(res);
+        }
+
+        [HttpGet("reg_teachers")]
+        public async Task<IActionResult> GetRegTeachersAsync()
+        {
+            var res = await _adminService.GetTeacherRegisterRequestsAsync();
+            return Ok(res);
+        }
+
+        [HttpGet("reg_students")]
+        public async Task<IActionResult> GetRegStudentsAsync()
+        {
+            var res = await _adminService.GetStudentRegisterRequestsAsync();
+            return Ok(res);
         }
 
 
-        // GET api/<controller>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
 
-        // POST api/<controller>
         [HttpPost]
-        public void Post([FromBody]string value)
+        [Route("reg_teachers_filtered")]
+        public async Task<IActionResult> GetFilteredRegTeachersAsync([FromBody]FilterModelDTO model)
         {
+            var res = await _adminService.GetTeacherRegisterRequestsAsync(model.Filters);
+            return Ok(res);
         }
 
-        // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPost]
+        [Route("reg_students_filtered")]
+        public async Task<IActionResult> GetFilteredRegStudentsAsync([FromBody]FilterModelDTO model)
         {
+            var res = await _adminService.GetStudentRegisterRequestsAsync(model.Filters);
+            return Ok(res);
         }
 
-        // DELETE api/<controller>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpPost("add_reg_teachers")]
+        public async Task<IActionResult> AcceptTeacherUsersAsync([FromBody]int[] idList)
         {
+            var result = await _adminService.AcceptTeacherRequestsAsync(idList);
+            return Ok(result);
+        }
+
+        [HttpPost("add_reg_students")]
+        public async Task<IActionResult> AcceptStudentUsersAsync([FromBody]int[] idList)
+        {
+            var result = await _adminService.AcceptStudentRequestsAsync(idList);
+            return Ok(result);
+        }
+
+        [HttpPost("delete_reg_teachers")]
+        public async Task<IActionResult> DeleteTeacherRegsAsync([FromBody]int[] idList)
+        {
+            var result = await _adminService.RejectTeacherRequstsAsync(idList);
+            return Ok(result);
+        }
+
+        [HttpPost("delete_reg_students")]
+        public async Task<IActionResult> DeleteStudentRegsAsync([FromBody]int[] idList)
+        {
+            var result = await _adminService.RejectStudentRequstsAsync(idList);
+            return Ok(result);
+        }
+
+        [HttpPost("delete_exist_teachers")]
+        public async Task<IActionResult> DeleteTeachersAsync([FromBody]int[] idList)
+        {
+            await _adminService.DeleteExistTeachersAsync(idList);
+            return Ok();
+        }
+
+        [HttpPost("delete_exist_students")]
+        public async Task<IActionResult> DeleteStudentsAsync([FromBody]int[] idList)
+        {
+            await _adminService.DeleteExistStudentsAsync(idList);
+            return Ok();
         }
     }
 }
