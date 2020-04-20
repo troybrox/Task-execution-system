@@ -27,7 +27,16 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
             const response = await axios.post(url, data)
             
             if (response.data.succeeded) {
-                const users = response.data.users
+                const users = response.data.data
+                const finalUsers = []
+                users.forEach(el => {
+                    const name = el.surname + ' ' + el.name + ' ' + el.patronymic
+                    if (el.position === 'Преподаватель')
+                        const additional = el.faculty + '. Кафедра ' + el.departmentName
+                    else 
+                        const additional = el.faculty + '. Группа ' + el.groupNumber
+                    finalUsers.push({id: el.id, name, additional, check: false})
+                })
 
                 dispatch(pushUsers(users))
             } else {
@@ -103,8 +112,6 @@ export function actionUsersHandler(url) {
         })
 
         try {
-            console.log(url)
-            console.log(idList)
             const response = await axios.post(url, idList)
             const data = response.data
             if (data.succeeded) {
