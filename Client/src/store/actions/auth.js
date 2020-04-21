@@ -1,5 +1,12 @@
 import axios from 'axios'
-import { AUTH_SUCCESS, LOGOUT, SUCCESS, ERROR_MESSAGE_AUTH, PUSH_FILTERS } from './actionTypes'
+import { 
+    AUTH_SUCCESS, 
+    LOGOUT, 
+    SUCCESS, 
+    ERROR_MESSAGE_AUTH, 
+    PUSH_FILTERS, 
+    ERROR_WINDOW 
+} from './actionTypes'
 
 export function registr(url, data) {
     return async dispatch => {
@@ -18,7 +25,9 @@ export function registr(url, data) {
                 dispatch(success(role, title, message))
             }
         } catch (e) {
-            dispatch(success(role, 'Ошибка', e.message))
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
         }
     }
 }
@@ -38,8 +47,9 @@ export function auth(data) {
                 dispatch(errorMessageAuth('Неверные данные!'))
             }
         } catch (e) {
-            const role = 'success'
-            dispatch(success(role, 'Ошибка', e.message))
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
         }
     }
 }
@@ -74,7 +84,9 @@ export function loadingFilters() {
             }
 
         } catch (e) {
-            console.log(e)
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
         }
     }
 }
@@ -107,6 +119,14 @@ export function logout() {
         type: LOGOUT
     }
 }
+
+export function errorWindow(catchError, catchErrorMessage) {
+    return {
+        type: ERROR_WINDOW,
+        catchError, catchErrorMessage
+    }
+}
+
 
 export function errorMessageAuth(errorMessages) {
     return {

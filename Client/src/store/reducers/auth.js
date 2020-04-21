@@ -1,4 +1,4 @@
-import { AUTH_SUCCESS, LOGOUT, SUCCESS, ERROR_MESSAGE_AUTH, PUSH_FILTERS } from "../actions/actionTypes"
+import { AUTH_SUCCESS, LOGOUT, SUCCESS, ERROR_MESSAGE_AUTH, PUSH_FILTERS, ERROR_WINDOW } from "../actions/actionTypes"
 
 const initialState = {
     faculties: [
@@ -16,9 +16,14 @@ const initialState = {
         {id: 1, name: 'Кафедра 1', facultyId: 1},
         {id: 2, name: 'Кафедра 2', facultyId: 2}
     ],    
+
     title: 'Успешно',
     message: 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.',
     errorMessages: null,
+
+    catchError: false,
+    catchErrorMessage: [],
+
     token: localStorage.getItem('token') || '',
     role: localStorage.getItem('role') || null
 }
@@ -44,6 +49,10 @@ export default function authReadducer(state = initialState, action) {
         case PUSH_FILTERS:
             return {
                 ...state, faculties: action.faculties, groups: action.groups, departments: action.departments,
+            }
+        case ERROR_WINDOW:
+            return {
+                ...state, catchError: action.catchError, catchErrorMessage: action.catchErrorMessage
             }
         default:
             return state

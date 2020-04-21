@@ -4,6 +4,9 @@ import {Link} from 'react-router-dom'
 import Auxiliary from '../Auxiliary/Auxiliary'
 import Label from '../../components/UI/Label/Label'
 import Input from '../../components/UI/Input/Input'
+import { connect } from 'react-redux'
+import { errorWindow } from '../../store/actions/auth'
+import Error from '../../components/Error/Error'
 
 class Layout extends React.Component {
     state = {
@@ -127,6 +130,12 @@ class Layout extends React.Component {
     render() {
         return (
             <Auxiliary>
+                { this.props.catchError ? 
+					<Error
+						errorMessage={this.props.catchErrorMessage}
+						errorWindow={() => this.props.errorWindow(false, [])}
+					/>: null}
+
                 <header className='header'>
                     <Link to={this.props.to} className='top_link'>
                         <img src={this.props.img} alt={this.props.head}/>
@@ -157,4 +166,17 @@ class Layout extends React.Component {
     }
 }
 
-export default Layout
+function mapStateToProps(state) {
+	return {
+		catchError: state.auth.catchError,
+		catchErrorMessage: state.auth.catchErrorMessage,
+	}
+}
+
+function mapDispatchToProps(dispatch) {
+	return {
+		errorWindow: (catchError, catchErrorMessage) => dispatch(errorWindow(catchError, catchErrorMessage))
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Layout)

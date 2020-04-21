@@ -192,7 +192,7 @@ function mapStateToProps(state) {
 	return {
 		faculties: state.auth.faculties,
 		groups: state.auth.groups,
-		departments: state.auth.departments,
+		departments: state.auth.departments
 	}
 }
 
