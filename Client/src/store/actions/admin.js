@@ -31,10 +31,11 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
                 const finalUsers = []
                 users.forEach(el => {
                     const name = el.surname + ' ' + el.name + ' ' + el.patronymic
+                    let additional
                     if (el.position === 'Преподаватель')
-                        const additional = el.faculty + '. Кафедра ' + el.departmentName
+                        additional = el.faculty + '. Кафедра ' + el.departmentName
                     else 
-                        const additional = el.faculty + '. Группа ' + el.groupNumber
+                        additional = el.faculty + '. Группа ' + el.groupNumber
                     finalUsers.push({id: el.id, name, additional, check: false})
                 })
 
