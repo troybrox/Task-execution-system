@@ -1,24 +1,28 @@
 import React from 'react'
 import Layout from '../../hoc/Layout/Layout'
 import { connect } from 'react-redux'
-import { registr } from '../../store/actions/auth'
+import { registr, loadingFilters } from '../../store/actions/auth'
 
 
 class Registration extends React.Component {
 	state = {
-		roles: ['Выберите роль','Преподаватель','Студент'],
+		roles: [
+			{id: null, name: 'Выберите роль'},
+			{id: 1, name: 'Преподаватель'},
+			{id: 2, name: 'Студент'}
+		],
 		fields: [
 			{ value: '', label: 'Имя', type: 'text', serverName: 'Name', valid: true },
 			{ value: '', label: 'Отчество', type: 'text', serverName: 'Patronymic', valid: true },
 			{ value: '', label: 'Фамилия', type: 'text', serverName: 'Surname', valid: true },
 			{ value: '', label: 'Логин', type: 'text', serverName: 'UserName', valid: true },
 			{ value: '', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true },
-			// { value: '', label: 'Факультет', type: 'number', serverName: 'Faculty', valid: true },
 			{ value: '', label: 'Роль', type: 'select', valid: true },
-			{ value: '', label: 'Кафедра', type: 'text', serverName: 'Department', invisible: true, valid: true },
+			{ value: '', label: 'Факультет', type: 'select', valid: true },
+			{ value: '', label: 'Кафедра', type: 'select', serverName: 'Department', invisible: true, valid: true },
 			{ value: '', label: 'Предмет', type: 'text', serverName: 'Discipline', invisible: true, valid: true },
 			{ value: '', label: 'Должность', type: 'text', serverName: 'Position', invisible: true, valid: true },
-			{ value: '', label: 'Группа', type: 'text', serverName: 'Group', invisible: true, valid: true },
+			{ value: '', label: 'Группа', type: 'select', serverName: 'Group', invisible: true, valid: true },
 			{ value: '', label: 'Пароль', type: 'password', serverName: 'Password', valid: true },
 			{ value: '', label: 'Введите пароль еще раз', type: 'password', valid: true },
 		]
@@ -90,42 +94,46 @@ class Registration extends React.Component {
     }
 	
 	// Функция для динамического появления/скрытия дополнительных полей
-	// при выборе роли пользователя
-	// + изменение поля Роли
-	selectRole = event => {
+	// при выборе роли и факультета пользователя
+	// + изменение поля select
+	selectRole = (target, label, facultyId, roleId) => {
 		const fields = [...this.state.fields]
 		let index;
+
+		if (label === 'Роль' || label === 'Факультет') { 
+			fields.forEach((el, number) => {
+				if (el.hasOwnProperty('invisible')) {
+					el.invisible = true
+					index = number
+				} 
+			})
+
+			if (facultyId !== null && roleId !== null)
+				switch (roleId) {
+					case '1':
+						for (let i = 1; i < 4; i++)	{
+							fields[index - i].invisible = false
+						}
+						break;
+					case '2':
+						fields[index].invisible = false
+						break;
+					default:
+						break;
+				} 
+		}
 		
 		fields.forEach((el, number) => {
-			if (el.hasOwnProperty('invisible')) {
+			if (el.label === label) {
 				index = number
 			} 
 		})
+		const control = fields[index]
+		control.value = target.value
 
-		for (let i = 0; i < 4; i++) {
-			fields[index - i].invisible = true
-		}
-		
-		switch (event.target.value) {
-			case 'Преподаватель': 
-				for (let i = 1; i < 4; i++)	{
-					fields[index - i].invisible = false
-				}
-				break;
-			case 'Студент': 
-				fields[index].invisible = false
-				break;
-			default: break;
-		}
-
-		fields.forEach((el, number) => {
-			if (el.type === 'select') {
-				index = number 
-			} 
-		})
-		let control = fields[index]
-		control.value = event.target.value
-		control.valid = control.value !== 'Выберите роль'
+		const selectedIndex = target.options.selectedIndex
+		const id = target.options[selectedIndex].getAttribute('index')
+		control.valid = id !== null
 		fields[index] = control
 
 		this.setState({
@@ -153,6 +161,10 @@ class Registration extends React.Component {
 		this.setState({fields})
 	}
 
+	componentDidMount() {
+		this.props.loadingFilters()
+	}
+
 	render() {
         return (
 			<Layout
@@ -163,6 +175,9 @@ class Registration extends React.Component {
 				img='images/reg.svg'
 				fields={this.state.fields}
 				roles={this.state.roles}
+				faculties={this.props.faculties}				
+				groups={this.props.groups}
+				departments={this.props.departments}				
 				onChange={this.onChangeHandler}
 				onSelect={this.selectRole}
 				onSubmit={this.onSubmitHandler}
@@ -173,10 +188,19 @@ class Registration extends React.Component {
     }
 }
 
-function mapDispatchToProps(dispatch) {
+function mapStateToProps(state) {
 	return {
-		registr: (url, data) => dispatch(registr(url, data))
+		faculties: state.auth.faculties,
+		groups: state.auth.groups,
+		departments: state.auth.departments,
 	}
 }
 
-export default connect(null, mapDispatchToProps)(Registration)
+function mapDispatchToProps(dispatch) {
+	return {
+		registr: (url, data) => dispatch(registr(url, data)),
+		loadingFilters: () => dispatch(loadingFilters())
+	}
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Registration)

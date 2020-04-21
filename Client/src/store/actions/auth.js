@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { AUTH_SUCCESS, LOGOUT, SUCCESS, ERROR_MESSAGE_AUTH } from './actionTypes'
+import { AUTH_SUCCESS, LOGOUT, SUCCESS, ERROR_MESSAGE_AUTH, PUSH_FILTERS } from './actionTypes'
 
 export function registr(url, data) {
     return async dispatch => {
@@ -41,6 +41,48 @@ export function auth(data) {
             const role = 'success'
             dispatch(success(role, 'Ошибка', e.message))
         }
+    }
+}
+
+export function loadingFilters() {
+    return async dispatch => {
+        try {
+            const url = 'https://localhost:44303/api/account/filters'
+            const response = await axios.get(url)
+            const data = response.data
+
+            if (data.succeeded) {
+                const faculties = [{id: null, name: 'Выберите факультет'}]
+	            const groups = [{id: null, name: 'Выберите группу'}]
+	            const departments = [{id: null, name: 'Выберите кафедру'}]
+    
+                data.data.forEach(el => {
+                    faculties.push({id: el.id, name: el.name})
+                    el.groups.forEach(item => {
+                        groups.push({id: item.id, name: item.name, facultyId: el.id})
+                    })
+                    el.departments.forEach(item => {
+                        departments.push({id: item.id, name: item.name, facultyId: el.id})
+                    })
+                })
+    
+                dispatch(pushFilters(faculties, groups, departments))
+            } else {
+                // const err = [...data.errorMessages]
+                // err.unshift('Сообщение с сервера.')
+                // dispatch(errorWindow(true, err))
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
+    }
+}
+
+export function pushFilters(faculties, groups, departments) {
+    return {
+        type: PUSH_FILTERS,
+        faculties, groups, departments
     }
 }
 

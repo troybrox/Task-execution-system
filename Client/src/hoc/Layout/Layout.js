@@ -6,15 +6,20 @@ import Label from '../../components/UI/Label/Label'
 import Input from '../../components/UI/Input/Input'
 
 class Layout extends React.Component {
+    state = {
+        facultyId: null,
+        roleId: null
+    }
    
     // Поля для select(для выбора роли) в регистрации
-	renderOptionRole() {
-		return this.props.roles.map((role, index) => {
+	renderOption(options) {
+		return options.map((role) => {
 			return (
 				<option 
-					key={index} 
+                    key={role.id}
+                    index={role.id}
 				>
-					{role}
+					{role.name}
 				</option>
 			)
 		})
@@ -26,19 +31,64 @@ class Layout extends React.Component {
 			return item.invisible ? null : <Label key={index} label={item.label} />
 		})
     }
+
+    onSelectHandler = (target, label) => {
+        const index = target.options.selectedIndex
+        const id = target.options[index].getAttribute('index')
+        let roleId = this.state.roleId
+        let facultyId = this.state.facultyId
+        switch (label) {
+            case 'Факультет':
+                facultyId = id
+                break;
+            case 'Роль':
+                roleId = id
+                break;
+            default:
+                break;
+        }
+
+        this.setState({
+            roleId,
+            facultyId
+        }, () => {this.props.onSelect(target, label, this.state.facultyId, this.state.roleId)})
+    }
     
     selectShow = item => {
         const cls = ['select']
         if (!item.valid) cls.push('invalid')
+        let options = this.props.roles
+
+        switch (item.label) {
+            case 'Факультет':
+                options = this.props.faculties
+                break;
+            case 'Группа':
+                options = []
+                this.props.groups.forEach(el => {
+                    if (el.id === null) options.push(el)
+                    else if (el.facultyId === +this.state.facultyId) options.push(el)
+                })
+                break;
+            case 'Кафедра':
+                options = []
+                this.props.departments.forEach(el => {
+                    if (el.id === null) options.push(el)
+                    else if (el.facultyId === +this.state.facultyId) options.push(el)
+                })
+                break;
+            default:
+                break;
+        }
 
         const select = (
-            <Auxiliary key='select'>
+            <Auxiliary key={item.label}>
                 <select 
                         className={cls.join(' ')} 
-                        onChange={event => this.props.onSelect(event)} 
+                        onChange={event => this.onSelectHandler(event.target, item.label)} 
                         required
                 >
-                    { this.renderOptionRole() }
+                    { this.renderOption(options) }
                 </select><br />
             </Auxiliary>
         )
@@ -50,16 +100,16 @@ class Layout extends React.Component {
         if (this.props.hTitle === 'Регистрация') {
 
             return this.props.fields.map((item, index) => {
-                return item.type === 'select' ? 
-                    this.selectShow(item) : 
-                    item.invisible ? null :
-                        <Input 
-                            key={index} 
-                            type={item.type} 
-                            value={item.value}
-                            valid={item.valid}
-                            onChange={event => this.props.onChange(event, index)}
-                        />
+                return item.invisible ? null :
+                    item.type === 'select' ? 
+                        this.selectShow(item) :
+                            <Input 
+                                key={index} 
+                                type={item.type} 
+                                value={item.value}
+                                valid={item.valid}
+                                onChange={event => this.props.onChange(event, index)}
+                            />
             })
         } else {
             return this.props.fields.map((item, index) => {

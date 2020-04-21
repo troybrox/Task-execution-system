@@ -3,6 +3,7 @@ export const AUTH_SUCCESS = 'AUTH_SUCCESS'
 export const LOGOUT = 'LOGOUT'
 export const SUCCESS = 'SUCCESS'
 export const ERROR_MESSAGE_AUTH = 'ERROR_MESSAGE_AUTH'
+export const PUSH_FILTERS = 'PUSH_FILTERS'
 
 // Для admin
 export const PUSH_USERS = 'PUSH_USERS'
