@@ -199,5 +199,11 @@
             display: inline-block;
             margin: 30px 0 0 20px;
         }
+
+        .disabled {
+            cursor: not-allowed;
+            border: 2px solid rgb(143, 143, 143);
+            background: rgb(211, 211, 211);
+        }
     }
 }

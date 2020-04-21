@@ -1,0 +1,38 @@
+.error_field{
+    position: fixed;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background: rgba(49, 49, 49, 0.671);
+
+    .error_window {
+        text-align: center;
+        margin: auto;
+        min-width: 400px;
+        height: max-content;
+        display: block;
+        background: rgb(255, 255, 255);
+        border: 1px solid grey;
+        border-radius: 5px;
+
+        h2 {
+            border-bottom: 1px solid grey;
+            padding: 10px;
+            color: rgb(145, 0, 0);
+        }
+
+        div {
+            padding: 10px;
+        }
+
+        button {
+            border-radius: 5px;;
+            height: 30px;
+            line-height: 26px;
+            padding: 0 10px;
+            cursor: pointer;
+            border: 2px solid grey;
+            margin: 10px;
+        }
+    }
+}

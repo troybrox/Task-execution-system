@@ -4,26 +4,34 @@ import { connect } from 'react-redux'
 import { changeCheckedHandler } from '../../store/actions/admin'
 
 class Action extends React.Component {
+    changeCheckedHandler = index => {
+        this.props.changeChecked(index)
+        this.props.onChangeCheck()
+    }
+
     renderUsers = () => {
-        const list = this.props.showUsers.map((item, index) => {
+        const list = this.props.users.map((item, index) => {
             return (
                 <li
-                    key={index}
+                    key={item.id}
                 >
                     <input 
                         type='checkbox' 
                         id={`check-${index}`}
                         className='check_list_input'
-                        // checked={item.check} 
+                        defaultChecked={item.check} 
                     />
-
+                    
                     <label 
                         htmlFor={`check-${index}`} 
                         className='user_list_admin check_list_label'
-                        onClick={this.props.changeChecked.bind(this, index)}
+                        onClick={this.changeCheckedHandler.bind(this, index)}
                     >
                         <img src='images/card.svg' alt='' />
-                        <p>{item.name}</p>
+                        <p className='name'>
+                            {item.name}
+                            <span className='additional'>{item.additional}</span>
+                        </p>
                     </label>
                 </li>
             )
@@ -40,11 +48,11 @@ class Action extends React.Component {
     }
 }
 
-// function mapStateToProps(state) {
-//     return {
-//         users: state.admin.users
-//     }
-// }
+function mapStateToProps(state) {
+    return {
+        users: state.admin.users
+    }
+}
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -52,4 +60,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Action)
+export default connect(mapStateToProps, mapDispatchToProps)(Action)
