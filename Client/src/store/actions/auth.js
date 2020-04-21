@@ -29,8 +29,8 @@ export function auth(data) {
             const url = 'https://localhost:44303/api/account/login'
             const response = await axios.post(url, data)
             const respData = response.data
-            localStorage.setItem('token', respData.idToken)
-            localStorage.setItem('role', respData.role)
+            localStorage.setItem('token', respData.data.idToken)
+            localStorage.setItem('role', respData.data.role)
 
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.idToken, respData.role))
