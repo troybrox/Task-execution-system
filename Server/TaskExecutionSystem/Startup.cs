@@ -1,24 +1,60 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using TaskExecutionSystem.Application.Initialization;
+using TaskExecutionSystem.Application.Options;
+using TaskExecutionSystem.BLL.Interfaces;
+using TaskExecutionSystem.BLL.Services;
+using TaskExecutionSystem.DAL.Data;
+using TaskExecutionSystem.Identity.JWT.Extensions;
 
 namespace TaskExecutionSystem
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+        
+        public IConfiguration Configuration { get; }
+
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+        // äîáàâëåíèå è íàñòðîéêà ñåðâèñîâ, èñïîëüçóåìûõ ïðèëîæåíèåì
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DataContext>(optionsBuilder => 
+                optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Connection")));
+
+            services.AddApiJwtAuthentication();
+            services.Configure<SeedOptions>(Configuration.GetSection("Seed"));
+            services.AddAsyncInitializer<IdentityInitializer>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                builder =>
+                {
+                    builder.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://localhost:44303")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
+
+            services.AddControllers();
+
+            services.AddTransient<IAccountService, AccountService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+
+        // äàííûé ìåòîäîì âûçûâàåòñÿ ïðè çàïóñêå, èñïîëüçóåòñÿ äëÿ íàñòðîéêè êîíôèãóðàöèè êîíâåéåðà http çàïðîñîâ 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -26,14 +62,31 @@ namespace TaskExecutionSystem
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(MyAllowSpecificOrigins);
+
             app.UseRouting();
+
+            app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+
+            app.UseRouting();
+            app.UseAuthorization();
+
+            app.UseAuthorization();
+
+            app.UseCookiePolicy(new CookiePolicyOptions 
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllers();
             });
         }
     }
