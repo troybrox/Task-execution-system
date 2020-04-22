@@ -56,6 +56,7 @@ export function auth(data) {
 
 export function loadingFilters() {
     return async dispatch => {
+
         try {
             const url = 'https://localhost:44303/api/account/filters'
             const response = await axios.get(url)
@@ -69,10 +70,10 @@ export function loadingFilters() {
                 data.data.forEach(el => {
                     faculties.push({id: el.id, name: el.name})
                     el.groups.forEach(item => {
-                        groups.push({id: item.id, name: item.name, facultyId: el.id})
+                        groups.push({id: item.id, name: item.name, facultyId: item.facultyId})
                     })
                     el.departments.forEach(item => {
-                        departments.push({id: item.id, name: item.name, facultyId: el.id})
+                        departments.push({id: item.id, name: item.name, facultyId: item.facultyId})
                     })
                 })
     

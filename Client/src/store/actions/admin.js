@@ -79,11 +79,11 @@ export function loadingLists(url, roleActive) {
     
                 data.data.forEach(el => {
                     selects[0].options.push({id: el.id, name: el.name})
-                    el.groups.forEach(item => {
-                        selects[1].options.push({id: item.id, name: item.name, facultyId: el.id})
-                    })
                     el.departments.forEach(item => {
-                        selects[2].options.push({id: item.id, name: item.name, facultyId: el.id})
+                        selects[1].options.push({id: item.id, name: item.name, facultyId: item.facultyId})
+                    })
+                    el.groups.forEach(item => {
+                        selects[2].options.push({id: item.id, name: item.name, facultyId: item.facultyId})
                     })
                 })
     

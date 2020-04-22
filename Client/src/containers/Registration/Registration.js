@@ -19,10 +19,10 @@ class Registration extends React.Component {
 			{ value: '', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true },
 			{ value: '', label: 'Роль', type: 'select', valid: true },
 			{ value: '', label: 'Факультет', type: 'select', valid: true },
-			{ value: '', label: 'Кафедра', type: 'select', serverName: 'Department', invisible: true, valid: true },
+			{ specialId:null, value: '', label: 'Кафедра', type: 'select', serverName: 'Department', invisible: true, valid: true },
 			{ value: '', label: 'Предмет', type: 'text', serverName: 'Discipline', invisible: true, valid: true },
 			{ value: '', label: 'Должность', type: 'text', serverName: 'Position', invisible: true, valid: true },
-			{ value: '', label: 'Группа', type: 'select', serverName: 'Group', invisible: true, valid: true },
+			{ specialId:null, value: '', label: 'Группа', type: 'select', serverName: 'Group', invisible: true, valid: true },
 			{ value: '', label: 'Пароль', type: 'password', serverName: 'Password', valid: true },
 			{ value: '', label: 'Введите пароль еще раз', type: 'password', valid: true },
 		]
@@ -61,7 +61,7 @@ class Registration extends React.Component {
 		let role = ''
 		const data = {}
 		this.state.fields.forEach(item => {
-			if (item.type === 'select') {
+			if (item.label === 'Роль') {
 				if (item.value === 'Студент') role = 'student'
 				else role = 'teacher'
 			}
@@ -69,7 +69,10 @@ class Registration extends React.Component {
 			if (item.hasOwnProperty('invisible')) {
 				if (!item.invisible) data[item.serverName] = item.value
 			} else {
-				data[item.serverName] = item.value
+				if (item.label === 'Группа' || item.label === 'Кафедра')
+					data[item.serverName] = item.specialId
+				else
+					data[item.serverName] = item.value
 			}
 		})
 		const url = `https://localhost:44303/api/account/register/${role}`
@@ -133,6 +136,7 @@ class Registration extends React.Component {
 
 		const selectedIndex = target.options.selectedIndex
 		const id = target.options[selectedIndex].getAttribute('index')
+		if (control.label === 'Кафедра' || control.label === 'Группа') control.specialId = +id
 		control.valid = id !== null
 		fields[index] = control
 
