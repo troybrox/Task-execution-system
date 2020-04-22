@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.DAL.Entities.Registration;
+using TaskExecutionSystem.BLL.DTO.Studies;
 
 namespace TaskExecutionSystem.BLL.Interfaces
 {
@@ -15,6 +13,8 @@ namespace TaskExecutionSystem.BLL.Interfaces
 
         public Task<OperationDetailDTO<SignInUserDetailDTO>> SignInAsync(UserLoginDTO dto);
         public Task<OperationDetailDTO<SignInUserDetailDTO>> SignOutAsync();
+
+        public Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudiesAsync();
 
         public Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterRequest registerEntity);
         public Task<OperationDetailDTO> CreateStudentAsync(List<int> registerEntityIdList);

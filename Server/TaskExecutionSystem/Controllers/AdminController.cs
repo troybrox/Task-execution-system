@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
@@ -30,8 +31,8 @@ namespace TaskExecutionSystem.Controllers
 
 
     // TODO: test accept methods
-    
 
+    //[Authorize("AdministratorPolicy")]
     [Route("api/[controller]")]
     public class AdminController : Controller
     {
@@ -52,52 +53,76 @@ namespace TaskExecutionSystem.Controllers
             return Ok(resultList);
         }
 
-        [HttpGet("exist_teachers")]
-        public async Task<IActionResult> GetExistTeachersAsync()
+
+        [HttpGet("filters/{userType}")]
+        public async Task<IActionResult> GetFilterByTypeAsync(string userType)
+        {
+            var res = await _adminService.GetAllStudyFiltersAsync(userType);
+            return Ok(res);
+        }
+
+
+        [HttpGet("exist_teachers_")]
+        public async Task<IActionResult> GetExistTeachersAsync_()
         {
             var res = await _adminService.GetExistTeachersAsync();
             return Ok(res);
         }
 
-        [HttpGet("exist_students")]
-        public async Task<IActionResult> GetExistStudentsAsync()
+        [HttpGet("exist_students_")]
+        public async Task<IActionResult> GetExistStudentsAsync_()
         {
             var res = await _adminService.GetExistStudentsAsync();
             return Ok(res);
         }
 
-        [HttpGet("reg_teachers")]
-        public async Task<IActionResult> GetRegTeachersAsync()
+        [HttpGet("reg_teachers_")]
+        public async Task<IActionResult> GetRegTeachersAsync_()
         {
             var res = await _adminService.GetTeacherRegisterRequestsAsync();
             return Ok(res);
         }
 
-        [HttpGet("reg_students")]
-        public async Task<IActionResult> GetRegStudentsAsync()
+        [HttpGet("reg_students_")] 
+        public async Task<IActionResult> GetRegStudentsAsync_()
         {
             var res = await _adminService.GetStudentRegisterRequestsAsync();
             return Ok(res);
         }
 
 
-
-        [HttpPost]
-        [Route("reg_teachers_filtered")]
-        public async Task<IActionResult> GetFilteredRegTeachersAsync([FromBody]FilterModelDTO model)
+        // todo: edit parameters => only FilterDTO[] filters
+        [HttpPost("reg_teachers")]
+        public async Task<IActionResult> GetRegTeachersAsync([FromBody]FilterDTO[] filters)
         {
-            var res = await _adminService.GetTeacherRegisterRequestsAsync(model.Filters);
+            var res = await _adminService.GetTeacherRegisterRequestsAsync(filters);
             return Ok(res);
         }
 
-        [HttpPost]
-        [Route("reg_students_filtered")]
-        public async Task<IActionResult> GetFilteredRegStudentsAsync([FromBody]FilterModelDTO model)
+        [HttpPost("reg_students")]
+        public async Task<IActionResult> GetRegStudentsAsync([FromBody]FilterDTO[] filters)
         {
-            var res = await _adminService.GetStudentRegisterRequestsAsync(model.Filters);
+            var res = await _adminService.GetStudentRegisterRequestsAsync(filters);
             return Ok(res);
         }
 
+        [HttpPost("exist_teachers")]
+        public async Task<IActionResult> GetExistTeachersAsync([FromBody]FilterDTO[] filters)
+        {
+            var res = await _adminService.GetExistTeachersAsync(filters);
+            return Ok(res);
+        }
+
+        [HttpPost("exist_students")]
+        public async Task<IActionResult> GetExistStudentsAsync([FromBody]FilterDTO[] filters)
+        {
+            var res = await _adminService.GetExistStudentsAsync(filters);
+            return Ok(res);
+        }
+        //
+
+        // todo: edit params here and in service 
+        // validation for registration
         [HttpPost("add_reg_teachers")]
         public async Task<IActionResult> AcceptTeacherUsersAsync([FromBody]int[] idList)
         {
@@ -115,14 +140,14 @@ namespace TaskExecutionSystem.Controllers
         [HttpPost("delete_reg_teachers")]
         public async Task<IActionResult> DeleteTeacherRegsAsync([FromBody]int[] idList)
         {
-            var result = await _adminService.RejectTeacherRequstsAsync(idList);
+            var result = await _adminService.RejectTeacherRequestsAsync(idList);
             return Ok(result);
         }
 
         [HttpPost("delete_reg_students")]
         public async Task<IActionResult> DeleteStudentRegsAsync([FromBody]int[] idList)
         {
-            var result = await _adminService.RejectStudentRequstsAsync(idList);
+            var result = await _adminService.RejectStudentRequestsAsync(idList);
             return Ok(result);
         }
 
@@ -139,5 +164,15 @@ namespace TaskExecutionSystem.Controllers
             await _adminService.DeleteExistStudentsAsync(idList);
             return Ok();
         }
+
+        [HttpPost("delete_group")]
+        public async Task<IActionResult> DeleteGroupAstnc([FromBody]int id)
+        {
+            await _adminService.DeleteGroupAsync(id);
+            return Ok();
+        }
+
+        // todo:
+        // delete group
     }
 }

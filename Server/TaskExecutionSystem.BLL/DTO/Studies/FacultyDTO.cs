@@ -12,20 +12,20 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
 
         public List<GroupDTO> Groups { get; set; }
 
-        public List<DepartmentDTO> Departmens { get; set; }
+        public List<DepartmentDTO> Departments { get; set; }
 
 
         public FacultyDTO()
         {
             Groups = new List<GroupDTO>();
-            Departmens = new List<DepartmentDTO>();
+            Departments = new List<DepartmentDTO>();
         }
 
         public static FacultyDTO Map(Faculty entity) => new FacultyDTO
         {
             Id = entity.Id,
             Name = entity.Name,
-            Departmens = DepartmentDTO.Map(entity.Departments),
+            Departments = DepartmentDTO.Map(entity.Departments),
             Groups = GroupDTO.Map(entity.Groups)
         };
     }

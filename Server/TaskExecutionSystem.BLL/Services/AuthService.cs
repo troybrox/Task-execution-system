@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Auth;
+using TaskExecutionSystem.BLL.DTO.Studies;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Data;
@@ -31,6 +32,7 @@ namespace TaskExecutionSystem.BLL.Services
             _signInManager = signInManager;
         }
 
+        // todo: return token
         // авторизация пользователя в системе 
         public async Task<OperationDetailDTO<SignInUserDetailDTO>> SignInAsync(UserLoginDTO dto)
         {
@@ -138,6 +140,29 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+
+        public async Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudiesAsync()
+        {
+            var resFacultyDTOList = new List<FacultyDTO>();
+            try
+            {
+                var entityList = await _context.Faculties
+                    .Include(f => f.Groups)
+                    .Include(f => f.Departments)
+                    .AsNoTracking()
+                    .ToListAsync();
+                foreach (var entity in entityList)
+                {
+                    resFacultyDTOList.Add(FacultyDTO.Map(entity));
+                }
+                return new OperationDetailDTO<List<FacultyDTO>> { Succeeded = true, Data = resFacultyDTOList, ErrorMessages = null };
+            }
+            catch (Exception e)
+            {
+                return new OperationDetailDTO<List<FacultyDTO>> { Succeeded = false, ErrorMessages = { _serverErrorMessage + e.Message } };
+            }
+        }
+
         
         private StudentRegisterRequest GetStudentRegEntityFromDTO(StudentRegisterDTO dto) => new StudentRegisterRequest
         {
@@ -191,10 +216,7 @@ namespace TaskExecutionSystem.BLL.Services
         };
 
 
-        // ---
-
         // приём заявки студента
-        //todo: delete regRequest
         public async Task<OperationDetailDTO> CreateStudentAsync(List<int> registerEntityIdList)
         {
             OperationDetailDTO resultDetail = new OperationDetailDTO();

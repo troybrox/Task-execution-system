@@ -16,6 +16,7 @@ namespace TaskExecutionSystem.BLL.DTO
         public static StudentDTO Map(StudentRegisterRequest entity) => new StudentDTO
         {
             Id = entity.Id,
+            Faculty = entity.Group.Faculty.Name,
             Name = entity.Name,
             Surname = entity.Surname,
             Patronymic = entity.Patronymic,
@@ -28,6 +29,7 @@ namespace TaskExecutionSystem.BLL.DTO
         {
             Id = entity.Id,
             UserId = entity.UserId,
+            Faculty = entity.Group.Faculty.Name,
             Name = entity.Name,
             Surname = entity.Surname,
             Patronymic = entity.Patronymic,

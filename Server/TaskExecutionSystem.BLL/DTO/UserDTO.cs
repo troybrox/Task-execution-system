@@ -17,5 +17,7 @@ namespace TaskExecutionSystem.BLL.DTO
         public string Surname { get; set; }
 
         public string Patronymic { get; set; }
+
+        public string Faculty { get; set; }
     }
 }

@@ -70,12 +70,21 @@ namespace TaskExecutionSystem.Controllers
             return Ok(detailResult);
         }
 
+
+        [HttpGet]
+        [Route("filters")]
+        public async Task<IActionResult> GetAllStudyFiltersAsync()
+        {
+            var res = await _accountService.GetAllStudiesAsync();
+            return Ok(res);
+        }
+
         // todo: method
         [HttpPost]
         [Route("signout")]
         public async Task<IActionResult> SignOutAsync([FromBody]UserLoginDTO dto)
         {
-                return Ok();
+            return Ok();
         }
     }
 }
