@@ -30,13 +30,13 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
                 const users = response.data.data
                 const finalUsers = []
                 users.forEach(el => {
-                    const name = el.surname + ' ' + el.name + ' ' + el.patronymic
+                    const name = `${el.surname} ${el.name} ${el.patronymic}`
                     let additional
                     if (el.position === 'Преподаватель')
-                        additional = el.faculty + '. Кафедра ' + el.departmentName
+                        additional = `${el.faculty}. Кафедра ${el.departmentName}`
                     else 
-                        additional = el.faculty + '. Группа ' + el.groupNumber
-                    finalUsers.push({id: el.id, name, additional, check: false})
+                        additional = `${el.faculty}. Группа ${el.groupNumber}`
+                    finalUsers.push({id: el.id, name: name, additional: ad, check: false})
                 })
 
                 dispatch(pushUsers(users))
@@ -115,9 +115,7 @@ export function actionUsersHandler(url) {
         try {
             const response = await axios.post(url, idList)
             const data = response.data
-            if (data.succeeded) {
-                dispatch(pushUsers(newList))
-            } else {
+            if (!data.succeeded) {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
                 dispatch(errorWindow(true, err)) 
@@ -140,13 +138,9 @@ export function deleteGroupHandler(url) {
         })
 
         try {
-            console.log(url)
-            console.log(idList)
             const response = await axios.post(url, idList)
             const data = response.data
-            if (data.succeeded) {
-                dispatch(pushUsers([]))
-            } else {
+            if (!data.succeeded) {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
                 dispatch(errorWindow(true, err))

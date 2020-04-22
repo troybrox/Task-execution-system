@@ -167,6 +167,8 @@ class Admin extends React.Component {
             const url = `https://localhost:44303/api/admin/delete_${path}`
 
             this.props.actionUsersHandler(url)
+            // this.requestUserHandler()
+            // this.requestListHandler()
         }
     }
 
@@ -177,6 +179,8 @@ class Admin extends React.Component {
             const url = `https://localhost:44303/api/admin/add_${path}`
 
             this.props.actionUsersHandler(url)
+            // this.requestUserHandler()
+            // this.requestListHandler()
         }
     }
 
