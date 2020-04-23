@@ -160,36 +160,38 @@ class Admin extends React.Component {
         this.props.loadingLists(url, roleActive)
     }
 
-    removeUsers = () => {
+    removeUsers = async() => {
         let success = window.confirm('Подтвердите ваше действие!');
         if (success) {
             const path = this.pathHandler()
             const url = `https://localhost:44303/api/admin/delete_${path}`
 
-            this.props.actionUsersHandler(url)
-            // this.requestUserHandler()
-            // this.requestListHandler()
+            await this.props.actionUsersHandler(url)
+            this.requestUserHandler()
+            this.requestListHandler()
         }
     }
 
-    addUsers = () => {
+    addUsers = async() => {
         const success = window.confirm('Подтвердите ваше действие!')
         if (success) {       
             const path = this.pathHandler()
             const url = `https://localhost:44303/api/admin/add_${path}`
 
-            this.props.actionUsersHandler(url)
-            // this.requestUserHandler()
-            // this.requestListHandler()
+            await this.props.actionUsersHandler(url)
+            this.requestUserHandler()
+            this.requestListHandler()
         }
     }
 
-    removeGroup = () => {
+    removeGroup = async() => {
         const success = window.confirm('Подтвердите ваше действие!')
         if (success) {
             const url = 'https://localhost:44303/api/admin/delete_group'
 
-            this.props.deleteGroupHandler(url)
+            await this.props.deleteGroupHandler(url)
+            this.requestUserHandler()
+            this.requestListHandler()
         }
     }
 

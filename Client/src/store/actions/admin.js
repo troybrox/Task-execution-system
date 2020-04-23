@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { PUSH_USERS, PUSH_SELECTS, ERROR_WINDOW } from './actionTypes'
+import { LOADING_START, PUSH_USERS, PUSH_SELECTS, ERROR_WINDOW } from './actionTypes'
 
 export function changeCheckedHandler(index) {
     return (dispatch, getState) => {
@@ -13,6 +13,7 @@ export function changeCheckedHandler(index) {
 
 export function loadingUsers(url, facultyId, groupId, departmentId, searchString) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const data = []
 
@@ -36,7 +37,7 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
                         additional = `${el.faculty}. Кафедра ${el.departmentName}`
                     else 
                         additional = `${el.faculty}. Группа ${el.groupNumber}`
-                    finalUsers.push({id: el.id, name: name, additional: ad, check: false})
+                    finalUsers.push({id: el.id, name: name, additional: additional, check: false})
                 })
 
                 dispatch(pushUsers(users))
@@ -150,6 +151,12 @@ export function deleteGroupHandler(url) {
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
+    }
+}
+
+export function loadingStart() {
+    return {
+        type: LOADING_START
     }
 }
 

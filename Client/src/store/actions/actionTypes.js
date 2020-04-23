@@ -11,3 +11,4 @@ export const PUSH_SELECTS = 'PUSH_SELECTS'
 
 // Универсально
 export const ERROR_WINDOW = 'ERROR_WINDOW'
+export const LOADING_START = 'LOADING_START'
