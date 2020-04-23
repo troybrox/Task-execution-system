@@ -4,7 +4,6 @@ import Auth from './containers/Auth/Auth'
 import Registration from './containers/Registration/Registration'
 import Admin from './containers/Admin/Admin'
 import Forget from './containers/Forget/Forget'
-import Success from './containers/Success/Success'
 import Logout from './components/Logout/Logout'
 
 import ProfileStudent from './containers/Student/Profile/Profile'
@@ -23,15 +22,7 @@ class App extends React.Component {
 	
 	// Отображение нужных страниц относительно роли
 	renderLinks = () => {
-		switch (this.props.role) {
-			case 'success':
-				return (
-					<Switch>
-						<Route path='/success' component={Success} />
-						<Redirect to={'/success'} />
-					</Switch>
-				)
-			
+		switch (this.props.role) {			
 			case 'administrator':
 				return (
 					<Switch>

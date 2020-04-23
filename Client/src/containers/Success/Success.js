@@ -1,46 +1,39 @@
 import React from 'react'
 import './Success.scss'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { success } from '../../store/actions/auth'
 
-class Success extends React.Component {
-    // backHandler = () => {
-    //     window.history.back()
-    // }
-    
+class Success extends React.Component {    
     render() {
         return (
             <div className='success'>
-                <h2>{this.props.title}</h2>
+                <h2>Успешно</h2>
                 <main>
                     <p>
-                        {this.props.message}
+                        Действие прошло успешно! 
+                        Дождитесь, пока администратор проверит информацию. 
+                        Как только это произойдет, 
+                        Вам на почту придет сообщение с подтверждением или отказом. 
+                        Спасибо.
                     </p>
-                    <div>
-                        <button
-                            className='link_return'
-                            onClick={this.backHandler}
-                        >
-                            Назад
-                        </button>
-
-                        <button
-                            className='link_return'
-                            onClick={this.onAuthContinue}
-                        >
-                            Вход
-                        </button>
-                    </div>
+                    <Link
+                        to={'auth'}
+                        className='link_return'
+                        onClick={() => this.props.success(false)}
+                    >
+                        Вход
+                    </Link>
                 </main>
             </div>
         )
     }
 }
 
-function mapStateToProps(state) {
+function mapDispatchToProps(dispatch) {
     return {
-        title: state.auth.title,
-        message: state.auth.message 
+        success: (successPage) => dispatch(success(successPage))
     }
 }
 
-export default connect(mapStateToProps)(Success)
+export default connect(null, mapDispatchToProps)(Success)

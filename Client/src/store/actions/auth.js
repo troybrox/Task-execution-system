@@ -3,26 +3,21 @@ import {
     AUTH_SUCCESS, 
     LOGOUT, 
     SUCCESS, 
-    ERROR_MESSAGE_AUTH, 
+    // ERROR_MESSAGE_AUTH, 
     PUSH_FILTERS, 
     ERROR_WINDOW 
 } from './actionTypes'
 
 export function registr(url, data) {
     return async dispatch => {
-        const role = 'success'
         try {
             const response = await axios.post(url, data)
             const respData = response.data
-            let title = 'Успешно'
-            let message = 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.'
             
             if (respData.succeeded) {
-                dispatch(success(role, title, message))
+                dispatch(success(true))
             } else {
-                title = 'Ошибка'
-                message = respData.errorMessages.join('. /n')
-                dispatch(success(role, title, message))
+                // dispatch(errorMessageAuth('Неверные данные!'))
             }
         } catch (e) {
             const err = ['Ошибка подключения']
@@ -44,7 +39,7 @@ export function auth(data) {
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.data.idToken, respData.data.role))
             } else {
-                dispatch(errorMessageAuth('Неверные данные!'))
+                // dispatch(errorMessageAuth('Неверные данные!'))
             }
         } catch (e) {
             const err = ['Ошибка подключения']
@@ -56,7 +51,6 @@ export function auth(data) {
 
 export function loadingFilters() {
     return async dispatch => {
-
         try {
             const url = 'https://localhost:44303/api/account/filters'
             const response = await axios.get(url)
@@ -79,9 +73,9 @@ export function loadingFilters() {
     
                 dispatch(pushFilters(faculties, groups, departments))
             } else {
-                // const err = [...data.errorMessages]
-                // err.unshift('Сообщение с сервера.')
-                // dispatch(errorWindow(true, err))
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера')
+                dispatch(errorWindow(true, err))
             }
 
         } catch (e) {
@@ -99,10 +93,10 @@ export function pushFilters(faculties, groups, departments) {
     }
 }
 
-export function success(role, title, message) {
+export function success(successPage) {
     return {
         type: SUCCESS,
-        role, title, message
+        successPage
     }
 }
 
@@ -129,9 +123,9 @@ export function errorWindow(catchError, catchErrorMessage) {
 }
 
 
-export function errorMessageAuth(errorMessages) {
-    return {
-        type: ERROR_MESSAGE_AUTH,
-        errorMessages
-    }
-}
+// export function errorMessageAuth(errorMessages) {
+//     return {
+//         type: ERROR_MESSAGE_AUTH,
+//         errorMessages
+//     }
+// }

@@ -2,6 +2,7 @@ import React from 'react'
 import Layout from '../../hoc/Layout/Layout'
 import { connect } from 'react-redux'
 import { registr, loadingFilters } from '../../store/actions/auth'
+import Success from '../Success/Success'
 
 
 class Registration extends React.Component {
@@ -166,28 +167,30 @@ class Registration extends React.Component {
 	}
 
 	componentDidMount() {
-		this.props.loadingFilters()
+		if (!this.props.successPage) this.props.loadingFilters()
 	}
 
 	render() {
         return (
-			<Layout
-				head='Вход'
-				hTitle='Регистрация'
-				link='Уже есть аккаунт? Авторизируйтесь!'
-				to='/auth'
-				img='images/reg.svg'
-				fields={this.state.fields}
-				roles={this.state.roles}
-				faculties={this.props.faculties}				
-				groups={this.props.groups}
-				departments={this.props.departments}				
-				onChange={this.onChangeHandler}
-				onSelect={this.selectRole}
-				onSubmit={this.onSubmitHandler}
-			>
-				<input className='submit input_fields' type='submit' value='Регистрация пользователя' />
-			</Layout>
+			this.props.successPage ? 
+				<Success /> : 
+				<Layout
+					head='Вход'
+					hTitle='Регистрация'
+					link='Уже есть аккаунт? Авторизируйтесь!'
+					to='/auth'
+					img='images/reg.svg'
+					fields={this.state.fields}
+					roles={this.state.roles}
+					faculties={this.props.faculties}				
+					groups={this.props.groups}
+					departments={this.props.departments}				
+					onChange={this.onChangeHandler}
+					onSelect={this.selectRole}
+					onSubmit={this.onSubmitHandler}
+				>
+					<input className='submit input_fields' type='submit' value='Регистрация пользователя' />
+				</Layout>
         )
     }
 }
@@ -196,7 +199,8 @@ function mapStateToProps(state) {
 	return {
 		faculties: state.auth.faculties,
 		groups: state.auth.groups,
-		departments: state.auth.departments
+		departments: state.auth.departments,
+		successPage: state.auth.successPage
 	}
 }
 
