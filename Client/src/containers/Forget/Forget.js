@@ -3,6 +3,7 @@ import Layout from '../../hoc/Layout/Layout'
 import Success from '../../containers/Success/Success'
 import { connect } from 'react-redux'
 import { success } from '../../store/actions/auth'
+import Button from '../../components/UI/Button/Button'
 
 class Forget extends React.Component {
     state = {
@@ -67,7 +68,11 @@ class Forget extends React.Component {
                     onChange={this.onChangeHandler}
                     onSubmit={this.onSubmitHandler}
 			    >
-                    <input className='submit any_types_inputs' type='submit' value='Восстановление' />
+                    <Button 
+                        typeButton='auth'
+                        onClickButton={event => this.onSubmitHandler(event)}
+                        value='Восстановление'
+                    />
 			    </Layout>
         )
     }
