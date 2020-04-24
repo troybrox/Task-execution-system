@@ -55,12 +55,6 @@
 			width: 60vw;
 		}
 
-		.any_types_inputs {
-			margin: 10px 0 0 10px;
-			line-height: 20px;
-			height: 20px;
-		}
-
 		.select {
 			margin: 10px 0 0 10px;
 			line-height: 25px;
@@ -81,28 +75,6 @@
 				}
 			}
 		}
-
-		#checkbox {
-			position: absolute;
-		}
-
-		.check_label {
-			margin: 7px 0 0 30px;
-		}
-
-		.submit {
-			width: max-content;
-			min-width: 100px;
-			background: rgb(0, 247, 255);
-			border: 1px solid rgb(0, 183, 255);
-			border-radius: 2px;
-			margin-left: 10px;
-			font-size: 17px;
-			font-weight: bold;
-			padding: 3px 20px 21px 10px;
-			cursor: pointer;
-		}
-
 	}
 
 	a {

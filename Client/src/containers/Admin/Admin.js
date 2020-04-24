@@ -7,6 +7,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { loadingUsers, loadingLists, errorWindow, actionUsersHandler, deleteGroupHandler } from '../../store/actions/admin'
 import Condition from '../../components/UI/Condition/Condition'
+import Button from '../../components/UI/Button/Button'
 
 class Admin extends React.Component {
     state = {
@@ -290,28 +291,26 @@ class Admin extends React.Component {
     }
 
     renderButtons() {
-        const cls = ['rm_button', 'bottom_button']
+        let cls = 'blue'
         const active = this.state.buttonActiveAction
-        if (!active) cls.push('disabled')
+        if (!active) cls = 'disactive'
 
         return (
             <Auxiliary>
-                <button 
-                    className={cls.join(' ')}
-                    disabled={!active}
-                    onClick={this.removeUsers}
-                >
-                    Удалить выбранные
-                </button>
+                <Button 
+                    typeButton={cls}
+                    onClickButton={this.removeUsers}
+                    value='Удалить выбранные'
+                />
 
                 {this.state.buttonRemoveGroup ? 
-                    <button 
-                        className={cls.join(' ')}
-                        disabled={!active}
-                        onClick={this.addUsers}
-                    >
-                        Добавить выбранные
-                    </button> : null}
+                    <Button 
+                        typeButton={cls}
+                        onClickButton={this.addUsers}
+                        value='Добавить выбранные'
+                    /> : 
+                    null
+                }
             </Auxiliary>
         )
     }
@@ -360,12 +359,12 @@ class Admin extends React.Component {
                         <div className='sort'>
                             { this.renderSelect() }
                             { this.state.showButtonAdd ? 
-                                <button 
-                                    className='rm_button'
-                                    onClick={this.removeGroup}
-                                >
-                                    Удалить группу
-                                </button> : null}
+                                <Button
+                                    typeButton='blue'
+                                    onClickButton={this.removeGroup}
+                                    value='Удалить группу'
+                                /> : null
+                            }
                         </div>
 
                         <div className='search'>
@@ -374,17 +373,19 @@ class Admin extends React.Component {
                                 placeholder='Поиск...' 
                                 onChange={event => this.searchChange(event)}
                             />
-                            <button 
-                                onClick={this.searchUsersHandler}
-                            >
-                                Поиск
-                            </button>
+                            <Button 
+                                typeButton='grey'
+                                onClickButton={this.searchUsersHandler}
+                                value='Поиск'
+                            />
                         </div>
 
                         <Action 
                             onChangeCheck={this.onChangeCheck}
                         />
-                        { this.renderButtons() }
+                        <div className='bottom_buttons'>
+                            { this.renderButtons() }
+                        </div>
                     </div>
                 </main>
 

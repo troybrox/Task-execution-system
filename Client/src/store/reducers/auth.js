@@ -61,7 +61,7 @@ export default function authReadducer(state = initialState, action) {
             }
         case ERROR_WINDOW:
             return {
-                ...state, catchError: action.catchError, catchErrorMessage: action.catchErrorMessage
+                ...state, catchError: action.catchError, catchErrorMessage: action.catchErrorMessage, loading: false
             }
         case LOADING_START:
             return {

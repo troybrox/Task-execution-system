@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { registr, loadingFilters } from '../../store/actions/auth'
 import Success from '../Success/Success'
 import Loader from '../../components/UI/Loader/Loader'
+import Button from '../../components/UI/Button/Button'
 
 
 class Registration extends React.Component {
@@ -191,10 +192,12 @@ class Registration extends React.Component {
 					onSubmit={this.onSubmitHandler}
 				>
 					{this.props.loading ? <Loader /> : null}
-					
-					<button className='submit input_fields'>
-						Регистрация пользователя
-					</button>
+
+					<Button 
+                	    typeButton='auth'
+                	    onClickButton={event => this.onSubmitHandler(event)}
+                	    value='Регистрация пользователя'
+                	/>
 				</Layout>
         )
     }

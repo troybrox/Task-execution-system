@@ -5,6 +5,7 @@ import Layout from '../../hoc/Layout/Layout'
 import { connect } from 'react-redux'
 import { auth } from '../../store/actions/auth'
 import Loader from '../../components/UI/Loader/Loader'
+import Button from '../../components/UI/Button/Button'
 
 class Auth extends React.Component {
     state = {
@@ -83,14 +84,18 @@ class Auth extends React.Component {
                 onSubmit={this.onSubmitHandler}
 			>
                 {/* {!!this.props.errorMessages ? <p className='errorMessages'>{this.props.errorMessages}</p> : null} */}
+                
                 {this.props.loading ? <Loader />: null}
 
-                <input type='checkbox' id='checkbox' className='any_types_inputs' />
+                <input type='checkbox' id='checkbox' />
                 <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br />
                 
-                <button className='submit  input_fields'>
-                    Вход
-                </button>
+                <Button 
+                    typeButton='auth'
+                    onClickButton={event => this.onSubmitHandler(event)}
+                    value='Вход'
+                />
+
                 <NavLink to='/forget' className='forgot_pass'>
                     <span>Забыли пароль?</span>
                 </NavLink>
