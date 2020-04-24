@@ -4,6 +4,7 @@ import './Auth.scss'
 import Layout from '../../hoc/Layout/Layout'
 import { connect } from 'react-redux'
 import { auth } from '../../store/actions/auth'
+import Loader from '../../components/UI/Loader/Loader'
 
 class Auth extends React.Component {
     state = {
@@ -81,12 +82,15 @@ class Auth extends React.Component {
                 onChange={this.onChangeHandler}
                 onSubmit={this.onSubmitHandler}
 			>
-                {!!this.props.errorMessages ? <p className='errorMessages'>{this.props.errorMessages}</p> : null}
-                
+                {/* {!!this.props.errorMessages ? <p className='errorMessages'>{this.props.errorMessages}</p> : null} */}
+                {this.props.loading ? <Loader />: null}
+
                 <input type='checkbox' id='checkbox' className='any_types_inputs' />
                 <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br />
                 
-                <input className='submit any_types_inputs' type='submit' value='Вход' />
+                <button className='submit  input_fields'>
+                    Вход
+                </button>
                 <NavLink to='/forget' className='forgot_pass'>
                     <span>Забыли пароль?</span>
                 </NavLink>
@@ -97,7 +101,8 @@ class Auth extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        errorMessages: state.auth.errorMessages
+        // errorMessages: state.auth.errorMessages,
+        loading: state.auth.loading
     }
 }
 

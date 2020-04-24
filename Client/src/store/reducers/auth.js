@@ -4,7 +4,8 @@ import {
     SUCCESS, 
     // ERROR_MESSAGE_AUTH, 
     PUSH_FILTERS, 
-    ERROR_WINDOW } from "../actions/actionTypes"
+    ERROR_WINDOW,
+    LOADING_START} from "../actions/actionTypes"
 
 const initialState = {
     faculties: [
@@ -23,7 +24,9 @@ const initialState = {
         {id: 2, name: 'Кафедра 2', facultyId: 2}
     ],    
     
-    successPage: true,
+    loading: false,
+
+    successPage: false,
 
     // errorMessages: null,
 
@@ -38,7 +41,7 @@ export default function authReadducer(state = initialState, action) {
     switch (action.type) {
         case AUTH_SUCCESS:
             return {
-                ...state, token: action.token, role: action.role
+                ...state, token: action.token, role: action.role, loading: false
             }
         case LOGOUT:
             return {
@@ -46,7 +49,7 @@ export default function authReadducer(state = initialState, action) {
             }
         case SUCCESS:
             return {
-                ...state, successPage: action.successPage,
+                ...state, successPage: action.successPage, loading: false
             }
         // case ERROR_MESSAGE_AUTH:
         //     return {
@@ -59,6 +62,10 @@ export default function authReadducer(state = initialState, action) {
         case ERROR_WINDOW:
             return {
                 ...state, catchError: action.catchError, catchErrorMessage: action.catchErrorMessage
+            }
+        case LOADING_START:
+            return {
+                ...state, loading: true
             }
         default:
             return state

@@ -3,6 +3,7 @@ import Layout from '../../hoc/Layout/Layout'
 import { connect } from 'react-redux'
 import { registr, loadingFilters } from '../../store/actions/auth'
 import Success from '../Success/Success'
+import Loader from '../../components/UI/Loader/Loader'
 
 
 class Registration extends React.Component {
@@ -189,7 +190,11 @@ class Registration extends React.Component {
 					onSelect={this.selectRole}
 					onSubmit={this.onSubmitHandler}
 				>
-					<input className='submit input_fields' type='submit' value='Регистрация пользователя' />
+					{this.props.loading ? <Loader /> : null}
+					
+					<button className='submit input_fields'>
+						Регистрация пользователя
+					</button>
 				</Layout>
         )
     }
@@ -200,7 +205,8 @@ function mapStateToProps(state) {
 		faculties: state.auth.faculties,
 		groups: state.auth.groups,
 		departments: state.auth.departments,
-		successPage: state.auth.successPage
+		successPage: state.auth.successPage,
+		loading: state.auth.loading
 	}
 }
 

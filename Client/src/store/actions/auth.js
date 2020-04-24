@@ -5,11 +5,12 @@ import {
     SUCCESS, 
     // ERROR_MESSAGE_AUTH, 
     PUSH_FILTERS, 
-    ERROR_WINDOW 
-} from './actionTypes'
+    ERROR_WINDOW,
+    LOADING_START } from './actionTypes'
 
 export function registr(url, data) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const response = await axios.post(url, data)
             const respData = response.data
@@ -29,6 +30,7 @@ export function registr(url, data) {
 
 export function auth(data) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'https://localhost:44303/api/account/login'
             const response = await axios.post(url, data)
@@ -119,6 +121,12 @@ export function errorWindow(catchError, catchErrorMessage) {
     return {
         type: ERROR_WINDOW,
         catchError, catchErrorMessage
+    }
+}
+
+export function loadingStart() {
+    return {
+        type: LOADING_START
     }
 }
 

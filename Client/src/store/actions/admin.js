@@ -1,5 +1,10 @@
 import axios from 'axios'
-import { LOADING_START, PUSH_USERS, PUSH_SELECTS, ERROR_WINDOW } from './actionTypes'
+import { 
+    LOADING_START, 
+    PUSH_USERS, 
+    PUSH_SELECTS, 
+    ERROR_WINDOW, 
+    CHANGE_CONDITION } from './actionTypes'
 
 export function changeCheckedHandler(index) {
     return (dispatch, getState) => {
@@ -104,6 +109,8 @@ export function loadingLists(url, roleActive) {
 
 export function actionUsersHandler(url) {
     return async (dispatch, getState) => {
+        await dispatch(changeCondition('loading'))
+        
         const idList = []
         const newList = []
         const state = getState().admin
@@ -116,7 +123,10 @@ export function actionUsersHandler(url) {
         try {
             const response = await axios.post(url, idList)
             const data = response.data
-            if (!data.succeeded) {
+            if (data.succeeded) {
+                dispatch(changeCondition('ready'))
+                setTimeout(() => dispatch(changeCondition(null)), 7000)
+            } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
                 dispatch(errorWindow(true, err)) 
@@ -131,6 +141,8 @@ export function actionUsersHandler(url) {
 
 export function deleteGroupHandler(url) {
     return async (dispatch, getState) => {
+        dispatch(changeCondition('loading'))
+
         const idList = []
         const state = getState().admin
 
@@ -141,7 +153,9 @@ export function deleteGroupHandler(url) {
         try {
             const response = await axios.post(url, idList)
             const data = response.data
-            if (!data.succeeded) {
+            if (data.succeeded) {
+                dispatch(changeCondition('ready'))
+            } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
                 dispatch(errorWindow(true, err))
@@ -178,5 +192,12 @@ export function errorWindow(errorShow, errorMessage) {
     return {
         type: ERROR_WINDOW,
         errorShow, errorMessage
+    }
+}
+
+export function changeCondition(actionCondition) {
+    return {
+        type: CHANGE_CONDITION,
+        actionCondition
     }
 }

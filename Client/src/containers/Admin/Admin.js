@@ -6,6 +6,7 @@ import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { loadingUsers, loadingLists, errorWindow, actionUsersHandler, deleteGroupHandler } from '../../store/actions/admin'
+import Condition from '../../components/UI/Condition/Condition'
 
 class Admin extends React.Component {
     state = {
@@ -323,7 +324,15 @@ class Admin extends React.Component {
                         errorMessage={this.props.errorMessage}
                         errorWindow={() => this.props.errorWindow(false, [])}
                         /> : 
-                    null}
+                    null
+                }
+
+                {this.props.actionCondition !== null ?
+                    <Condition 
+                        actionCondition={this.props.actionCondition}
+                    /> :
+                    null
+                }
 
                 <header>
                     <span className='header_items admin'>
@@ -389,7 +398,8 @@ function mapStateToProps(state) {
         users: state.admin.users,
         selects: state.admin.selects,
         errorShow: state.admin.errorShow,
-        errorMessage: state.admin.errorMessage
+        errorMessage: state.admin.errorMessage,
+        actionCondition: state.admin.actionCondition
     }
 }
 

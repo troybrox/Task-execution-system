@@ -1,4 +1,9 @@
-import { LOADING_START, PUSH_USERS, PUSH_SELECTS, ERROR_WINDOW } from "../actions/actionTypes"
+import { 
+    LOADING_START, 
+    PUSH_USERS, 
+    PUSH_SELECTS, 
+    ERROR_WINDOW, 
+    CHANGE_CONDITION } from "../actions/actionTypes"
 
 const initialState = {
     users: [
@@ -26,7 +31,9 @@ const initialState = {
     ],
     errorShow: false,
     errorMessage: [],
-    loading: true
+
+    loading: false,
+    actionCondition: null // 'loading', 'ready'
 }
 
 export default function adminReducer(state = initialState, action) {
@@ -37,7 +44,8 @@ export default function adminReducer(state = initialState, action) {
             }
         case PUSH_USERS:
             return {
-                ...state, users: action.users, loading: false
+                ...state, users: action.users, loading: false, 
+                actionCondition: null
             }
         case PUSH_SELECTS:
             return {
@@ -45,7 +53,15 @@ export default function adminReducer(state = initialState, action) {
             }
         case ERROR_WINDOW:
             return {
-                ...state, errorShow: action.errorShow, errorMessage: action.errorMessage, loading: false
+                ...state, 
+                errorShow: action.errorShow, 
+                errorMessage: action.errorMessage, 
+                loading: false, 
+                actionCondition: null
+            }
+        case CHANGE_CONDITION:
+            return {
+                ...state, actionCondition: action.actionCondition
             }
         default:
             return state

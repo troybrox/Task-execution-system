@@ -8,6 +8,7 @@ export const PUSH_FILTERS = 'PUSH_FILTERS'
 // Для admin
 export const PUSH_USERS = 'PUSH_USERS'
 export const PUSH_SELECTS = 'PUSH_SELECTS'
+export const CHANGE_CONDITION = 'CHANGE_CONDITION'
 
 // Универсально
 export const ERROR_WINDOW = 'ERROR_WINDOW'
