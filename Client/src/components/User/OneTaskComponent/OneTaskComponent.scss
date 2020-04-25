@@ -1,0 +1,87 @@
+.main_one_task {
+    display: flex;
+    
+    .task_options {
+        border: 1px solid grey;
+        border-radius: 5px;
+        margin: 10px;
+        width: 100%;
+        // height: 300px;
+        // background: rgb(212, 212, 212);
+        overflow-y: auto;
+
+    }    
+    
+    .aside_one_task {
+        padding: 10px 5px;
+        // position: fixed;
+        text-align: center;
+        border: 1px solid grey;
+        margin: 10px 10px 10px auto ;
+        width: 30%;
+        min-width: 300px;
+        max-width: 500px;
+        height: 100%;
+        // background: rgb(180, 180, 180);
+
+        .memebers {
+            margin: 0 20px;
+            // padding: 5px;
+            border-bottom: 2px solid rgb(207, 207, 207);
+
+            ul {
+                margin: 10px 0;
+
+                .student_li {
+                    display: flex;
+                    align-items: flex-end;
+                    margin-top: 5px;
+
+                    img {
+                        width: 32px;
+                        height: 32px;
+                        border: 1px solid grey;
+                    }
+
+                    .student_checkbox {
+                        display: none;
+                    }
+
+                    .student_label {
+                        // line-height: 32px;
+                        display: flex;
+                        align-items: flex-end;
+
+                        -webkit-touch-callout: none;
+                        -webkit-user-select: none;
+                        -khtml-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
+
+                        &:after {
+                            content: '';
+                            display: inline-block;
+                            height: 14px;
+                            width: 14px;
+                            outline: 1px solid #939598;
+                            margin-left: auto;
+                        }
+                    }
+
+                    .student_checkbox:checked + .student_label:after {
+                        outline:1px solid #939598;
+                        border:2px solid #fff;
+                        width:10px;
+                        height:10px;
+                        background-color:rgb(70, 121, 163);
+                    }
+                }
+            }
+        }
+
+        .date_create {
+            margin-top: 10px;
+        }
+    }
+}

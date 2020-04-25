@@ -16,9 +16,11 @@ class Tasks extends React.Component {
 
     choiceSubjectHandler = index => {
         const subjects = [...this.state.subjects]
-        console.log(subjects[index])
+        subjects.forEach(el => {
+            el.open = false
+        })
 
-        subjects[index].open = !subjects[index].open
+        subjects[index].open = true
 
         this.setState({
             subjects

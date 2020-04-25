@@ -4,6 +4,7 @@ import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 import Label from '../../UI/Label/Label'
 import Input from '../../UI/Input/Input'
+import Select from '../../UI/Select/Select'
 
 class ProfileComponent extends React.Component {
     state = {
@@ -33,9 +34,6 @@ class ProfileComponent extends React.Component {
 	}
 
     selectShow = (item, index) => {
-        const cls = ['select', 'hide']
-        if (!item.valid) cls.push('invalid')
-
         let options = this.props.groups
         switch (item.serverName) {
             case 'Faculty':
@@ -50,13 +48,12 @@ class ProfileComponent extends React.Component {
 
         const select = (
             <Auxiliary key={index}>
-                <select 
-                        className={cls.join(' ')} 
-                        onChange={event => this.props.onSelect(event)} 
-                        required
+                <Select 
+                        typeSelect='blue'
+                        onChangeSelect={event => this.props.onSelect(event)} 
                 >
                     { this.renderOptionRole(options) }
-                </select><br />
+                </Select><br />
             </Auxiliary>
         )
         return select

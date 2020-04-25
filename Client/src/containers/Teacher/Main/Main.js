@@ -6,8 +6,22 @@ import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 class Main extends React.Component {
     state = {
         subjects: [
-            {value: 'Моделирование сложных систем', groups: ['6001-020304D', '6002-020304D'], open: false},
-            {value: 'ЭВМ', groups: ['6005-020304D', '6004-020304D'], open: false}
+            {
+                value: 'Моделирование сложных систем', 
+                groups: [
+                    {value: '6001-020304D', open: false}, 
+                    {value: '6002-020304D', open: false}
+                ], 
+                open: false
+            },
+            {
+                value: 'ЭВМ', 
+                groups: [
+                    {value: '6005-020304D', open: false}, 
+                    {value: '6004-020304D', open: false}
+                ], 
+                open: false
+            }
         ],
         students: [
             {
@@ -46,9 +60,23 @@ class Main extends React.Component {
         title: ''
     }
 
-    choiceGroup = (value, item) => {
-        const title = value + '. Группа ' + item
-        this.setState({title})
+    choiceGroup = (indexSubject, indexGroup) => {
+        const subjects = [...this.state.subjects]
+        subjects.forEach(el => {
+            el.groups.forEach(element => {
+                element.open = false
+            })
+        })    
+        
+        subjects[indexSubject].groups[indexGroup].open = true
+        const nameSubject = subjects[indexSubject].value
+        const nameGroup = subjects[indexSubject].groups[indexGroup].value
+
+        const title = nameSubject + '. Группа ' + nameGroup
+        this.setState({
+            title,
+            subjects
+        })
     }
 
     choiceSubject = index => {
@@ -70,16 +98,18 @@ class Main extends React.Component {
 
     }
 
-    renderMiniList(groups, value) {
+    renderMiniList(groups, indexSubject) {
         return groups.map((item, index) => {
+            const cls = ['small_items']
+            if (item.open) cls.push('active_small')
             return (
                 <li 
                     key={index}
-                    className='small_items'
-                    onClick={this.choiceGroup.bind(this, value, item)}
+                    className={cls.join(' ')}
+                    onClick={this.choiceGroup.bind(this, indexSubject, index)}
                 >
                     <img src='images/folder-regular.svg' alt='' />
-                    {item}
+                    {item.value}
                 </li>
             )
         })
@@ -90,9 +120,7 @@ class Main extends React.Component {
             const cls = ['big_items']
             let src = 'images/angle-right-solid.svg'
             if (item.open) {
-                cls.push('active_big')
                 src = 'images/angle-down-solid.svg'
-
             }
             return (
                 <Auxiliary key={index}>
@@ -106,7 +134,7 @@ class Main extends React.Component {
 
                     {item.open ? 
                         <ul className='small_list'>
-                            {this.renderMiniList(item.groups, item.value)}
+                            {this.renderMiniList(item.groups, index)}
                         </ul> : null
                     }
                 </Auxiliary>

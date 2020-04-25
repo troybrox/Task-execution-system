@@ -20,11 +20,7 @@
         }
 
         button {
-            border: 2px solid rgb(143, 143, 143);
-            background: rgb(211, 211, 211);
             margin-right: 60px;
-            border-radius: 5px;
-            padding: 5px 10px;
         }
     }
 
@@ -35,13 +31,8 @@
         .sort {
             
             select {
-                margin-left: 5px;
                 height: 30px;
                 width: 250px;
-                background: white;
-                border: 1px solid rgb(66, 150, 189);
-                border-radius: 5px;
-                color: rgb(49, 49, 49);
             }
         }
 
@@ -49,15 +40,8 @@
             margin: auto 20px 0 auto;
 
             button {
-                border-radius: 5px;
                 font-weight: bold;
-                font-size: 17px;
-                height: 40px;
-                line-height: 36px;
-                padding: 0 10px;
-                cursor: pointer;
-                border: 2px solid rgb(33, 115, 153);
-                background: rgb(143, 210, 255);
+                font-size: 16px;
             }
         }
     }
@@ -66,6 +50,9 @@
         display: flex;
         border-bottom: 1px dashed grey;
         margin: 0 20px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #000;
 
         .labs_left {
             margin-top: 20px;

@@ -37,7 +37,7 @@ const initialState = {
     role: localStorage.getItem('role') || null
 }
 
-export default function authReadducer(state = initialState, action) {
+export default function authReducer(state = initialState, action) {
     switch (action.type) {
         case AUTH_SUCCESS:
             return {
