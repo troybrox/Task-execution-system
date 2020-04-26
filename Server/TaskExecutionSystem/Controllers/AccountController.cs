@@ -31,6 +31,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(detail);
         }
 
+
         [HttpPost]
         [Route("register/student")]
         public async Task<IActionResult> AddStudentRegRequestAsync(StudentRegisterDTO dto)
@@ -79,12 +80,13 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        // todo: method
+
         [HttpPost]
         [Route("signout")]
         public async Task<IActionResult> SignOutAsync([FromBody]UserLoginDTO dto)
         {
-            return Ok();
+            var res = await _accountService.SignOutAsync();
+            return Ok(res);
         }
     }
 }

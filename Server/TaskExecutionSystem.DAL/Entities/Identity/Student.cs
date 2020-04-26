@@ -1,6 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.Studies;
+using TaskExecutionSystem.DAL.Entities.Task;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
 {
@@ -33,5 +36,18 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         public User User { get; set; }
 
         public Group Group { get; set; }
+
+
+        public List<TaskStudentItem> TaskStudentItems { get; set; }
+
+        public List<Solution> Solutions { get; set; }
+
+
+        public Student()
+        {
+            TaskStudentItems = new List<TaskStudentItem>();
+
+            Solutions = new List<Solution>();
+        }
     }
 }

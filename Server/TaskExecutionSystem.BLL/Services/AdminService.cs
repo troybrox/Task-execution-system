@@ -29,7 +29,6 @@ namespace TaskExecutionSystem.BLL.Services
         private const string _entityGettingError = "Ошибка при получении списков пользователей.";
         private const string _entityDeletingError = "Ошибка при удалении пользователей. ";
 
-        // todo: faculty field for sending
         public AdminService(UserManager<User> userManager, DataContext context)
         {
             _context = context;

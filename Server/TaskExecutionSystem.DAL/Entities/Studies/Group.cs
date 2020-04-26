@@ -4,6 +4,7 @@ using System.Text;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.Registration;
+using TaskExecutionSystem.DAL.Entities.Task;
 
 namespace TaskExecutionSystem.DAL.Entities.Studies
 {
@@ -16,6 +17,8 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
         public List<Student> Students { get; set; }
 
         public List<StudentRegisterRequest> StudentRegisterRequests { get; set; }
+
+        public List<TaskModel> Tasks { get; set; }
 
         public List<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 
@@ -30,6 +33,7 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
             Students = new List<Student>();
             StudentRegisterRequests = new List<StudentRegisterRequest>();
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
+            Tasks = new List<TaskModel>();
         }
 
         public Group(string numberName, int facultyId)

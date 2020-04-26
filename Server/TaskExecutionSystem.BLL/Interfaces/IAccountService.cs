@@ -12,7 +12,7 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO> CreateTeacherRegisterRequestAsync(TeacherRegisterDTO dto);
 
         public Task<OperationDetailDTO<SignInUserDetailDTO>> SignInAsync(UserLoginDTO dto);
-        public Task<OperationDetailDTO<SignInUserDetailDTO>> SignOutAsync();
+        public Task<OperationDetailDTO> SignOutAsync();
 
         public Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudiesAsync();
 

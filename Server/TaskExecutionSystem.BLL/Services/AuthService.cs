@@ -80,9 +80,18 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public Task<OperationDetailDTO<SignInUserDetailDTO>> SignOutAsync()
+        public async Task<OperationDetailDTO> SignOutAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _signInManager.SignOutAsync();
+                return new OperationDetailDTO { Succeeded = true };
+            }
+            catch (Exception e)
+            {
+                return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _serverErrorMessage } };
+            }
+            
         }
 
 

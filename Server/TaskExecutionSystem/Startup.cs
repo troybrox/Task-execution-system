@@ -52,7 +52,8 @@ namespace TaskExecutionSystem
             services.AddControllers();
 
             services.AddTransient<IAccountService, AuthService>()
-                .AddTransient<IAdminService, AdminService>();
+                .AddTransient<IAdminService, AdminService>()
+                .AddTransient<ITaskService, TaskService>();
         }
 
 
@@ -62,6 +63,10 @@ namespace TaskExecutionSystem
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
             }
 
             app.UseCors(MyAllowSpecificOrigins);
@@ -88,6 +93,11 @@ namespace TaskExecutionSystem
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.Run(async (context) =>
+            {
+                await context.Response.WriteAsync("Could Not Find Anything");
             });
         }
     }

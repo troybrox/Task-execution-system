@@ -6,6 +6,9 @@ using TaskExecutionSystem.DAL.Entities.Elements;
 using TaskExecutionSystem.DAL.Entities.Registration;
 using TaskExecutionSystem.DAL.Entities.Studies;
 using TaskExecutionSystem.DAL.Entities.Relations;
+using TaskExecutionSystem.DAL.Entities.Task;
+using TaskExecutionSystem.DAL.Entities.Repository;
+using TaskExecutionSystem.DAL.Entities.File;
 
 namespace TaskExecutionSystem.DAL.Data
 {
@@ -23,6 +26,21 @@ namespace TaskExecutionSystem.DAL.Data
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 
+        public DbSet<TaskModel> TaskModels { get; set; }
+        public DbSet<Solution> Solutions { get; set; }
+        public DbSet<TypeOfTask> TaskTypes { get; set; }
+
+        public DbSet<RepositoryModel> RepositoryModels { get; set; }
+        public DbSet<Theme> Themes { get; set; }
+        public DbSet<Paragraph> Paragraphs { get; set; }
+
+        public DbSet<TaskFile> TaskFiles { get; set; }
+        public DbSet<SolutionFile> SolutionFiles { get; set; }
+        public DbSet<RepoFile> RepoFiles { get; set; }
+
+        public DbSet<TaskStudentItem> TaskStudentItems { get; set; }
+
+        // add Task, Repo configs => relations [!]
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()

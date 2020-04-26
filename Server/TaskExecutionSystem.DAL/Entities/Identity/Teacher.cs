@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TaskExecutionSystem.DAL.Entities.Studies;
 using TaskExecutionSystem.DAL.Entities.Relations;
+using TaskExecutionSystem.DAL.Entities.Task;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
 {
@@ -30,6 +31,8 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
 
         public List<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 
+        public List<TaskModel> TaskItems { get; set; }
+
 
         [Required]
         public long UserId { get; set; }
@@ -48,6 +51,8 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         public Teacher()
         {
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
+
+            TaskItems = new List<TaskModel>();
         }
     }
 }
