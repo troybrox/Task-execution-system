@@ -8,8 +8,14 @@ import Select from '../../UI/Select/Select'
 
 class TasksComponent extends React.Component {
     state = {
-        title: ''
+        title: '',
+        tabTitles: [
+            {title: 'Существующие', active: true}, 
+            {title: 'Заявки', active: false}
+        ],
     }
+
+    
 
     choiceSubject = (value, index) => {
         this.props.choiceSubject(index)
@@ -51,7 +57,6 @@ class TasksComponent extends React.Component {
                         to={`/tasks/${index}`}
                         key={index}
                         className='each_labs' 
-                        // onClick={}
                     >
                         <div className='labs_left'>
                             <span className='subject_for_lab'>{subject[0]}</span>
@@ -66,10 +71,46 @@ class TasksComponent extends React.Component {
             )
         })
     }
+
+    changeTab = index => {
+        const tabTitles = [...this.state.tabTitles]
+        tabTitles.forEach(el => {
+            el.active = false
+        })
+        tabTitles[index].active = true
+
+        this.setState({
+            tabTitles,
+        }, () => {
+            // this.requestUserHandler()
+            // this.requestListHandler()
+            console.log('swap')
+        })
+    }
+
+    renderTab() {
+        return this.state.tabTitles.map((item, index) => {
+            const cls = ['tab']
+            if (item.active) cls.push('active_tab')
+            return (
+                <h4
+                    key={index}
+                    className={cls.join(' ')}
+                    onClick={this.changeTab.bind(this, index)}
+                >
+                    {item.title}
+                </h4>
+            )
+        })
+    }
     
     render() {
         const main = (
             <div className='labs_group'>
+                <div className='nav'>
+                    { this.renderTab() }
+                </div> 
+                
                 <div className='search'>
                     <input type='search' placeholder='Поиск...' />
                     <Button 
@@ -112,7 +153,7 @@ class TasksComponent extends React.Component {
                 <div className='main_subject'>
                     <aside className='aside_subject'>
                         {this.renderList()}
-                    </aside>                        
+                    </aside>                       
                     { this.state.title ? main : null}
                 </div>
             </Frame>

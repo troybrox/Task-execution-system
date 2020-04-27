@@ -10,6 +10,9 @@ export const PUSH_USERS = 'PUSH_USERS'
 export const PUSH_SELECTS = 'PUSH_SELECTS'
 export const CHANGE_CONDITION = 'CHANGE_CONDITION'
 
+// Для teacher
+export const SUCCESS_TASK_ADDITION = 'SUCCESS_TASK_ADDITION'
+
 // Универсально
 export const ERROR_WINDOW = 'ERROR_WINDOW'
 export const LOADING_START = 'LOADING_START'

@@ -53,6 +53,7 @@
         cursor: pointer;
         text-decoration: none;
         color: #000;
+        min-width: 510px;
 
         .labs_left {
             margin-top: 20px;
@@ -68,7 +69,7 @@
 
         .labs_right {
             display: flex;
-            margin: auto 50px auto auto;
+            margin: auto 0 auto 40%;
 
             img {
                 width: 30px;
@@ -76,14 +77,8 @@
             }
 
             span {
-                // display: inline-block;
                 margin-left: 10px;
                 line-height: 30px;
-            }
-
-            .close_lab {
-                margin-left: 100px;
-                cursor: pointer;
             }
         }
     }

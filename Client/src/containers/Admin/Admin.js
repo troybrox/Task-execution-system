@@ -291,7 +291,7 @@ class Admin extends React.Component {
     }
 
     renderButtons() {
-        let cls = 'blue'
+        let cls = 'blue_big'
         const active = this.state.buttonActiveAction
         if (!active) cls = 'disactive'
 
