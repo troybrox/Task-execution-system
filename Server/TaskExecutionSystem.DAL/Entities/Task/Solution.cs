@@ -16,11 +16,16 @@ namespace TaskExecutionSystem.DAL.Entities.Task
 
         public SolutionFile File { get; set; }
 
-        // проверка на вовремя
+        public bool InTime { get; set; }
+
 
         public int TaskId { get; set; }
 
         public int StudentId { get; set; }
 
+
+        public TaskModel TaskModel { get; set; }
+
+        public Student Student { get; set; }
     }
 }

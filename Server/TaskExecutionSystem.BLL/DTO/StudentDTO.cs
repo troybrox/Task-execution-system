@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using TaskExecutionSystem.DAL.Entities.Registration;
+using TaskExecutionSystem.BLL.DTO.Task;
 
 namespace TaskExecutionSystem.BLL.DTO
 {
@@ -11,6 +12,8 @@ namespace TaskExecutionSystem.BLL.DTO
         public int GroupId { get; set; }
 
         public string GroupNumber { get; set; }
+
+        public List<SolutionDTO> Solutions { get; set; }
 
 
         public static StudentDTO Map(StudentRegisterRequest entity) => new StudentDTO

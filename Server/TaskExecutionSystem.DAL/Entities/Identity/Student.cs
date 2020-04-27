@@ -24,6 +24,8 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Column(TypeName = "varchar(255)")]
         public string Patronymic { get; set; }
 
+        public int NotificationCounter { get; set; }
+
 
         [Required]
         public long UserId { get; set; }

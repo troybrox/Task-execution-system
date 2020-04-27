@@ -28,6 +28,7 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         [Column(TypeName = "varchar(255)")]
         public string Position { get; set; }
 
+        public int NotificationCounter { get; set; }
 
         public List<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 

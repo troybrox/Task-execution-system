@@ -31,7 +31,6 @@
     <Folder Include="wwwroot\Files\TaskFiles\" />
     <Folder Include="wwwroot\Files\SolutionFiles\" />
     <Folder Include="wwwroot\Files\RepoFiles\" />
-    <Folder Include="wwwroot\TaskFiles\" />
   </ItemGroup>
 
 </Project>
