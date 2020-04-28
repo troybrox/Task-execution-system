@@ -30,9 +30,10 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
 
         public int NotificationCounter { get; set; }
 
+
         public List<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 
-        public List<TaskModel> TaskItems { get; set; }
+        public List<TaskModel> Tasks { get; set; }
 
 
         [Required]
@@ -53,7 +54,7 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         {
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
 
-            TaskItems = new List<TaskModel>();
+            Tasks = new List<TaskModel>();
         }
     }
 }

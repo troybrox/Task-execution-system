@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.Interfaces;
+using static TaskExecutionSystem.BLL.Infrastructure.Contracts.ErrorMessageContract;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities;
 using TaskExecutionSystem.DAL.Entities.Identity;
@@ -20,9 +21,6 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly SignInManager<User> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly DataContext _context;
-
-        private const string _serverErrorMessage = "Ошибка, произошло исключение на сервере. Подробнее: ";
-        private const string _signInErrorMessage = "Ошибка при авторизации. Неверное имя пользователя/электронная почта или пароль. Проверьте правильность ввода и повторите попытку.";
 
         public AccountService(UserManager<User> userManager, SignInManager<User> signInManager,
             IHttpContextAccessor httpContextAccessor, DataContext context)

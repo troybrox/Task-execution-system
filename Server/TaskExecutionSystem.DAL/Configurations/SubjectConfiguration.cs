@@ -19,6 +19,12 @@ namespace TaskExecutionSystem.DAL.Configurations
                 .HasForeignKey(gts => gts.SubjectId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
+
+            builder.HasMany(s => s.Tasks)
+                .WithOne(t => t.Subject)
+                .HasForeignKey(t => t.SubjectId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaskExecutionSystem.BLL.DTO;
 using static TaskExecutionSystem.BLL.Infrastructure.Contracts.DirectoryContract;
+using static TaskExecutionSystem.BLL.Infrastructure.Contracts.ErrorMessageContract;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Data;
@@ -14,6 +15,7 @@ using TaskExecutionSystem.DAL.Entities.Task;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.File;
+using TaskExecutionSystem.BLL.DTO.Filters;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -23,15 +25,38 @@ namespace TaskExecutionSystem.BLL.Services
         public TaskService(DataContext context)
         {
             _context = context;
-
         }
 
-        public Task<OperationDetailDTO> CreateFileAsync()
+        public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
         {
             throw new NotImplementedException();
         }
 
-        // todo: adding file
+        public async Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
+        {
+            var detail = new OperationDetailDTO<TaskDTO>();
+            try
+            {
+                var entity = await _context.TaskModels.FindAsync(id);
+                if (entity != null)
+                {
+                    var dto = TaskDTO.Map(entity);
+                    detail.Succeeded = true;
+                    detail.Data = dto;
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Задание не найдено.");
+                }
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+            }
+            return detail;
+        }
+
+        // todo: adding file [?]
         public async Task<OperationDetailDTO> CreateTaskAsync(TaskCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO { Succeeded = false };
@@ -46,8 +71,7 @@ namespace TaskExecutionSystem.BLL.Services
                     await _context.SaveChangesAsync();
 
 
-                    await AddTaskStudentsAsync(newTask.Id, dto.StudentIds);
-                    
+                    await AddStudentsToTaskAsync(newTask.Id, dto.StudentIds);
                     
                     detail.Succeeded = true;
                     return detail;
@@ -66,12 +90,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public async Task<OperationDetailDTO> CreateFileAsync(IFormFile uploadedFile = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<OperationDetailDTO> AddFileToDBAsync(int taskID, string fileName)
+        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string fileName)
         {
             var detail = new OperationDetailDTO();
             try
@@ -82,7 +101,7 @@ namespace TaskExecutionSystem.BLL.Services
                     var newFile = new TaskFile
                     {
                         //TaskItemId = taskID,
-                        TaskItem = task,
+                        TaskModel = task,
                         FileName = fileName,
                         Path = TaskFilePath + fileName,
                         FileURI = TaskFileURI + fileName,
@@ -104,7 +123,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        private async Task AddTaskStudentsAsync(int taskID, int[] studentIDs)
+        private async Task AddStudentsToTaskAsync(int taskID, int[] studentIDs)
         {
             var task = await _context.TaskModels.FindAsync(taskID);
             var students = new List<Student>();
@@ -120,6 +139,11 @@ namespace TaskExecutionSystem.BLL.Services
                     task.TaskStudentItems.Add(taskStudentItem);
                 }
             }
+        }
+
+        public Task<OperationDetailDTO> UpdateTaskAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -53,7 +53,9 @@ namespace TaskExecutionSystem
 
             services.AddTransient<IAccountService, AuthService>()
                 .AddTransient<IAdminService, AdminService>()
+                .AddTransient<ITaskService, TaskService>()
                 .AddTransient<ITaskService, TaskService>();
+                //.AddTransient<ITeacherService, TeacherService>();
         }
 
 

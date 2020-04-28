@@ -59,9 +59,17 @@ namespace TaskExecutionSystem.DAL.Data
             modelBuilder.ApplyConfiguration(new GroupConfiguration());
             modelBuilder.ApplyConfiguration(new DepartmentConfiguration());
             modelBuilder.ApplyConfiguration(new SubjectConfiguration());
+
             modelBuilder.ApplyConfiguration(new TeacherConfiguration());
             modelBuilder.ApplyConfiguration(new StudentConfiguration());
+
+            modelBuilder.ApplyConfiguration(new TaskTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskFileConfiguration());
+            modelBuilder.ApplyConfiguration(new SolutionFileConfiguration());
+
             modelBuilder.ApplyConfiguration(new GroupTeacherSubjectConfiguration());
+            modelBuilder.ApplyConfiguration(new TaskStudentItemConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

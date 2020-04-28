@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Folder Include="DTO\Result\" />
+    <Folder Include="DTO\Repository\" />
   </ItemGroup>
 
   <ItemGroup>

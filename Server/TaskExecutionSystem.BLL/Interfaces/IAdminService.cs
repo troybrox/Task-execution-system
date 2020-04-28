@@ -11,11 +11,6 @@ namespace TaskExecutionSystem.BLL.Interfaces
 {
     public interface IAdminService
     {
-        //public Task<OperationDetailDTO<List<FacultyDTO>>> GetRegStudentsStudyFilters();
-        //public Task<OperationDetailDTO<List<FacultyDTO>>> GetRegTeachersStudyFilters();
-        //public Task<OperationDetailDTO<List<FacultyDTO>>> GetStudentsStudyFilters();
-        //public Task<OperationDetailDTO<List<FacultyDTO>>> GetTeachersStudyFilters();
-
         public Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudyFiltersAsync(string userType);
 
         public Task<OperationDetailDTO<List<StudentDTO>>> GetStudentRegisterRequestsAsync();

@@ -15,6 +15,34 @@
     <Compile Remove="Migrations\20200416201310_Initial.Designer.cs" />
     <Compile Remove="Migrations\20200416201650_Initial.cs" />
     <Compile Remove="Migrations\20200416201650_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20200428181848_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428181848_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428182408_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428182408_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428190923_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428190923_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428192517_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428192517_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428192912_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428192912_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428193241_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428193241_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428193919_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428193919_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428194805_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428194805_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428194921_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428194921_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428195225_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428195225_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428200205_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428200205_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428225247_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428225247_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428225635_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428225635_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428225912_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428225912_Task_Solution.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

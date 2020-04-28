@@ -6,7 +6,7 @@ using TaskExecutionSystem.DAL.Entities.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.File;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace TaskExecutionSystem.DAL.Entities.Task
 {
@@ -26,9 +26,11 @@ namespace TaskExecutionSystem.DAL.Entities.Task
 
         public bool IsOpen { get; set; }
 
+        public int TimePercentage { get; set; }
+
         public TaskFile File { get; set; }
 
-
+        //[Required]
         public int TeacherId { get; set; }
 
         public int TypeId { get; set; }
@@ -37,11 +39,9 @@ namespace TaskExecutionSystem.DAL.Entities.Task
 
         public int GroupId { get; set; }
 
+        
+        public Teacher Teacher { get; set; }
 
-        [ForeignKey("TeacherId")]
-        public Teacher Creator { get; set; }
-
-        [ForeignKey("TypeId")]
         public TypeOfTask Type { get; set; }
 
         public Subject Subject { get; set; }
@@ -51,10 +51,13 @@ namespace TaskExecutionSystem.DAL.Entities.Task
 
         public List<TaskStudentItem> TaskStudentItems { get; set; }
 
+        public List<Solution> Solutions { get; set; }
+
 
         public TaskModel()
         {
             TaskStudentItems = new List<TaskStudentItem>();
+            Solutions = new List<Solution>();
         }
     }
 }

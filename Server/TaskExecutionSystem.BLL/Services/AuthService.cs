@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.DTO.Studies;
+using static TaskExecutionSystem.BLL.Infrastructure.Contracts.ErrorMessageContract;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Data;
@@ -21,9 +22,9 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly SignInManager<User> _signInManager;
         private readonly DataContext _context;
 
-        private const string _serverErrorMessage = "Ошибка, произошло исключение на сервере. Подробнее: ";
-        private const string _signInErrorMessage = 
-            "Ошибка при авторизации. Неверное имя пользователя/электронная почта или пароль. Проверьте правильность ввода и повторите попытку.";
+        //private const string _serverErrorMessage = "Ошибка, произошло исключение на сервере. Подробнее: ";
+        //private const string _signInErrorMessage = 
+        //    "Ошибка при авторизации. Неверное имя пользователя/электронная почта или пароль. Проверьте правильность ввода и повторите попытку.";
 
         public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, DataContext context)
         {

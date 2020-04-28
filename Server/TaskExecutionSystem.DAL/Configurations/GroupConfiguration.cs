@@ -25,6 +25,12 @@ namespace TaskExecutionSystem.DAL.Configurations
                 .HasForeignKey(gts => gts.GroupId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
+
+            builder.HasMany(g => g.Tasks)
+                .WithOne(t => t.Group)
+                .HasForeignKey(t => t.GroupId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
     }
 }

@@ -8,6 +8,7 @@ namespace TaskExecutionSystem.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<GroupTeacherSubjectItem> builder)
         {
+            // config in parent entity class [!s]
             builder.HasOne(i => i.Group)
                 .WithMany(g => g.GroupTeacherSubjectItems)
                 .HasForeignKey(i => i.GroupId)

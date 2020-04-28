@@ -23,7 +23,6 @@ namespace TaskExecutionSystem.DAL.Entities.Task
 
         public int StudentId { get; set; }
 
-
         public TaskModel TaskModel { get; set; }
 
         public Student Student { get; set; }

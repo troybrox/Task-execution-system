@@ -1,4 +1,5 @@
-﻿using TaskExecutionSystem.DAL.Entities.Task;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using TaskExecutionSystem.DAL.Entities.Task;
 
 namespace TaskExecutionSystem.DAL.Entities.File
 {
@@ -6,6 +7,7 @@ namespace TaskExecutionSystem.DAL.Entities.File
     {
         public int SolutionId { get; set; }
 
+        [ForeignKey("SolutionId")]
         public Solution Solution { get; set; }
     }
 }
