@@ -82,34 +82,5 @@ namespace TaskExecutionSystem.Application.Initialization
                 }
             }
         }
-
-
-        //private async Task InitializeUsers()
-        //{
-        //    var teacherUsers = _options
-        //        .Value
-        //        .Teachers
-        //        .Select(x => new User
-        //        {
-        //            UserName = x.UserName,
-        //            NormalizedUserName = x.UserName.ToUpperInvariant()
-        //        })
-        //        .ToList();
-
-        //    var existingUsers = await _userManager.GetUsersInRoleAsync(Role.Types.Teacher.ToString());
-
-        //    if (teacherUsers.Any() && teacherUsers.Count > existingUsers.Count)
-        //    {
-        //        var newUsers = teacherUsers
-        //            .Where(x => existingUsers.All(u => u.UserName != x.UserName))
-        //            .ToList();
-
-        //        foreach (var user in newUsers)
-        //        {
-        //            await _userManager.CreateAsync(user);
-        //            await _userManager.AddToRoleAsync(user, Role.Types.Teacher.ToString());
-        //        }
-        //    }
-        //}
     }
 }

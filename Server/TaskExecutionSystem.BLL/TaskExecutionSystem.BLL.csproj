@@ -9,7 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\" />
+    <Folder Include="DTO\Result\" />
+    <Folder Include="DTO\Repository\" />
   </ItemGroup>
 
   <ItemGroup>

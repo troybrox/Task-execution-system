@@ -10,8 +10,6 @@ namespace TaskExecutionSystem.BLL.DTO
         [Required]
         public string Position { get; set; }
 
-        public string Department { get; set; }
-
-        public string Discipline { get; set; }
+        public int DepartmentId { get; set; }
     }
 }

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AspNetCore.AsyncInitialization" Version="1.1.2" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
@@ -27,6 +28,9 @@
   <ItemGroup>
     <Folder Include="Identity.JWT\Middleware\" />
     <Folder Include="Identity.JWT\Interfaces\" />
+    <Folder Include="wwwroot\Files\TaskFiles\" />
+    <Folder Include="wwwroot\Files\SolutionFiles\" />
+    <Folder Include="wwwroot\Files\RepoFiles\" />
   </ItemGroup>
 
 </Project>

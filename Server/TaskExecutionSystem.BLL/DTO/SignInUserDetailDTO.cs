@@ -5,7 +5,7 @@ using TaskExecutionSystem.DAL.Entities.Identity;
 
 namespace TaskExecutionSystem.BLL.DTO
 {
-    public class LoginServiceDetailDTO
+    public class SignInUserDetailDTO
     {
         public User User { get; set; }
 

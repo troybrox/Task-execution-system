@@ -12,16 +12,24 @@ namespace TaskExecutionSystem.Application.Initialization
     {
         public IConfiguration Configuration { get; }
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<Role> _roleManager;
 
-        public IdentityInitializer(IServiceProvider serviceProvider, IConfiguration configuration, UserManager<User> userManager)
+        public IdentityInitializer(IServiceProvider serviceProvider, IConfiguration configuration, UserManager<User> userManager, RoleManager<Role> roleManager)
             : base(serviceProvider)
         {
             Configuration = configuration;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // инициализация ролей 
         protected override async Task InitializeAsync(DataContext context)
+        {
+            await InitializeRoles(context);
+            await InitializeAdmin(context);
+        }
+
+        private async Task InitializeRoles(DataContext context)
         {
             var roleNames = Enum
                 .GetNames(typeof(Role.Types));
@@ -42,30 +50,46 @@ namespace TaskExecutionSystem.Application.Initialization
                     .ToList();
 
                 await context.AddRangeAsync(newRoles);
+                await context.SaveChangesAsync();
             }
-
-            await InitializeAdmin();
         }
 
-        // инициализация адиминистратора | при запуске приложения проверяется его существование, если нет - добавляется
-        // пароль и логин админа в appsettings.json
-        public async Task InitializeAdmin()
+
+        // инициализация адиминистратора | при запуске приложения проверяется его существование, если нет - добавляется в систему;
+        // пароль и логин админа в файле appsettings.json
+        private async Task InitializeAdmin(DataContext context)
         {
-            string adminUserName = Configuration.GetSection("AdminAuthOptions")["UserName"];
+            var adminUserName = Configuration.GetSection("AdminAuthOptions")["UserName"];
             var user = await _userManager.FindByNameAsync(adminUserName);
+            var existingAdminRole = await _roleManager.FindByNameAsync(Role.Types.Administrator.ToString());
 
             if (user == null)
             {
-                var administrator = new User
+                if (existingAdminRole != null)
                 {
-                    UserName = adminUserName,
-                };
-                string adminPassword = Configuration.GetSection("AdminAuthOptions")["UserPassword"];
-                var createAdminRes = await _userManager.CreateAsync(administrator, adminPassword);
+                    var administrator = new User
+                    {
+                        UserName = adminUserName,
+                    };
 
-                if (createAdminRes.Succeeded)
+                    string adminPassword = Configuration.GetSection("AdminAuthOptions")["UserPassword"];
+                    var createAdminRes = await _userManager.CreateAsync(administrator, adminPassword);
+
+                    if (createAdminRes.Succeeded)
+                    {
+                        await _userManager.AddToRoleAsync(administrator, Role.Types.Administrator.ToString());
+                    }
+                }
+            }
+
+            else
+            {
+                if(!await _userManager.IsInRoleAsync(user, Role.Types.Administrator.ToString()))
                 {
-                    await _userManager.AddToRoleAsync(administrator, Role.Types.Administrator.ToString());
+                    if(existingAdminRole != null)
+                    {
+                        await _userManager.AddToRoleAsync(user, Role.Types.Administrator.ToString());
+                    }
                 }
             }
         }
