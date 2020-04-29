@@ -67,11 +67,11 @@
                 font-size: 16px;
                 resize: none;
                 border-radius: 10px;
-                border: 2px dashed rgb(143, 143, 143);
+                border: 2px solid rgb(143, 143, 143);
             }
 
             .label_file {
-                width: 85%;
+                width: 90%;
                 border: 2px dashed grey;
                 border-radius: 5px;
                 display: block;
@@ -215,6 +215,11 @@
 
             .date_input_create {
                 margin-top: 10px;
+            }
+
+            span {
+                font-size: 14px;
+                color: rgb(83, 83, 83);
             }
         }
     }

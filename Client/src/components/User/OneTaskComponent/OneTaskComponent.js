@@ -104,7 +104,7 @@ class OneTaskComponent extends React.Component {
             <div className='check_all'>
                 <input type='checkbox' id='all_check' className='student_checkbox' />
                 <label htmlFor='all_check' className='label_all student_label_check'>
-                    <span>Выделить всех</span>
+                    <span>Назначить всю группу</span>
                 </label>
             </div>
         : null
@@ -358,6 +358,7 @@ class OneTaskComponent extends React.Component {
                                 <span className='need_field'>*</span>
                             </h4>
                             { this.renderDate() }
+                            <span>Назначить всю группу</span>
                         </div>
                     </aside>
                 </div>
