@@ -1,12 +1,70 @@
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN } from "../actions/actionTypes"
 
 const initialState = {
-    teacherData: {
+    mainData: [
+        {
+            value: 'Моделирование сложных систем', 
+            groups: [
+                {
+                    value: '6001-020304D', 
+                    students: [
+                        {
+                            name: 'Студент 1', 
+                            labs: [
+                                {id: 1, name: 'Лабораторная работа №1', begin: '10.10.2020', end: '10.11.2020'},
+                                {id: 2, name: 'Лабораторная работа №2', begin: '18.10.2020', end: ''}
+                            ],
+                            open: false, 
+                        },
+                        {
+                            name: 'Студент 2', 
+                            labs: [
+                                {id: 3, name: 'Лабораторная работа №1', begin: '10.10.2020', end: ''},
+                                {id: 4, name: 'Лабораторная работа №2', begin: '18.10.2020', end: '10.11.2020'}
+                            ],
+                            open: false, 
+                        }
+                    ],
+                    open: false
+                }, 
+                {
+                    value: '6002-020304D', 
+                    students: [
+                        {
+                            name: 'Студент 3', 
+                            labs: [
+                                {id: 5, name: 'Лабораторная работа №1', begin: '10.10.2020', end: ''},
+                                {id: 6, name: 'Лабораторная работа №2', begin: '18.10.2020', end: ''}
+                            ],
+                            open: false, 
+                        },
+                        {
+                            name: 'Студент 4', 
+                            labs: [
+                                {id: 7, name: 'Лабораторная работа №1', begin: '10.10.2020', end: '10.11.2020'},
+                                {id: 8, name: 'Лабораторная работа №2', begin: '18.10.2020', end: '10.11.2020'}
+                            ],
+                            open: false, 
+                        }
+                    ],
+                    open: false
+                }
+            ], 
+            open: false
+        },
+        {
+            value: 'ЭВМ', 
+            groups: [
+                {value: '6005-020304D', open: false}, 
+                {value: '6004-020304D', open: false}
+            ], 
+            open: false
+        }
+    ],
+    taskData: {
         teaherName: "Xxx",
         teaherSurname: "Xxx",
         teaherPatronymic: "Xxx",
-    }, 
-    taskData: {
         subject: "xx",
         type: "Лабораторная работа",
         name: "xx",
@@ -50,11 +108,13 @@ const initialState = {
 
 export default function teacherReducer(state = initialState, action) {
     switch (action.type) {
+        case SUCCESS_MAIN:
+            return {
+                ...state, mainData: action.mainData
+            }
         case SUCCESS_TASK_ADDITION:
             return {
-                ...state,
-                teacherData: action.teacherData, 
-                taskData: action.taskData
+                ...state, taskData: action.taskData
             }
         case ERROR_WINDOW:
             return {

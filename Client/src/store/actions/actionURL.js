@@ -1,0 +1,1 @@
+export const commonURL = 'https://localhost:44303'

@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { loadingUsers, loadingLists, errorWindow, actionUsersHandler, deleteGroupHandler } from '../../store/actions/admin'
 import Condition from '../../components/UI/Condition/Condition'
 import Button from '../../components/UI/Button/Button'
+import { commonURL } from '../../store/actions/actionURL'
 
 class Admin extends React.Component {
     state = {
@@ -150,7 +151,7 @@ class Admin extends React.Component {
         const departmentId = this.state.departmentId
         const search = this.state.search
 
-        const url = `https://localhost:44303/api/admin/${path}`
+        const url = `${commonURL}/api/admin/${path}`
         this.props.loadingUsers(url, facultyId, groupId, departmentId, search)
     }
 
@@ -158,7 +159,7 @@ class Admin extends React.Component {
         const path = this.pathHandler()
         const roleActive = this.state.aside[0].active
 
-        const url = `https://localhost:44303/api/admin/filters/${path}`
+        const url = `${commonURL}/api/admin/filters/${path}`
         this.props.loadingLists(url, roleActive)
     }
 
@@ -166,7 +167,7 @@ class Admin extends React.Component {
         let success = window.confirm('Подтвердите ваше действие!');
         if (success) {
             const path = this.pathHandler()
-            const url = `https://localhost:44303/api/admin/delete_${path}`
+            const url = `${commonURL}/api/admin/delete_${path}`
 
             await this.props.actionUsersHandler(url)
             this.requestUserHandler()
@@ -178,7 +179,7 @@ class Admin extends React.Component {
         const success = window.confirm('Подтвердите ваше действие!')
         if (success) {       
             const path = this.pathHandler()
-            const url = `https://localhost:44303/api/admin/add_${path}`
+            const url = `${commonURL}/api/admin/add_${path}`
 
             await this.props.actionUsersHandler(url)
             this.requestUserHandler()
@@ -189,7 +190,7 @@ class Admin extends React.Component {
     removeGroup = async() => {
         const success = window.confirm('Подтвердите ваше действие!')
         if (success) {
-            const url = 'https://localhost:44303/api/admin/delete_group'
+            const url = `${commonURL}/api/admin/delete_group`
 
             await this.props.deleteGroupHandler(url)
             this.requestUserHandler()

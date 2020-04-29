@@ -11,6 +11,7 @@ export const PUSH_SELECTS = 'PUSH_SELECTS'
 export const CHANGE_CONDITION = 'CHANGE_CONDITION'
 
 // Для teacher
+export const SUCCESS_MAIN = 'SUCCESS_MAIN'
 export const SUCCESS_TASK_ADDITION = 'SUCCESS_TASK_ADDITION'
 
 // Универсально

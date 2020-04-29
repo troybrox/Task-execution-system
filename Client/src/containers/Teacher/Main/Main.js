@@ -2,100 +2,39 @@ import React from 'react'
 import './Main.scss'
 import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
+import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
+import { fetchMain } from '../../../store/actions/teacher'
+import { choiceGroupHandler, choiceSubjectHandler, choiceStudentHandler } from '../../../store/actions/teacher'
 
 class Main extends React.Component {
     state = {
-        subjects: [
-            {
-                value: 'Моделирование сложных систем', 
-                groups: [
-                    {value: '6001-020304D', open: false}, 
-                    {value: '6002-020304D', open: false}
-                ], 
-                open: false
-            },
-            {
-                value: 'ЭВМ', 
-                groups: [
-                    {value: '6005-020304D', open: false}, 
-                    {value: '6004-020304D', open: false}
-                ], 
-                open: false
-            }
-        ],
-        students: [
-            {
-                name: 'Студент 1', 
-                open: false, 
-                labs: [
-                    {name: 'Лабораторная работа №1', begin: '10.10.2020', end: '10.11.2020'},
-                    {name: 'Лабораторная работа №2', begin: '18.10.2020', end: ''}
-                ]
-            },
-            {
-                name: 'Студент 2', 
-                open: false, 
-                labs: [
-                    {name: 'Лабораторная работа №1', begin: '10.10.2020', end: ''},
-                    {name: 'Лабораторная работа №2', begin: '18.10.2020', end: '10.11.2020'}
-                ]
-            },
-            {
-                name: 'Студент 3', 
-                open: false, 
-                labs: [
-                    {name: 'Лабораторная работа №1', begin: '10.10.2020', end: ''},
-                    {name: 'Лабораторная работа №2', begin: '18.10.2020', end: ''}
-                ]
-            },
-            {
-                name: 'Студент 4', 
-                open: false, 
-                labs: [
-                    {name: 'Лабораторная работа №1', begin: '10.10.2020', end: '10.11.2020'},
-                    {name: 'Лабораторная работа №2', begin: '18.10.2020', end: '10.11.2020'}
-                ]
-            }
-        ],
+        activeSubjectIndex: null,
+        activeGroupIndex: null,
         title: ''
     }
 
+    choiceSubject = indexSubject => {
+        this.props.choiceSubjectHandler(indexSubject)
+
+        this.setState({
+            activeSubjectIndex: indexSubject,
+        })
+    }
+
     choiceGroup = (indexSubject, indexGroup) => {
-        const subjects = [...this.state.subjects]
-        subjects.forEach(el => {
-            el.groups.forEach(element => {
-                element.open = false
-            })
-        })    
-        
-        subjects[indexSubject].groups[indexGroup].open = true
-        const nameSubject = subjects[indexSubject].value
-        const nameGroup = subjects[indexSubject].groups[indexGroup].value
+        this.props.choiceGroupHandler(indexSubject, indexGroup)
+
+        const nameSubject = this.props.mainData[indexSubject].value
+        const nameGroup = this.props.mainData[indexSubject].groups[indexGroup].value
 
         const title = nameSubject + '. Группа ' + nameGroup
+        
         this.setState({
-            title,
-            subjects
+            activeSubjectIndex: indexSubject,
+            activeGroupIndex: indexGroup,
+            title
         })
-    }
-
-    choiceSubject = index => {
-        const subjects = [...this.state.subjects]
-        subjects[index].open = !subjects[index].open
-
-        this.setState({
-            subjects
-        })
-    }
-
-    choiceStudent = index => {
-        const students = [...this.state.students]
-        students[index].open = !students[index].open 
-
-        this.setState({
-            students
-        })
-
     }
 
     renderMiniList(groups, indexSubject) {
@@ -116,7 +55,7 @@ class Main extends React.Component {
     }
     
     renderList() {
-        const list = this.state.subjects.map((item, index) => {
+        const list = this.props.mainData.map((item, index) => {
             const cls = ['big_items']
             let src = 'images/angle-right-solid.svg'
             if (item.open) {
@@ -126,13 +65,13 @@ class Main extends React.Component {
                 <Auxiliary key={index}>
                     <li 
                         className={cls.join(' ')}
-                        onClick={this.choiceSubject.bind(this, index)}
+                        onClick={() => this.choiceSubject(index)}
                     >
                         {<img src={src} alt='' />}
                         {item.value}
                     </li>
 
-                    {item.open ? 
+                    {item.open && 'groups' in item ? 
                         <ul className='small_list'>
                             {this.renderMiniList(item.groups, index)}
                         </ul> : null
@@ -152,7 +91,12 @@ class Main extends React.Component {
             if (item.end) src = 'images/check-square-regular.svg'
             return (
                 <div key={index} className='labs'>
-                    <span className='title'>{item.name}</span>
+                    <Link 
+                        className='title'
+                        to={`task/${item.id}`}
+                    >
+                        {item.name}
+                    </Link>
                     <span className='time'>
                         <span>Открыта {item.begin}</span><br />
                         {item.end ? <span>Закрыта {item.end}</span> : null}
@@ -164,22 +108,29 @@ class Main extends React.Component {
     }
 
     renderStudents() {
-        return this.state.students.map((item, index) => {
-            const cls = ['each_student']
-            if (item.open) cls.push('active_student')
-            return (
-                <Auxiliary key={index}>
-                    <div 
-                        className={cls.join(' ')} 
-                        onClick={this.choiceStudent.bind(this, index)}
-                    >
-                        <img src='images/card.svg' alt='' />
-                        <p>{item.name}</p>
-                    </div>
-                    {item.open ? this.renderLabs(item.labs) : null}
-                </Auxiliary>
-            )
-        })
+        const indexSubject = this.state.activeSubjectIndex
+        const indexGroup = this.state.activeGroupIndex
+        const group = this.props.mainData[indexSubject].groups[indexGroup]
+
+        if ('students' in group)
+            return group.students.map((item, index) => {
+                const cls = ['each_student']
+                if (item.open) cls.push('active_student')
+                return (
+                    <Auxiliary key={index}>
+                        <div 
+                            className={cls.join(' ')} 
+                            onClick={() => this.props.choiceStudentHandler(indexSubject, indexGroup, index)}
+                        >
+                            <img src='images/card.svg' alt='' />
+                            <p>{item.name}</p>
+                        </div>
+                        {item.open ? this.renderLabs(item.labs) : null}
+                    </Auxiliary>
+                )
+            })
+        else 
+            return null
     }
 
     render() {
@@ -191,7 +142,7 @@ class Main extends React.Component {
                         {this.renderList()}
                     </aside>
                     <div className='persons_group'>
-                        { this.state.title ? this.renderStudents() : null}
+                        { this.state.activeGroupIndex !== null ? this.renderStudents() : null}
                     </div>
                 </div>
             </Frame>
@@ -199,4 +150,22 @@ class Main extends React.Component {
     }
 }
 
-export default Main
+function mapStateToProps(state) {
+    return {
+        mainData: state.teacher.mainData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchMain: () => dispatch(fetchMain()),
+        choiceSubjectHandler: (indexSubject) => 
+            dispatch(choiceSubjectHandler(indexSubject)),
+        choiceGroupHandler: (indexSubject, indexGroup) => 
+            dispatch(choiceGroupHandler(indexSubject, indexGroup)),
+        choiceStudentHandler: (indexSubject, indexGroup, indexStudent) => 
+            dispatch(choiceStudentHandler(indexSubject, indexGroup, indexStudent)),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main)
