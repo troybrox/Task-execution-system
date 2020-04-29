@@ -26,7 +26,7 @@ namespace TaskExecutionSystem
 
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-        // добавление и настройка сервисов, используемых приложением
+        // Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГҐ ГЁ Г­Г Г±ГІГ°Г®Г©ГЄГ  Г±ГҐГ°ГўГЁГ±Г®Гў, ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГ¬Г»Гµ ГЇГ°ГЁГ«Г®Г¦ГҐГ­ГЁГҐГ¬
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(optionsBuilder => 
@@ -59,7 +59,7 @@ namespace TaskExecutionSystem
         }
 
 
-        // данный методом вызывается при запуске, используется для настройки конфигурации конвейера http запросов 
+        // Г¤Г Г­Г­Г»Г© Г¬ГҐГІГ®Г¤Г®Г¬ ГўГ»Г§Г»ГўГ ГҐГІГ±Гї ГЇГ°ГЁ Г§Г ГЇГіГ±ГЄГҐ, ГЁГ±ГЇГ®Г«ГјГ§ГіГҐГІГ±Гї Г¤Г«Гї Г­Г Г±ГІГ°Г®Г©ГЄГЁ ГЄГ®Г­ГґГЁГЈГіГ°Г Г¶ГЁГЁ ГЄГ®Г­ГўГҐГ©ГҐГ°Г  http Г§Г ГЇГ°Г®Г±Г®Гў 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -80,6 +80,7 @@ namespace TaskExecutionSystem
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseAuthorization();
 
             app.UseAuthorization();
 

@@ -1,0 +1,61 @@
+.profile {
+    display: flex;
+
+    .photo_side {
+        margin: 30px 0 0 30px;
+        border: 2px solid rgb(95, 95, 95);
+        height: min-content;
+
+        img {
+            height: 200px;
+        }
+    }
+
+    .info_side {
+        margin: 10px 50px 0 20px;
+        width: 100%;
+
+        h3 {
+            padding: 2px 5px;
+            border-bottom: 2px solid rgb(95, 95, 95);
+        }
+
+        .info {  
+            display: flex;
+            margin: 10px 0;
+    
+            .label_info {
+                text-align: right;
+                width: 25%;
+                min-width: 200px;
+
+                .label {
+                    display: inline-block;
+                    margin-top: 10px;
+                    color: rgb(80, 80, 80);
+                    line-height: 24px;
+                    background: rgb(225, 225, 255);
+                }
+            }
+        
+            .input_info {
+                text-align: left;
+                margin-left: 10px;
+                width: 50%;
+
+                .select {
+                    margin: 10px 0 0 10px;
+                    line-height: 24px;
+                    height: 24px;
+                    width: calc(50% + 40px);
+                    background: white;
+                    border: 1px solid rgb(66, 150, 189);
+                    border-radius: 5px;
+                    color: rgb(49, 49, 49);
+                }
+            }
+        }
+
+
+    }
+}

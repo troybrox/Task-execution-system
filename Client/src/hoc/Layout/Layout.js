@@ -7,7 +7,7 @@ import Input from '../../components/UI/Input/Input'
 
 class Layout extends React.Component {
    
-    // Рендерим поля для select(для выбора роли), данные о полях берем из массива state.roles
+    // Поля для select(для выбора роли) в регистрации
 	renderOptionRole() {
 		return this.props.roles.map((role, index) => {
 			return (
@@ -20,7 +20,7 @@ class Layout extends React.Component {
 		})
 	}
 
-    // Рендерим колону с label с помощью универсального компонента Label
+    // Рендерим колону с label
 	renderLabels() {
 		return this.props.fields.map((item, index) => {
 			return item.invisible ? null : <Label key={index} label={item.label} />
@@ -45,11 +45,7 @@ class Layout extends React.Component {
         return select
     }
 
-    // Рендерим колону с input с помощью универсального компонента Input
-    // но так как у нас есть поле select в регистрации, 
-    // то проверяем для регистрации ли этот компонент
-    // и если это так, то потом делаем проверку на type
-	// и в случае type='select' выводим select
+    // Рендерим колону с input
     renderInputs() {
         if (this.props.hTitle === 'Регистрация') {
 
@@ -78,8 +74,6 @@ class Layout extends React.Component {
         }
     }
 
-    // Рендерим компонент аутентификации
-    // так же используем Link из библиотеки реакта для роутинга
     render() {
         return (
             <Auxiliary>

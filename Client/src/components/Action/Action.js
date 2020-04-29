@@ -4,21 +4,35 @@ import { connect } from 'react-redux'
 import { changeCheckedHandler } from '../../store/actions/admin'
 
 class Action extends React.Component {
+    changeCheckedHandler = index => {
+        this.props.changeChecked(index)
+        this.props.onChangeCheck()
+    }
+
     renderUsers = () => {
-        const list = this.props.showUsers.map((item, index) => {
+        const list = this.props.users.map((item, index) => {
             return (
-                <li 
-                    key={index} 
-                    className='user_list_admin'
-                    onClick={this.props.changeChecked.bind(this, index)}
+                <li
+                    key={item.id}
                 >
-                    <img src='images/card.png' alt='' />
-                    <label htmlFor={`check-${index}`}>{item.name}</label>
                     <input 
                         type='checkbox' 
                         id={`check-${index}`}
-                        // checked={item.check} 
+                        className='check_list_input'
+                        defaultChecked={item.check} 
                     />
+                    
+                    <label 
+                        htmlFor={`check-${index}`} 
+                        className='user_list_admin check_list_label'
+                        onClick={this.changeCheckedHandler.bind(this, index)}
+                    >
+                        <img src='images/card.svg' alt='' />
+                        <p className='name'>
+                            {item.name}
+                            <span className='additional'>{item.additional}</span>
+                        </p>
+                    </label>
                 </li>
             )
         })
@@ -34,11 +48,11 @@ class Action extends React.Component {
     }
 }
 
-// function mapStateToProps(state) {
-//     return {
-//         users: state.admin.users
-//     }
-// }
+function mapStateToProps(state) {
+    return {
+        users: state.admin.users
+    }
+}
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -46,4 +60,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(null, mapDispatchToProps)(Action)
+export default connect(mapStateToProps, mapDispatchToProps)(Action)

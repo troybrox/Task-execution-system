@@ -1,5 +1,4 @@
 import React from 'react'
-import './Registration.scss'
 import Layout from '../../hoc/Layout/Layout'
 import { connect } from 'react-redux'
 import { registr } from '../../store/actions/auth'
@@ -14,7 +13,7 @@ class Registration extends React.Component {
 			{ value: '', label: 'Фамилия', type: 'text', serverName: 'Surname', valid: true },
 			{ value: '', label: 'Логин', type: 'text', serverName: 'UserName', valid: true },
 			{ value: '', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true },
-			// { value: '', label: 'Факультет', type: 'number', valid: true },
+			// { value: '', label: 'Факультет', type: 'number', serverName: 'Faculty', valid: true },
 			{ value: '', label: 'Роль', type: 'select', valid: true },
 			{ value: '', label: 'Кафедра', type: 'text', serverName: 'Department', invisible: true, valid: true },
 			{ value: '', label: 'Предмет', type: 'text', serverName: 'Discipline', invisible: true, valid: true },
@@ -25,14 +24,12 @@ class Registration extends React.Component {
 		]
 	}
 
-	// функция для отправки формы на сервер с проверкой на корректность данных
+	// Проверка на корректность данных при регистрации
 	onSubmitHandler = event => {
 		event.preventDefault()
 		
-		let success = true // изначально проверка на валидность со значением true   
+		let success = true   
 		const password = []
-			
-		// если поле заполнено, валидно и предыдущие поля такие же, значит success = true
 		this.state.fields.forEach(el => {
 			if (el.invisible) return
 			if (el.type === 'password') {
@@ -41,8 +38,6 @@ class Registration extends React.Component {
 			success = !!el.value && success
 		})
 
-		// если пароли не совпадают, то делаем их валидацию success = false
-		// и показываем это на полях
 		if (password[0] !== password[1]) {
 			success = false
 			this.checkPasswordsHandler(false)
@@ -50,15 +45,14 @@ class Registration extends React.Component {
 			this.checkPasswordsHandler(true)
 		}
 		
-		// если все поля валидны, то есть success = true
 		if (success) {
 			this.registerHandler()
 		} else {
-			// если success = false, то показываем какие поля невалидны
 			this.emptyFieldsHandler()
 		}
 	}
 
+	// Процесс регистрации
 	registerHandler = async() => {
 		let role = ''
 		const data = {}
@@ -88,7 +82,6 @@ class Registration extends React.Component {
 		control.type === 'password' ? 
 			fields[index].valid = control.value !== '' : 
 			fields[index].valid = control.value.trim() !== ''
-        
         fields[index] = control
 
         this.setState({
@@ -103,19 +96,16 @@ class Registration extends React.Component {
 		const fields = [...this.state.fields]
 		let index;
 		
-		// вычисляем индекс скрытых полей
 		fields.forEach((el, number) => {
 			if (el.hasOwnProperty('invisible')) {
 				index = number
 			} 
 		})
 
-	 	// номер элемента в state.fields, который мы будем, либо показывать, либо скрывать
 		for (let i = 0; i < 4; i++) {
 			fields[index - i].invisible = true
 		}
 		
-		// В зависимости от роли отображаем нужное, либо ничего не меняем
 		switch (event.target.value) {
 			case 'Преподаватель': 
 				for (let i = 1; i < 4; i++)	{
@@ -128,18 +118,14 @@ class Registration extends React.Component {
 			default: break;
 		}
 
-		// Меняем поле выбора Роли
 		fields.forEach((el, number) => {
 			if (el.type === 'select') {
 				index = number 
 			} 
 		})
-
 		let control = fields[index]
-
 		control.value = event.target.value
 		control.valid = control.value !== 'Выберите роль'
-		
 		fields[index] = control
 
 		this.setState({
@@ -167,10 +153,6 @@ class Registration extends React.Component {
 		this.setState({fields})
 	}
 
-	// Layout - компонент высшего порядка для аутентификации
-	// (универсальный для регистрации, авторизации и восстановления пароля)
-	// поэтому вносим необходимые данные компонента регистрации в props 
-	// и редерим компонент Layout 
 	render() {
         return (
 			<Layout
@@ -178,7 +160,7 @@ class Registration extends React.Component {
 				hTitle='Регистрация'
 				link='Уже есть аккаунт? Авторизируйтесь!'
 				to='/auth'
-				img='images/reg.png'
+				img='images/reg.svg'
 				fields={this.state.fields}
 				roles={this.state.roles}
 				onChange={this.onChangeHandler}

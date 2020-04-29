@@ -19,30 +19,25 @@ class Auth extends React.Component {
     onSubmitHandler = event => {
         event.preventDefault()
         
-        let success = true // изначально проверка на валидность со значением true
+        let success = true
 
-        // проверка полей авторизации
         this.state.fields.forEach(el => {
             success = el.valid && !!el.value && success
         })
         
-        // если все поля валидны, то есть success = true
         if (success) {  
             this.loginHandler()  
-            //window.location.pathname = '/admin'
         } else {
-            // если success = false, то показываем какие поля невалидны
             this.emptyFieldsHandler()
         }
     }
 
+    // Функция для авторизации
     loginHandler = () => {
         const data = {}
         this.state.fields.forEach(item => {
             data[item.serverName] = item.value
         })
-
-
 
         this.props.auth(data)
     }
@@ -72,12 +67,8 @@ class Auth extends React.Component {
 		})
 
 		this.setState({fields})
-	}
-
-	// Layout - компонент высшего порядка для аутентификации
-	// (универсальный для регистрации, авторизации и восстановления пароля)
-	// поэтому вносим необходимые данные компонента авторизации в props 
-	// и редерим компонент Layout 
+    }
+    
     render() {
         return (
             <Layout
@@ -85,14 +76,16 @@ class Auth extends React.Component {
 				hTitle='Авторизация'
                 link='Нужен аккаунт? Зарегистрируйтесь!'
                 to='/registration'
-                img='images/user.png'
+                img='images/user.svg'
                 fields={this.state.fields}
                 onChange={this.onChangeHandler}
                 onSubmit={this.onSubmitHandler}
 			>
                 {!!this.props.errorMessages ? <p className='errorMessages'>{this.props.errorMessages}</p> : null}
+                
                 <input type='checkbox' id='checkbox' className='any_types_inputs' />
                 <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br />
+                
                 <input className='submit any_types_inputs' type='submit' value='Вход' />
                 <NavLink to='/forget' className='forgot_pass'>
                     <span>Забыли пароль?</span>

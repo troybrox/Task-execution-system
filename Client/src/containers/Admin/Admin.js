@@ -1,8 +1,11 @@
 import React from 'react'
 import './Admin.scss'
 import Action from '../../components/Action/Action'
+import Error from '../../components/Error/Error'
+import Auxiliary from '../../hoc/Auxiliary/Auxiliary'
 import { connect } from 'react-redux'
-// import axios from 'axios'
+import { Link } from 'react-router-dom'
+import { loadingUsers, loadingLists, errorWindow, actionUsersHandler, deleteGroupHandler } from '../../store/actions/admin'
 
 class Admin extends React.Component {
     state = {
@@ -10,38 +13,197 @@ class Admin extends React.Component {
             {value: 'Преподаватели', forSelect: 'Кафедра', active: true}, 
             {value: 'Студенты', forSelect: 'Группа', active: false},
         ],
-        hTitle: 'Преподаватели',
         tabTitles: [
             {title: 'Существующие', active: true}, 
             {title: 'Заявки', active: false}
         ],
-        
-        selects: [
-            {
-                title: 'Факультет', 
-                options: ['Все', 'Информатики', 'Политологии'], 
-                show: true
-            },
-            {
-                title: 'Кафедра',  
-                options: ['Все', 'Институт ракетно-космической техники', 'Институт двигателей и энергетических установок'], 
-                show: true
-            },
-            {
-                title: 'Группа',  
-                options: ['Все', '6213-010201D', '2402-020502A'], 
-                show: false
-            }
-        ],
+        hTitle: 'Преподаватели',
 
-        showButton: false,
-        wordAction: 'Удалить',
+        showButtonAdd: false,
+        buttonRemoveGroup: false,
+        buttonActiveAction: false,
 
-        showUsers: this.props.users
+        groupId: null,
+        facultyId: null,
+        departmentId: null,
+        search: ''
     }
-    // https://localhost:44303/api/admin/student/regrequest
-    // https://localhost:44303/api/admin/student/add
-    // https://localhost:44303/api/admin/student/delete
+
+    chooseHandler = index => {
+        const showButtonAdd = false
+        const aside = [...this.state.aside]
+        const selects = [...this.props.selects]
+
+        aside.forEach(el => {
+            el.active = false
+        })
+        aside[index].active = true
+
+        const hTitle = aside[index].value
+
+        selects.forEach(el => {
+            if (el.title === aside[index].forSelect || el.title === 'Факультет') el.show = true
+            else el.show = false
+        })
+
+        this.setState({
+            aside,
+            hTitle,
+            showButtonAdd
+        }, () => {
+            this.requestUserHandler()
+            this.requestListHandler()
+        })
+    }
+
+    changeTab = index => {
+        const showButtonAdd = false
+        const tabTitles = [...this.state.tabTitles]
+        let buttonRemoveGroup = false
+        tabTitles.forEach(el => {
+            el.active = false
+        })
+        tabTitles[index].active = true
+        if (tabTitles[index].title === 'Заявки') buttonRemoveGroup = true
+
+        this.setState({
+            tabTitles,
+            buttonRemoveGroup,
+            showButtonAdd
+        }, () => {
+            this.requestUserHandler()
+            this.requestListHandler()
+        })
+    }
+
+    checkSelect = (event, title) => {
+        const index = event.target.options.selectedIndex
+        const id = event.target.options[index].getAttribute('index')
+
+        let showButtonAdd = this.state.showButtonAdd
+        if (title === 'Группа') {
+            showButtonAdd = false
+            if (id !== null) showButtonAdd = true && !this.state.buttonRemoveGroup
+        }
+
+        let facultyId = this.state.facultyId
+        let groupId = this.state.groupId
+        let departmentId = this.state.departmentId
+        switch (title) {
+            case 'Факультет':
+                facultyId = id
+                break;
+            case 'Группа':
+                groupId = id
+                break;
+            case 'Кафедра':
+                departmentId = id
+                break;
+            default:
+                break;
+        }
+
+        this.setState({
+            showButtonAdd,
+            facultyId,
+            groupId,
+            departmentId
+        }, () => {this.requestUserHandler()})
+    }
+
+    searchChange = event => {
+        const search = event.target.value
+
+        this.setState({
+            search
+        })
+    }
+
+    searchUsersHandler = () => {   
+        const search = this.state.search     
+        if (search.trim() !== '') {
+            this.requestUserHandler()
+        }
+    }
+
+    pathHandler = () => {
+        let roleForURL = 'teachers'
+        let typeForURL = 'exist'
+        
+        if (this.state.aside[1].active) {
+            roleForURL = 'students'
+        }
+        if (this.state.tabTitles[1].active) {
+            typeForURL = 'reg'
+        }
+
+        return typeForURL + '_' + roleForURL
+    }
+
+    requestUserHandler = () => {
+        const path = this.pathHandler()
+
+        const facultyId = this.state.facultyId
+        const groupId = this.state.groupId
+        const departmentId = this.state.departmentId
+        const search = this.state.search
+
+        const url = `https://localhost:44303/api/admin/${path}`
+        this.props.loadingUsers(url, facultyId, groupId, departmentId, search)
+    }
+
+    requestListHandler = () => {
+        const path = this.pathHandler()
+        const roleActive = this.state.aside[0].active
+
+        const url = `https://localhost:44303/api/admin/filters/${path}`
+        this.props.loadingLists(url, roleActive)
+    }
+
+    removeUsers = () => {
+        let success = window.confirm('Подтвердите ваше действие!');
+        if (success) {
+            const path = this.pathHandler()
+            const url = `https://localhost:44303/api/admin/delete_${path}`
+
+            this.props.actionUsersHandler(url)
+        }
+    }
+
+    addUsers = () => {
+        const success = window.confirm('Подтвердите ваше действие!')
+        if (success) {       
+            const path = this.pathHandler()
+            const url = `https://localhost:44303/api/admin/add_${path}`
+
+            this.props.actionUsersHandler(url)
+        }
+    }
+
+    removeGroup = () => {
+        const success = window.confirm('Подтвердите ваше действие!')
+        if (success) {
+            const url = 'https://localhost:44303/api/admin/delete_group'
+
+            this.props.deleteGroupHandler(url)
+        }
+    }
+
+    onChangeCheck = () => {
+        let buttonActiveAction = false
+        this.props.users.forEach((el) => {
+            if (el.check) buttonActiveAction = true
+        })
+
+        this.setState({
+            buttonActiveAction
+        })
+    }
+
+    componentDidMount() {
+        this.requestUserHandler()
+        this.requestListHandler()
+    }
 
     renderSideBar() {
         const side = this.state.aside.map((item, index) => {
@@ -65,35 +227,6 @@ class Admin extends React.Component {
         )
     }
 
-    chooseHandler = index => {
-        const showButton = false
-        const aside = [...this.state.aside]
-        const selects = [...this.state.selects]
-
-        aside.forEach(el => {
-            el.active = false
-        })
-        aside[index].active = true
-
-        const hTitle = aside[index].value
-
-        selects.forEach(el => {
-            if (el.title === aside[index].forSelect || el.title === 'Факультет') el.show = true
-            else el.show = false
-        })
-
-        this.setState({
-            aside,
-            hTitle,
-            selects,
-            showButton
-        })
-
-        // let url = 'https://localhost:44303/api/admin/teacher'
-        // if (aside[index].value === 'Студент') url = 'https://localhost:44303/api/admin/student'
-        // const response = axios.get(url)
-    }
-
     renderTab() {
         return this.state.tabTitles.map((item, index) => {
             const cls = ['tab']
@@ -110,42 +243,16 @@ class Admin extends React.Component {
         })
     }
 
-    changeTab = index => {
-        // запрос на сервер для юзеров нужных
-        // const response = axios.get('https://localhost:44303/api/admin/student/reqrequest')
-        const tabTitles = [...this.state.tabTitles]
-        let wordAction = 'Удалить'
-        tabTitles.forEach(el => {
-            el.active = false
-        })
-        tabTitles[index].active = true
-        if (tabTitles[index].title === 'Заявки') wordAction = 'Добавить'
-
-        this.setState({
-            tabTitles,
-            wordAction
-        })
-    }
-
-    checkSelect = event => {
-        let showButton = false
-        if (event.target.value !== 'Все') showButton = true
-
-        this.setState({
-            showButton
-        })
-    }
-
     renderSelect() {
-        return this.state.selects.map((item, index) => {
+        return this.props.selects.map((item, index) => {
             if (item.show)
                 return (
                     <div key={index} className='sort_item'>
                         <p>{item.title}</p>
                         <select
-                            onChange = {item.title === 'Группа' ? event => this.checkSelect(event) : null }
+                            onChange = {event => this.checkSelect(event, item.title) }
                         >
-                            { this.renderOptions(item.options) }
+                            { this.renderOptions(item.options, item.title) }
                         </select>
                     </div>
                 )
@@ -153,61 +260,76 @@ class Admin extends React.Component {
         })
     }
 
-    renderOptions(options) {
-        return options.map((item, index) => {
-            return (
-                <option key={index}>
-                    {item}
+    renderOptions(options, title) {
+        return options.map((item) => {
+            const option  = (
+                <option 
+                    key={item.id}
+                    index={item.id}
+                >
+                    {item.name}
                 </option>
             )
+            if (this.state.facultyId === null || item.id === null || title === 'Факультет') {
+                return option
+            } else {
+                if (item.facultyId === +this.state.facultyId) {
+                    return option
+                } else {
+                    return null
+                }
+            }
         })
     }
 
-    componentDidMount() {
-        // запрос на сервер для получения данных
+    renderButtons() {
+        const cls = ['rm_button', 'bottom_button']
+        const active = this.state.buttonActiveAction
+        if (!active) cls.push('disabled')
+
+        return (
+            <Auxiliary>
+                <button 
+                    className={cls.join(' ')}
+                    disabled={!active}
+                    onClick={this.removeUsers}
+                >
+                    Удалить выбранные
+                </button>
+
+                {this.state.buttonRemoveGroup ? 
+                    <button 
+                        className={cls.join(' ')}
+                        disabled={!active}
+                        onClick={this.addUsers}
+                    >
+                        Добавить выбранные
+                    </button> : null}
+            </Auxiliary>
+        )
     }
-
-    searchHandler = () => {
-        const showUsers = [...this.props.users]
-        // const find
-        // if (find.trim() !== '') {
-            // сделать map'ом
-            // showUsers.forEach(el => {
-                // if (el.name.indexOf(find) === -1)
-                // удаляем из showUsers
-            // })
-        // }
-
-        this.setState({
-            showUsers
-        })
-    }
-
-    // ДЛЯ ПОДСВЕТКИ ЭЛЕМЕНТОВ ПОИСКА(В LOCAL STATE ХРАНИТЬ СТРОКУ ПОИСКА)
-    // И ФУНКЦИЮ ИСПОЛЬЗОВАТЬ ДЛЯ ACTION(ТАК ЖЕ СДЕЛАТЬ ПРОВЕРКУ НА ПУСТУЮ СТРОКУ)
-    // highlight = text => {
-    //     return text.id + 
-    //     '. <b>' + 
-    //     text.name.replace(new RegExp(this.query, 'gi'), '<span class="highlighted">$&</span>') + 
-    //     '</b> - <em>' + 
-    //     text.city.replace(new RegExp(this.query, 'gi'), '<span class="highlighted">$&</span>') + 
-    //     '</em>';
-    // }
 
     render() {
         return (
             <div className='admin'>
+                {this.props.errorShow ? 
+                    <Error 
+                        errorMessage={this.props.errorMessage}
+                        errorWindow={() => this.props.errorWindow(false, [])}
+                        /> : 
+                    null}
 
                 <header>
-                    <h2>{ this.state.hTitle }</h2>
-                    <span>
+                    <span className='header_items admin'>
+                        <img src='images/login.svg' alt='login' />
                         <h3>Администратор</h3>
-                        <img src='images/login.png' alt='login' />
                     </span>
 
-                    {/* <span> */}
-                        {/* <h3>Выход</h3> */}
-                    {/* </span> */}
+                    <h2 className='header_items head'>{ this.state.hTitle }</h2>
+
+                    <span className='header_items'>
+                        <Link className='exit' to='/logout'>Выход</Link>
+                    </span>
                 </header>
 
                 <main>
@@ -222,22 +344,32 @@ class Admin extends React.Component {
 
                         <div className='sort'>
                             { this.renderSelect() }
-                            { this.state.showButton ? <button className='rm_button'>{this.state.wordAction} группу</button> : null}
+                            { this.state.showButtonAdd ? 
+                                <button 
+                                    className='rm_button'
+                                    onClick={this.removeGroup}
+                                >
+                                    Удалить группу
+                                </button> : null}
                         </div>
 
                         <div className='search'>
-                            <input type='search' placeholder='Поиск...' />
+                            <input 
+                                type='search' 
+                                placeholder='Поиск...' 
+                                onChange={event => this.searchChange(event)}
+                            />
                             <button 
-                                // onClick={this.searchHandler}
+                                onClick={this.searchUsersHandler}
                             >
                                 Поиск
                             </button>
                         </div>
 
-                        <Action
-                            showUsers={this.state.showUsers}
+                        <Action 
+                            onChangeCheck={this.onChangeCheck}
                         />
-                        <button className='rm_button bottom_button'>{this.state.wordAction} выбранные</button>
+                        { this.renderButtons() }
                     </div>
                 </main>
 
@@ -248,13 +380,25 @@ class Admin extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        users: state.admin.users
+        users: state.admin.users,
+        selects: state.admin.selects,
+        errorShow: state.admin.errorShow,
+        errorMessage: state.admin.errorMessage
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        
+        loadingUsers: (url, facultyId, groupId, departmentId, searchString) => 
+            dispatch(loadingUsers(url, facultyId, groupId, departmentId, searchString)),
+        loadingLists: (url, facultyId, groupId, departmentId, searchString) => 
+            dispatch(loadingLists(url, facultyId, groupId, departmentId, searchString)),
+        errorWindow: (errorShow, errorMessage) => 
+            dispatch(errorWindow(errorShow, errorMessage)),
+        actionUsersHandler: (url) => 
+            dispatch(actionUsersHandler(url)),
+        deleteGroupHandler: (url) =>
+            dispatch(deleteGroupHandler(url))
     }
 }
 

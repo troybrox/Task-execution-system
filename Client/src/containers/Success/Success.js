@@ -1,9 +1,12 @@
 import React from 'react'
 import './Success.scss'
 import { connect } from 'react-redux'
-import { success } from '../../store/actions/auth'
 
 class Success extends React.Component {
+    // backHandler = () => {
+    //     window.history.back()
+    // }
+    
     render() {
         return (
             <div className='success'>
@@ -12,12 +15,21 @@ class Success extends React.Component {
                     <p>
                         {this.props.message}
                     </p>
-                    <button
-                        className='link_return'
-                        onClick={this.props.success.bind(this, null, '', '')}
-                    >
-                        Вернуться на вход
-                    </button>
+                    <div>
+                        <button
+                            className='link_return'
+                            onClick={this.backHandler}
+                        >
+                            Назад
+                        </button>
+
+                        <button
+                            className='link_return'
+                            onClick={this.onAuthContinue}
+                        >
+                            Вход
+                        </button>
+                    </div>
                 </main>
             </div>
         )
@@ -31,10 +43,4 @@ function mapStateToProps(state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        success: (role, title, message) => dispatch(success(role, title, message))
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Success)
+export default connect(mapStateToProps)(Success)
