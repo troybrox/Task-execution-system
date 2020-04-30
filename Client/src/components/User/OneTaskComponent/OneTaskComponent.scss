@@ -1,0 +1,226 @@
+.big_title_task {
+    width: 100%;
+    border-bottom: 2px solid grey;
+    text-align: center;
+    height: 40px;
+    line-height: 40px;
+    
+    .back_task {
+        position: absolute;
+        left: 0;
+        margin-left: 10px;
+        color: #555;
+        font-weight: bold;
+    }
+
+    h2 {
+        display: inline-block;
+        margin: 0 auto;
+    }
+}
+
+.main_one_task {
+    display: flex;
+
+    .need_field {
+        color: red;
+        margin: 0 2px 0 1px;
+    }
+    
+    .task_options {
+        width: 100%;
+        overflow-y: auto;
+
+        .contain_create {
+            padding: 5px 20px;
+            border: 1px solid grey;
+            border-radius: 5px;
+            margin: 10px 30px;
+            min-width: 400px;
+
+            h4 {
+                display: inline-block;
+                margin-bottom: 10px;
+            }
+
+            select {
+                width: 40%;
+                min-width: 100px;
+                height: 30px;
+            }
+
+            .title_input {
+                padding: 0 10px;
+                margin: 10px;
+                width: 70%;
+                line-height: 25px;
+                height: 25px;
+                border-radius: 30px;
+                border: 2px solid rgb(143, 143, 143);
+            }
+
+            .description_textarea {
+                padding: 5px 10px;
+                margin-top: 10px;
+                height: 150px;
+                width: 90%;
+                font-size: 16px;
+                resize: none;
+                border-radius: 10px;
+                border: 2px solid rgb(143, 143, 143);
+            }
+
+            .label_file {
+                width: 90%;
+                border: 2px dashed grey;
+                border-radius: 5px;
+                display: block;
+                margin: 20px 0;
+                padding: 20px;
+                transition: border 300ms ease;
+                cursor: pointer;
+                text-align: center;
+
+                .title_file {
+                    color: grey;
+                    transition: 200ms color;
+                }
+
+                &:hover {
+                    border: 2px dashed rgb(66, 150, 189);
+                }
+
+                input[type=file] {
+                    outline: 0;
+                    opacity: 0;
+                    pointer-events: none;
+                    user-select: none;
+                }
+            }
+        }
+
+        button {
+            margin: 10px 30px;
+        }
+    }    
+    
+    .aside_one_task {
+        padding: 10px 5px;
+        text-align: center;
+        border: 1px solid grey;
+        margin: 10px 10px 10px auto ;
+        width: 30%;
+        min-width: 300px;
+        max-width: 500px;
+
+
+        .memebers {
+            margin: 0 20px;
+            border-bottom: 2px solid rgb(207, 207, 207);
+
+            .group_create {
+                margin: 10px 0;
+            }
+
+            .check_all {
+                width: 100%;
+                border-bottom: 2px solid rgb(207, 207, 207);
+
+                .label_all {
+                    width: max-content;
+                    margin: 10px 20px 5px  auto;
+                    font-size: 14px;
+                    color: rgb(83, 83, 83);
+                    display: flex;
+                    align-items: flex-end;
+
+                    &:after {
+                        margin: 0 5px;
+                    }
+                }
+            }
+
+            .student_checkbox {
+                display: none;
+            }
+
+            .student_label_check {
+                &:after {
+                    content: '';
+                    display: inline-block;
+                    height: 14px;
+                    width: 14px;
+                    outline: 1px solid #939598;
+                }
+            }
+
+            .student_checkbox:checked + .student_label_check:after {
+                outline: 1px solid #939598;
+                border: 2px solid #fff;
+                width: 10px;
+                height: 10px;
+                background-color: rgb(70, 121, 163);
+            }
+
+            
+
+            ul {
+                margin: 10px 0;
+                overflow-y: scroll;
+                // height: 150px;
+                max-height: 150px;
+
+                .student_li {
+                    display: flex;
+                    align-items: flex-end;
+                    margin-bottom: 5px;
+
+                    img {
+                        width: 32px;
+                        height: 32px;
+                        border: 1px solid grey;
+                    }
+
+                    .student_label {
+                        width: 100%;
+                        margin-right: 10px;
+                        display: flex;
+                        align-items: flex-end;
+
+                        -webkit-touch-callout: none;
+                        -webkit-user-select: none;
+                        -khtml-user-select: none;
+                        -moz-user-select: none;
+                        -ms-user-select: none;
+                        user-select: none;
+
+                        &:after {
+                            margin: 0 0 8px auto;
+                        }
+
+                        span {
+                            margin: 0 0 8px 5px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .date_create {
+            margin-top: 10px;
+
+            .date_p_create {
+                margin-top: 10px;
+            }
+
+            .date_input_create {
+                margin-top: 10px;
+            }
+
+            span {
+                font-size: 14px;
+                color: rgb(83, 83, 83);
+            }
+        }
+    }
+}

@@ -7,10 +7,10 @@ import { connect } from 'react-redux'
 class Frame extends React.Component {
     state = {
         headerItems: [
-            {title: 'Профиль', img: 'images/user-regular.svg', path: '/profile', show: true},
+            {title: 'Профиль', img: '/images/user-regular.svg', path: '/profile', show: true},
             {title: 'Главная', path: '/', show: true},
-            {title: 'Задачи', img: 'images/file-alt-regular.svg', path: '/tasks', show: true},
-            {title: 'Репозиторий', img: 'images/book-solid.svg', path: '/repository', show: true},
+            {title: 'Задачи', img: '/images/file-alt-regular.svg', path: '/tasks', show: true},
+            {title: 'Репозиторий', img: '/images/book-solid.svg', path: '/repository', show: true},
         ]
     }
 

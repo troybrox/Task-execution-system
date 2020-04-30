@@ -1,32 +1,39 @@
 import axios from 'axios'
-import { AUTH_SUCCESS, LOGOUT, SUCCESS, ERROR_MESSAGE_AUTH } from './actionTypes'
+import { 
+    AUTH_SUCCESS, 
+    LOGOUT, 
+    SUCCESS, 
+    // ERROR_MESSAGE_AUTH, 
+    PUSH_FILTERS, 
+    ERROR_WINDOW,
+    LOADING_START } from './actionTypes'
+import { commonURL } from './actionURL'
 
 export function registr(url, data) {
     return async dispatch => {
-        const role = 'success'
+        dispatch(loadingStart())
         try {
             const response = await axios.post(url, data)
             const respData = response.data
-            let title = 'Успешно'
-            let message = 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.'
             
             if (respData.succeeded) {
-                dispatch(success(role, title, message))
+                dispatch(success(true))
             } else {
-                title = 'Ошибка'
-                message = respData.errorMessages.join('. /n')
-                dispatch(success(role, title, message))
+                // dispatch(errorMessageAuth('Неверные данные!'))
             }
         } catch (e) {
-            dispatch(success(role, 'Ошибка', e.message))
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
         }
     }
 }
 
 export function auth(data) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
-            const url = 'https://localhost:44303/api/account/login'
+            const url = `${commonURL}/api/account/login`
             const response = await axios.post(url, data)
             const respData = response.data
             localStorage.setItem('token', respData.data.idToken)
@@ -35,19 +42,64 @@ export function auth(data) {
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.data.idToken, respData.data.role))
             } else {
-                dispatch(errorMessageAuth('Неверные данные!'))
+                // dispatch(errorMessageAuth('Неверные данные!'))
             }
         } catch (e) {
-            const role = 'success'
-            dispatch(success(role, 'Ошибка', e.message))
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
         }
     }
 }
 
-export function success(role, title, message) {
+export function loadingFilters() {
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/account/filters`
+            const response = await axios.get(url)
+            const data = response.data
+
+            if (data.succeeded) {
+                const faculties = [{id: null, name: 'Выберите факультет'}]
+	            const groups = [{id: null, name: 'Выберите группу'}]
+	            const departments = [{id: null, name: 'Выберите кафедру'}]
+    
+                data.data.forEach(el => {
+                    faculties.push({id: el.id, name: el.name})
+                    el.groups.forEach(item => {
+                        groups.push({id: item.id, name: item.name, facultyId: item.facultyId})
+                    })
+                    el.departments.forEach(item => {
+                        departments.push({id: item.id, name: item.name, facultyId: item.facultyId})
+                    })
+                })
+    
+                dispatch(pushFilters(faculties, groups, departments))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера')
+                dispatch(errorWindow(true, err))
+            }
+
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function pushFilters(faculties, groups, departments) {
+    return {
+        type: PUSH_FILTERS,
+        faculties, groups, departments
+    }
+}
+
+export function success(successPage) {
     return {
         type: SUCCESS,
-        role, title, message
+        successPage
     }
 }
 
@@ -66,9 +118,23 @@ export function logout() {
     }
 }
 
-export function errorMessageAuth(errorMessages) {
+export function errorWindow(catchError, catchErrorMessage) {
     return {
-        type: ERROR_MESSAGE_AUTH,
-        errorMessages
+        type: ERROR_WINDOW,
+        catchError, catchErrorMessage
     }
 }
+
+export function loadingStart() {
+    return {
+        type: LOADING_START
+    }
+}
+
+
+// export function errorMessageAuth(errorMessages) {
+//     return {
+//         type: ERROR_MESSAGE_AUTH,
+//         errorMessages
+//     }
+// }

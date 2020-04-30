@@ -1,0 +1,44 @@
+import React from 'react'
+import './Button.scss'
+
+const Button = props => {
+    const cls = ['button']
+    let disable = false
+
+    switch (props.typeButton) {
+        case 'auth':
+            cls.push('auth_button')
+            break;
+        case 'blue':
+            cls.push('active_blue_button')
+            break;
+        case 'blue_big':
+            cls.push('active_blue_button', 'big_button')
+            break;
+        case 'grey':
+            cls.push('active_grey_button')
+            break;
+        case 'disactive':
+            cls.push('disactive_button')
+            disable = true
+            break;
+        case 'disactive_big':
+            cls.push('disactive_button', 'big_button')
+            disable = true
+            break;
+        default:
+            break;
+    }
+    
+    return (
+        <button
+            className={cls.join(' ')}
+            disabled={disable}
+            onClick={props.onClickButton}
+        >
+            {props.value}
+        </button>
+    )
+}
+
+export default Button

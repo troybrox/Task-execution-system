@@ -1,7 +1,9 @@
 import React from 'react'
 import Layout from '../../hoc/Layout/Layout'
+import Success from '../../containers/Success/Success'
 import { connect } from 'react-redux'
 import { success } from '../../store/actions/auth'
+import Button from '../../components/UI/Button/Button'
 
 class Forget extends React.Component {
     state = {
@@ -21,10 +23,7 @@ class Forget extends React.Component {
         })
         
         if (success) {
-            const role = 'success'
-            const title = 'Успешно'
-            const message = 'Действие прошло успешно! Дождитесь, пока администратор проверит информацию. Как только это произойдет, Вам на почту придет сообщение с подтверждением или отказом. Спасибо.'
-            this.props.success(role, title, message)
+            this.props.success(success)
         } else {
             this.emptyFieldsHandler()
         }
@@ -57,26 +56,38 @@ class Forget extends React.Component {
     
     render() {
         return (
-            <Layout
-				head='Вход'
-				hTitle='Восстановление пароля'
-                link='Вернуться'
-                to='/auth'
-                img='images/reg.png'
-                fields={this.state.fields}
-                onChange={this.onChangeHandler}
-                onSubmit={this.onSubmitHandler}
-			>
-                <input className='submit any_types_inputs' type='submit' value='Восстановление' />
-			</Layout>
+            this.props.successPage ? 
+                <Success /> :
+                <Layout
+			    	head='Вход'
+			    	hTitle='Восстановление пароля'
+                    link='Вернуться'
+                    to='/auth'
+                    img='images/reg.svg'
+                    fields={this.state.fields}
+                    onChange={this.onChangeHandler}
+                    onSubmit={this.onSubmitHandler}
+			    >
+                    <Button 
+                        typeButton='auth'
+                        onClickButton={event => this.onSubmitHandler(event)}
+                        value='Восстановление'
+                    />
+			    </Layout>
         )
+    }
+}
+
+function mapStateToProps(state) {
+    return {
+        successPage: state.auth.successPage
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        success: (role, title, message) => dispatch(success(role, title, message))
+        success: (successPage) => dispatch(success(successPage))
     }
 }
 
-export default connect(null, mapDispatchToProps)(Forget)
+export default connect(mapStateToProps, mapDispatchToProps)(Forget)

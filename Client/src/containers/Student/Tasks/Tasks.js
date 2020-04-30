@@ -13,13 +13,14 @@ class Tasks extends React.Component {
             {name: 'Лабораторная работа №3',  countComments: 10, lastOpen: ['3 дня', 'Студент3 Студент4']},
         ]
     }
+
     choiceSubjectHandler = index => {
         const subjects = [...this.state.subjects]
         subjects.forEach(el => {
             el.open = false
         })
 
-        subjects[index].open = !subjects[index].open
+        subjects[index].open = true
 
         this.setState({
             subjects
@@ -31,7 +32,7 @@ class Tasks extends React.Component {
             <TasksComponent 
                 subjects={this.state.subjects}
                 labs={this.state.labs}
-                choiceSubjectHandler={this.choiceSubjectHandler}
+                choiceSubject={this.choiceSubjectHandler}
             />
         )
     }

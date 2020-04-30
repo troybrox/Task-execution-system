@@ -24,7 +24,7 @@
 .form_box {
 	width: 50vw;
 	min-width: 420px;
-    margin: 100px auto;
+    margin: 70px auto;
     border: 1px solid grey;
     background: rgb(230, 255, 255);
 	padding-bottom: 10px;
@@ -55,12 +55,6 @@
 			width: 60vw;
 		}
 
-		.any_types_inputs {
-			margin: 10px 0 0 10px;
-			line-height: 20px;
-			height: 20px;
-		}
-
 		.select {
 			margin: 10px 0 0 10px;
 			line-height: 25px;
@@ -69,24 +63,18 @@
 			background: white;
 		}
 
-		#checkbox {
-			position: absolute;
-		}
+		.center_loader {
+			text-align: left;
+			margin-left: 50px;
+			
+			.lds-ellipsis {
+				height: 0;
 
-		.check_label {
-			margin: 7px 0 0 30px;
+				div {
+					top: -8px;
+				}
+			}
 		}
-
-		.submit {
-			background: rgb(0, 247, 255);
-			border: 1px solid rgb(0, 183, 255);
-			border-radius: 2px;
-			font-size: 10px;
-			font-weight: bold;
-			padding: 0 20px 0 10px;
-			cursor: pointer;
-		}
-
 	}
 
 	a {

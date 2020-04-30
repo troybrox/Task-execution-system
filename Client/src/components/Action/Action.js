@@ -1,5 +1,6 @@
 import React from 'react'
 import './Action.scss'
+import Loader from '../UI/Loader/Loader'
 import { connect } from 'react-redux'
 import { changeCheckedHandler } from '../../store/actions/admin'
 
@@ -42,7 +43,7 @@ class Action extends React.Component {
     render() {
         return (
             <div className='action'>
-                { this.renderUsers() }
+                { this.props.loading ? <Loader /> : this.renderUsers() }
             </div>
         )
     }
@@ -50,7 +51,8 @@ class Action extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        users: state.admin.users
+        users: state.admin.users,
+        loading: state.admin.loading
     }
 }
 

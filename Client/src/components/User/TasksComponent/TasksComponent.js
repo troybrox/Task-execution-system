@@ -2,14 +2,23 @@ import React from 'react'
 import './TasksComponent.scss'
 import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
+import Button from '../../UI/Button/Button'
+import { Link } from 'react-router-dom'
+import Select from '../../UI/Select/Select'
 
-class TisksComponent extends React.Component {
+class TasksComponent extends React.Component {
     state = {
-        title: ''
+        title: '',
+        tabTitles: [
+            {title: 'Существующие', active: true}, 
+            {title: 'Заявки', active: false}
+        ],
     }
 
+    
+
     choiceSubject = (value, index) => {
-        this.props.choiceSubjectHandler(index)
+        this.props.choiceSubject(index)
 
         const title = value
         this.setState({title})
@@ -26,7 +35,7 @@ class TisksComponent extends React.Component {
                 <Auxiliary key={index}>
                     <li 
                         className={cls.join(' ')}
-                        onClick={this.choiceSubject.bind(this, item.value, index)}
+                        onClick={() => this.choiceSubject(item.value, index)}
                     >
                         {<img src={src} alt='' />}
                         {item.value}
@@ -44,20 +53,53 @@ class TisksComponent extends React.Component {
         const subject = this.state.title.split(' ')
         return this.props.labs.map((item, index) => {
             return (
-                <div 
+                    <Link
+                        to={`/tasks/${index}`}
+                        key={index}
+                        className='each_labs' 
+                    >
+                        <div className='labs_left'>
+                            <span className='subject_for_lab'>{subject[0]}</span>
+                            <span>{item.name}</span><br />
+                            <span className='small_text'>Открыта {item.lastOpen[0]} назад {item.lastOpen[1]}</span>
+                        </div>
+                        <div className='labs_right'>
+                            <img src='images/comment-regular.svg' alt='' />
+                            <span>{item.countComments}</span>
+                        </div>
+                    </Link>
+            )
+        })
+    }
+
+    changeTab = index => {
+        const tabTitles = [...this.state.tabTitles]
+        tabTitles.forEach(el => {
+            el.active = false
+        })
+        tabTitles[index].active = true
+
+        this.setState({
+            tabTitles,
+        }, () => {
+            // this.requestUserHandler()
+            // this.requestListHandler()
+            console.log('swap')
+        })
+    }
+
+    renderTab() {
+        return this.state.tabTitles.map((item, index) => {
+            const cls = ['tab']
+            if (item.active) cls.push('active_tab')
+            return (
+                <h4
                     key={index}
-                    className='each_labs' 
+                    className={cls.join(' ')}
+                    onClick={this.changeTab.bind(this, index)}
                 >
-                    <div className='labs_left'>
-                        <span className='subject_for_lab'>{subject[0]}</span>
-                        <span>{item.name}</span><br />
-                        <span className='small_text'>Открыта {item.lastOpen[0]} назад {item.lastOpen[1]}</span>
-                    </div>
-                    <div className='labs_right'>
-                        <img src='images/comment-regular.svg' alt='' />
-                        <span>{item.countComments}</span>
-                    </div>
-                </div>
+                    {item.title}
+                </h4>
             )
         })
     }
@@ -65,23 +107,39 @@ class TisksComponent extends React.Component {
     render() {
         const main = (
             <div className='labs_group'>
+                <div className='nav'>
+                    { this.renderTab() }
+                </div> 
+                
                 <div className='search'>
                     <input type='search' placeholder='Поиск...' />
-                    <button 
-                        // onClick={this.searchHandler}
-                    >
-                        Поиск
-                    </button>
+                    <Button 
+                        // onClickButton={this.searchHandler}
+                        typeButton='grey'
+                        value='Поиск'
+                    />
                 </div>
 
                 <div className='some_functions'>
                     <div className='sort'>
                         <span className='small_text'>Сортировать по</span>
-                        <select>
+                        <Select
+                            onChangeSelect={console.log('ok')}
+                        >
                             <option>Лабораторная работа</option>
                             <option>Контрольная работа</option>
                             <option>Домашняя работа</option>
-                        </select>
+                        </Select>
+                    </div>
+                    <div className='new_task'>
+                        <Link
+                            to={'/create_task'}
+                        >
+                            <Button 
+                                typeButton='blue'
+                                value='Новая задача'
+                            />
+                        </Link>
                     </div>
                 </div>
             
@@ -95,7 +153,7 @@ class TisksComponent extends React.Component {
                 <div className='main_subject'>
                     <aside className='aside_subject'>
                         {this.renderList()}
-                    </aside>                        
+                    </aside>                       
                     { this.state.title ? main : null}
                 </div>
             </Frame>
@@ -103,4 +161,4 @@ class TisksComponent extends React.Component {
     }
 }
 
-export default TisksComponent
+export default TasksComponent

@@ -1,5 +1,6 @@
 import React from 'react'
 import './Error.scss'
+import Button from '../UI/Button/Button'
 
 class Error extends React.Component {
     renderMessage() {
@@ -16,7 +17,11 @@ class Error extends React.Component {
                     <div>
                         {this.renderMessage()}
                     </div>
-                    <button onClick={this.props.errorWindow}>Закрыть</button>
+                    <Button 
+                        typeButton='grey'
+                        onClickButton={this.props.errorWindow}
+                        value='Закрыть'
+                    />
                 </div>
             </div>
         )
