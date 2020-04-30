@@ -573,7 +573,7 @@ namespace TaskExecutionSystem.BLL.Services
             var resultList = new List<StudentDTO>();
             try
             {
-                var students = from s in _context.Students.Include(s => s.Group).ThenInclude(g => g.Faculty) select s;
+                var students = from s in _context.Students.Include(s => s.User).Include(s => s.Group).ThenInclude(g => g.Faculty) select s;
 
                 students = students.OrderBy(s => s.Surname);
 
@@ -636,7 +636,7 @@ namespace TaskExecutionSystem.BLL.Services
             var resultList = new List<TeacherDTO>();
             try
             {
-                var teachers = from t in _context.Teachers.Include(tr => tr.Department).ThenInclude(d => d.Faculty) select t;
+                var teachers = from t in _context.Teachers.Include(tr => tr.User).Include(tr => tr.Department).ThenInclude(d => d.Faculty) select t;
 
                 teachers = teachers.OrderBy(t => t.Surname);
 
