@@ -42,7 +42,7 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
                         additional = `${el.faculty}. Кафедра ${el.departmentName}`
                     else 
                         additional = `${el.faculty}. Группа ${el.groupNumber}`
-                    finalUsers.push({id: el.id, name: name, additional: additional, check: false})
+                    finalUsers.push({id: el.id, name, additional, check: false})
                 })
 
                 dispatch(pushUsers(users))

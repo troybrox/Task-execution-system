@@ -13,6 +13,7 @@ export function registr(url, data) {
     return async dispatch => {
         dispatch(loadingStart())
         try {
+            console.log(data)
             const response = await axios.post(url, data)
             const respData = response.data
             
