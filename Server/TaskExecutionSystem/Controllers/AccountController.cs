@@ -81,34 +81,12 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         [Route("signout")]
-        public async Task<IActionResult> SignOutAsync([FromBody]UserLoginDTO dto)
+        public async Task<IActionResult> SignOutAsync()
         {
             var res = await _accountService.SignOutAsync();
             return Ok(res);
         }
     }
 }
-
-
-// todo: edit method
-//[HttpPost]
-//[Route("register_/teacherUser")] // url edited
-//public async Task<IActionResult> RegisterTeacherAsync([FromBody]TeacherRegisterDTO dto)
-//{
-//    var test = JsonConvert.SerializeObject(dto);
-//    var detail = new OperationDetailDTO();
-
-//    if (dto != null)
-//    {
-//        var res = await _accountService.CreateTeacherAsync(dto);
-//        detail = res;
-//    }
-//    else
-//        detail.ErrorMessages = new List<string> { "Ошибка! Значение параметра было нулевым." };
-
-//    return Ok(detail);
-//}
-
-// todo: edit method
