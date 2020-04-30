@@ -21,7 +21,7 @@ namespace TaskExecutionSystem.Controllers
 
         [HttpPost]
         [Route("register/teacher")]
-        public async Task<IActionResult> AddTeacherRegRequestAsync(TeacherRegisterDTO dto)
+        public async Task<IActionResult> AddTeacherRegRequestAsync([FromBody]TeacherRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
             var detail = new OperationDetailDTO();
@@ -34,7 +34,7 @@ namespace TaskExecutionSystem.Controllers
 
         [HttpPost]
         [Route("register/student")]
-        public async Task<IActionResult> AddStudentRegRequestAsync(StudentRegisterDTO dto)
+        public async Task<IActionResult> AddStudentRegRequestAsync([FromBody]StudentRegisterDTO dto)
         {
             var test = JsonConvert.SerializeObject(dto);
             var detail = new OperationDetailDTO();
