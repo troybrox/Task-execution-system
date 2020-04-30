@@ -19,7 +19,9 @@ export function registr(url, data) {
             if (respData.succeeded) {
                 dispatch(success(true))
             } else {
-                // dispatch(errorMessageAuth('Неверные данные!'))
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера')
+                dispatch(errorWindow(true, err))
             }
         } catch (e) {
             const err = ['Ошибка подключения']
@@ -42,7 +44,9 @@ export function auth(data) {
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.data.idToken, respData.data.role))
             } else {
-                // dispatch(errorMessageAuth('Неверные данные!'))
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера')
+                dispatch(errorWindow(true, err))
             }
         } catch (e) {
             const err = ['Ошибка подключения']
@@ -111,6 +115,7 @@ export function authSuccess(token, role) {
 }
 
 export function logout() {
+    axios.get(`${commonURL}/api/account/signout`)
     localStorage.removeItem('token')
     localStorage.removeItem('role')
     return {
