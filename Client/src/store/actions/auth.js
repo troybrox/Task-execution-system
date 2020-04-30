@@ -19,7 +19,7 @@ export function registr(url, data) {
             if (respData.succeeded) {
                 dispatch(success(true))
             } else {
-                const err = [...data.errorMessages]
+                const err = [...respData.errorMessages]
                 err.unshift('Сообщение с сервера')
                 dispatch(errorWindow(true, err))
             }
@@ -93,6 +93,21 @@ export function loadingFilters() {
     }
 }
 
+export function logoutHandler() {
+    return async dispatch => {
+        try {
+            await axios.get(`${commonURL}/api/account/signout`)
+            localStorage.removeItem('token')
+            localStorage.removeItem('role')
+            dispatch(logout())
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
 export function pushFilters(faculties, groups, departments) {
     return {
         type: PUSH_FILTERS,
@@ -114,10 +129,7 @@ export function authSuccess(token, role) {
     }
 }
 
-export async function logout() {
-    await axios.get(`${commonURL}/api/account/signout`)
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
+export function logout() {
     return {
         type: LOGOUT
     }

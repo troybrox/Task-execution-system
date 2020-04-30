@@ -14,6 +14,8 @@ export const CHANGE_CONDITION = 'CHANGE_CONDITION'
 export const SUCCESS_MAIN = 'SUCCESS_MAIN'
 export const SUCCESS_TASK_ADDITION = 'SUCCESS_TASK_ADDITION'
 
+// Для student
+
 // Универсально
 export const ERROR_WINDOW = 'ERROR_WINDOW'
 export const LOADING_START = 'LOADING_START'

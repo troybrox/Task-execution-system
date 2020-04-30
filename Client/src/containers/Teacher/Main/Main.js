@@ -16,10 +16,6 @@ class Main extends React.Component {
 
     choiceSubject = indexSubject => {
         this.props.choiceSubjectHandler(indexSubject)
-
-        this.setState({
-            activeSubjectIndex: indexSubject,
-        })
     }
 
     choiceGroup = (indexSubject, indexGroup) => {

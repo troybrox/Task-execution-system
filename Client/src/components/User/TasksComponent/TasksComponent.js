@@ -8,11 +8,7 @@ import Select from '../../UI/Select/Select'
 
 class TasksComponent extends React.Component {
     state = {
-        title: '',
-        tabTitles: [
-            {title: 'Существующие', active: true}, 
-            {title: 'Заявки', active: false}
-        ],
+        title: ''
     }
 
     
@@ -71,46 +67,10 @@ class TasksComponent extends React.Component {
             )
         })
     }
-
-    changeTab = index => {
-        const tabTitles = [...this.state.tabTitles]
-        tabTitles.forEach(el => {
-            el.active = false
-        })
-        tabTitles[index].active = true
-
-        this.setState({
-            tabTitles,
-        }, () => {
-            // this.requestUserHandler()
-            // this.requestListHandler()
-            console.log('swap')
-        })
-    }
-
-    renderTab() {
-        return this.state.tabTitles.map((item, index) => {
-            const cls = ['tab']
-            if (item.active) cls.push('active_tab')
-            return (
-                <h4
-                    key={index}
-                    className={cls.join(' ')}
-                    onClick={this.changeTab.bind(this, index)}
-                >
-                    {item.title}
-                </h4>
-            )
-        })
-    }
     
     render() {
         const main = (
-            <div className='labs_group'>
-                <div className='nav'>
-                    { this.renderTab() }
-                </div> 
-                
+            <div className='labs_group'>               
                 <div className='search'>
                     <input type='search' placeholder='Поиск...' />
                     <Button 

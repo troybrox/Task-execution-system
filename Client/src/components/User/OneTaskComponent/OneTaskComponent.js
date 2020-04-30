@@ -358,7 +358,7 @@ class OneTaskComponent extends React.Component {
                                 <span className='need_field'>*</span>
                             </h4>
                             { this.renderDate() }
-                            <span>Назначить всю группу</span>
+                            <p className='small_text_date'>Обратите внимание, что дата сдачи должна быть не ранее даты начала</p>
                         </div>
                     </aside>
                 </div>
