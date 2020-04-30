@@ -2,12 +2,31 @@ import axios from 'axios'
 import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN } from './actionTypes'
 import { commonURL } from './actionURL'
 
-export function fetchProfile() {}
+export function fetchProfile() {
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/teacher/profile`
+            const response = await axios.get(url)
+            const data = response.data
+            if (data.succeeded) {
+                // прием данных
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
 
 export function fetchMain() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/some` // ADDRESS MAIN
+            const url = `${commonURL}/api/teacher/main`
             const response = await axios.get(url)
             const data = response.data
 
@@ -83,8 +102,8 @@ export function fetchTasks() {}
 export function fetchTaskById(id) {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/some` // ADDRESS TASK_ADDITION
-            const response = await axios.post(url, id)
+            const url = `${commonURL}/api/teacher/task/${id}`
+            const response = await axios.get(url)
             const data = response.data
 
             if (data.succeeded) {
