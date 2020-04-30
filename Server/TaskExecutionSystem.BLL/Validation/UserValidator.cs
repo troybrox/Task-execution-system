@@ -24,21 +24,33 @@ namespace TaskExecutionSystem.BLL.Validation
                 res = false;
             }
 
-            if (String.IsNullOrEmpty(dto.Patronymic) || dto.Password.Length >= 50)
+            if (String.IsNullOrEmpty(dto.Patronymic) || dto.Patronymic.Length >= 50)
             {
                 messages.Add("Укажите корректно отчество. Только буквы, максимальная длина - 50.");
                 res = false;
             }
 
-            if (String.IsNullOrEmpty(dto.Position) || dto.Name.Length >= 50)
+            if (String.IsNullOrEmpty(dto.Position) || dto.Position.Length >= 50)
             {
                 messages.Add("Укажите корректно должность. Только буквы, максимальная длина - 50.");
                 res = false;
             }
 
-            if (String.IsNullOrEmpty(dto.UserName))
+            if (String.IsNullOrEmpty(dto.UserName) || dto.UserName.Length >= 50)
             {
-                messages.Add("Укажите корректно имя пользователя");
+                messages.Add("Укажите корректно имя пользователя. Максимальная длина - 50.");
+                res = false;
+            }
+
+            if (dto.Password.Length <= 6)
+            {
+                messages.Add("Укажите корректно пароль. Минимальная длина - 6.");
+                res = false;
+            }
+
+            if (!EmailValidator.IsCorrect(dto.Email))
+            {
+                messages.Add("Укажите корректно электронную почту.");
                 res = false;
             }
 
@@ -62,15 +74,27 @@ namespace TaskExecutionSystem.BLL.Validation
                 res = false;
             }
 
-            if (String.IsNullOrEmpty(dto.Patronymic) || dto.Password.Length >= 50)
+            if (String.IsNullOrEmpty(dto.Patronymic) || dto.Patronymic.Length >= 50)
             {
                 messages.Add("Укажите корректно отчество. Только буквы, максимальная длина - 50.");
                 res = false;
             }
 
-            if (String.IsNullOrEmpty(dto.UserName))
+            if (String.IsNullOrEmpty(dto.UserName) || dto.UserName.Length >= 50)
             {
-                messages.Add("Укажите корректно имя пользователя");
+                messages.Add("Укажите корректно имя пользователя. Максимальная длина - 50.");
+                res = false;
+            }
+
+            if (dto.Password.Length <= 6)
+            {
+                messages.Add("Укажите корректно пароль. Минимальная длина - 6.");
+                res = false;
+            }
+
+            if (!EmailValidator.IsCorrect(dto.Email))
+            {
+                messages.Add("Укажите корректно электронную почту.");
                 res = false;
             }
 

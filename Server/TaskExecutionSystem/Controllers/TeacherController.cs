@@ -60,31 +60,8 @@ namespace TaskExecutionSystem.Controllers
             {
                 return Ok(e.Message);
             }
-
-            //var uploadedFile = file.uploadedFile;
-            //try 
-            //{
-            //    string message = "";
-            //    if (uploadedFile != null)
-            //    {
-            //        string path = "/TaskFiles/" + uploadedFile.FileName;
-            //        using (var fileStream = new FileStream(_environment.WebRootPath + path, FileMode.Create))
-            //        {
-            //            await uploadedFile.CopyToAsync(fileStream);
-            //        }
-            //        message = "Файл загружен";
-            //    }
-            //    else
-            //    {
-            //        message = "Параметр был null";
-            //    }
-            //    return Ok(message);
-            //}
-            //catch(Exception e)
-            //{
-            //    return Ok(e.Message);
-            //}
         }
+
 
         [HttpPost("add_task")]
         public async Task<IActionResult> AddTaskAsync(TaskCreateModelDTO dto)
@@ -123,3 +100,29 @@ namespace TaskExecutionSystem.Controllers
         }
     }
 }
+
+
+
+//var uploadedFile = file.uploadedFile;
+//try 
+//{
+//    string message = "";
+//    if (uploadedFile != null)
+//    {
+//        string path = "/TaskFiles/" + uploadedFile.FileName;
+//        using (var fileStream = new FileStream(_environment.WebRootPath + path, FileMode.Create))
+//        {
+//            await uploadedFile.CopyToAsync(fileStream);
+//        }
+//        message = "Файл загружен";
+//    }
+//    else
+//    {
+//        message = "Параметр был null";
+//    }
+//    return Ok(message);
+//}
+//catch(Exception e)
+//{
+//    return Ok(e.Message);
+//}

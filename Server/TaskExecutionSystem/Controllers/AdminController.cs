@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.Interfaces;
@@ -31,9 +32,10 @@ namespace TaskExecutionSystem.Controllers
 
 
     // TODO: test accept methods
-
     //[Authorize("AdministratorPolicy")]
+
     [Route("api/[controller]")]
+    [Authorize(AdministratorPolicy)]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;

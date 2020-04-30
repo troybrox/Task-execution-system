@@ -90,9 +90,8 @@ namespace TaskExecutionSystem.BLL.Services
             }
             catch (Exception e)
             {
-                return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _serverErrorMessage } };
+                return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _serverErrorMessage + e.Message} };
             }
-            
         }
 
 
