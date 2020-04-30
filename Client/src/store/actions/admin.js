@@ -38,14 +38,14 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
                 users.forEach(el => {
                     const name = `${el.surname} ${el.name} ${el.patronymic}`
                     let additional
-                    if (el.position === 'Преподаватель')
+                    if ('departmentName' in el)
                         additional = `${el.faculty}. Кафедра ${el.departmentName}`
                     else 
                         additional = `${el.faculty}. Группа ${el.groupNumber}`
                     finalUsers.push({id: el.id, name: name, additional: additional, check: false})
                 })
 
-                dispatch(pushUsers(users))
+                dispatch(pushUsers(finalUsers))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

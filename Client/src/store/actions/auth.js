@@ -44,7 +44,7 @@ export function auth(data) {
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.data.idToken, respData.data.role))
             } else {
-                const err = [...data.errorMessages]
+                const err = [...respData.errorMessages]
                 err.unshift('Сообщение с сервера')
                 dispatch(errorWindow(true, err))
             }
