@@ -114,8 +114,8 @@ export function authSuccess(token, role) {
     }
 }
 
-export function logout() {
-    axios.get(`${commonURL}/api/account/signout`)
+export async function logout() {
+    await axios.get(`${commonURL}/api/account/signout`)
     localStorage.removeItem('token')
     localStorage.removeItem('role')
     return {
