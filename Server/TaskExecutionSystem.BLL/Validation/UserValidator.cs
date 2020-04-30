@@ -42,7 +42,7 @@ namespace TaskExecutionSystem.BLL.Validation
                 res = false;
             }
 
-            if (dto.Password.Length <= 6)
+            if (dto.Password.Length < 6)
             {
                 messages.Add("Укажите корректно пароль. Минимальная длина - 6.");
                 res = false;
@@ -86,7 +86,7 @@ namespace TaskExecutionSystem.BLL.Validation
                 res = false;
             }
 
-            if (dto.Password.Length <= 6)
+            if (dto.Password.Length < 6)
             {
                 messages.Add("Укажите корректно пароль. Минимальная длина - 6.");
                 res = false;
