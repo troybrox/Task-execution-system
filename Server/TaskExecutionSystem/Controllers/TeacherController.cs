@@ -12,6 +12,31 @@ using TaskExecutionSystem.BLL.Interfaces;
 
 namespace TaskExecutionSystem.Controllers
 {
+    // todo: скинуть Олегу объекты
+
+    // api/teacher/profile
+
+    // api/teacher/profile/update [POST]
+
+    // api/teacher/profile/updatepassword
+
+    // api/teacher/main
+
+
+    // api/teacher/task/add/filters [список групп - у каждой студенты; список типов заданий]
+
+    // api/teacher/task/add [POST (filters)]
+
+    // api/teacher/task/filters [список предметов - у каждого группы; список типов заданий]
+
+    // api/teacher/task [POST  (filters)]
+
+    // api/teacher/task/{id}
+
+    // api/teacher/task/{id}/close
+
+
+
     [Route("api/teacher")]
     [ApiController]
     public class TeacherController : ControllerBase

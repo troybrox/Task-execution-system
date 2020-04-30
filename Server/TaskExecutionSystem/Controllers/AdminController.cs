@@ -35,7 +35,7 @@ namespace TaskExecutionSystem.Controllers
     //[Authorize("AdministratorPolicy")]
 
     [Route("api/[controller]")]
-    [Authorize(AdministratorPolicy)]
+    //[Authorize(AdministratorPolicy)]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
