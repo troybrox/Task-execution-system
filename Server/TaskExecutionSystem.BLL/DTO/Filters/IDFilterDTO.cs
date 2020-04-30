@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TaskExecutionSystem.DAL.Entities.Registration
+namespace TaskExecutionSystem.BLL.DTO.Filters
 {
-    class TeacherRegister
+    class IDFilterDTO
     {
     }
 }

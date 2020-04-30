@@ -28,6 +28,9 @@
   <ItemGroup>
     <Folder Include="Identity.JWT\Middleware\" />
     <Folder Include="Identity.JWT\Interfaces\" />
+    <Folder Include="wwwroot\Files\TaskFiles\" />
+    <Folder Include="wwwroot\Files\SolutionFiles\" />
+    <Folder Include="wwwroot\Files\RepoFiles\" />
   </ItemGroup>
 
 </Project>

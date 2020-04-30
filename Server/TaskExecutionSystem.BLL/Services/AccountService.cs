@@ -7,21 +7,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.Interfaces;
+using static TaskExecutionSystem.BLL.Infrastructure.Contracts.ErrorMessageContract;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities;
 using TaskExecutionSystem.DAL.Entities.Identity;
+using TaskExecutionSystem.DAL.Entities.Registration;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    public class AccountService : IAccountService
+    public class AccountService
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly DataContext _context;
-
-        private const string _serverErrorMessage = "Ошибка, произошло исключение на сервере. Подробнее: ";
-        private const string _signInErrorMessage = "Ошибка при авторизации. Неверное имя пользователя/электронная почта или пароль. Проверьте правильность ввода и повторите попытку.";
 
         public AccountService(UserManager<User> userManager, SignInManager<User> signInManager,
             IHttpContextAccessor httpContextAccessor, DataContext context)
@@ -33,7 +32,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         // авторизация пользователя в системе 
-        public async Task<OperationDetailDTO<LoginServiceDetailDTO>> SignInAsync(UserLoginDTO dto)
+        public async Task<OperationDetailDTO<SignInUserDetailDTO>> SignInAsync(UserLoginDTO dto)
         {
             List<string> errors = new List<string>();
             
@@ -47,7 +46,7 @@ namespace TaskExecutionSystem.BLL.Services
                     {
                         var user = await _userManager.FindByNameAsync(dto.UserName);
                         var roleList = await _userManager.GetRolesAsync(user);
-                        return new OperationDetailDTO<LoginServiceDetailDTO> { Succeeded = true, Data = new LoginServiceDetailDTO { User = user, UserRoles = roleList } };
+                        return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = true, Data = new SignInUserDetailDTO { User = user, UserRoles = roleList } };
                     }
 
                     else
@@ -58,26 +57,26 @@ namespace TaskExecutionSystem.BLL.Services
                         if (emailRes.Succeeded)
                         {
                             var roleList = await _userManager.GetRolesAsync(user);
-                            return new OperationDetailDTO<LoginServiceDetailDTO> { Succeeded = true, Data = new LoginServiceDetailDTO { User = user, UserRoles = roleList } };
+                            return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = true, Data = new SignInUserDetailDTO { User = user, UserRoles = roleList } };
                         }
                         else
                         {
                             errors.Add(_signInErrorMessage);
-                            return new OperationDetailDTO<LoginServiceDetailDTO> { Succeeded = false, ErrorMessages = errors };
+                            return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = false, ErrorMessages = errors };
                         }
                     }
                 }
                 else
                 {
                     errors.Add("Имя пользователя или почта не соответствует требованиям");
-                    return new OperationDetailDTO<LoginServiceDetailDTO> { Succeeded = false, ErrorMessages = errors };
+                    return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = false, ErrorMessages = errors };
                 }
             }
 
             catch (Exception e)
             {
                 errors.Add(_serverErrorMessage + e.Message);
-                return new OperationDetailDTO<LoginServiceDetailDTO> { Succeeded = false, ErrorMessages = errors };
+                return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = false, ErrorMessages = errors };
             }
         }
 
@@ -93,7 +92,7 @@ namespace TaskExecutionSystem.BLL.Services
                     Name = dto.Name,
                     Surname = dto.Surname,
                     Patronymic = dto.Patronymic,
-                    StudyGroupNumber = dto.Group,
+                    GroupId = dto.GroupId
                 };
 
                 var user = new User
@@ -149,9 +148,8 @@ namespace TaskExecutionSystem.BLL.Services
                     Name = dto.Name,
                     Surname = dto.Surname,
                     Patronymic = dto.Patronymic,
-                    Department = dto.Department,
                     Position = dto.Position,
-                    MainSubject = dto.Discipline,
+                    DepartmentId = dto.DepartmentId,
                 };
 
                 var user = new User
@@ -195,5 +193,41 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        public Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateTeacherRegisterRequestAsync(TeacherRegisterDTO dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO<SignInUserDetailDTO>> SignOutAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public Task<OperationDetailDTO> CreateStudentAsync(StudentRegisterRequest registerEntity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterRequest registerEntity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateStudentAsync(int registerEntityId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateStudentAsync(List<int> registerEntityIdList)
+        {
+            throw new NotImplementedException();
+        }
     }
+
 }

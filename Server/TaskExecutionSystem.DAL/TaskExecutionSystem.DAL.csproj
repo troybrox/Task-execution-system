@@ -5,6 +5,47 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200412135654_InitMigration.cs" />
+    <Compile Remove="Migrations\20200412135654_InitMigration.Designer.cs" />
+    <Compile Remove="Migrations\20200416195510_SetStudiesWithConfigs.cs" />
+    <Compile Remove="Migrations\20200416195510_SetStudiesWithConfigs.Designer.cs" />
+    <Compile Remove="Migrations\20200416200249_InitMigration.cs" />
+    <Compile Remove="Migrations\20200416200249_InitMigration.Designer.cs" />
+    <Compile Remove="Migrations\20200416201310_Initial.cs" />
+    <Compile Remove="Migrations\20200416201310_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20200416201650_Initial.cs" />
+    <Compile Remove="Migrations\20200416201650_Initial.Designer.cs" />
+    <Compile Remove="Migrations\20200428181848_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428181848_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428182408_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428182408_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428190923_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428190923_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428192517_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428192517_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428192912_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428192912_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428193241_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428193241_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428193919_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428193919_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428194805_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428194805_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428194921_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428194921_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428195225_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428195225_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428200205_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428200205_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428225247_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428225247_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428225635_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428225635_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200428225912_Task_Solution.cs" />
+    <Compile Remove="Migrations\20200428225912_Task_Solution.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.3" />
@@ -17,10 +58,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Entities\Relations\" />
   </ItemGroup>
 
 </Project>

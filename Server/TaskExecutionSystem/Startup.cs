@@ -34,7 +34,8 @@ namespace TaskExecutionSystem
 
             services.AddApiJwtAuthentication();
             services.Configure<SeedOptions>(Configuration.GetSection("Seed"));
-            services.AddAsyncInitializer<IdentityInitializer>();
+            services.AddAsyncInitializer<IdentityInitializer>()
+                .AddAsyncInitializer<StudyDataInitializer>();
 
             services.AddCors(options =>
             {
@@ -50,7 +51,11 @@ namespace TaskExecutionSystem
 
             services.AddControllers();
 
-            services.AddTransient<IAccountService, AccountService>();
+            services.AddTransient<IAccountService, AuthService>()
+                .AddTransient<IAdminService, AdminService>()
+                .AddTransient<ITaskService, TaskService>()
+                .AddTransient<ITaskService, TaskService>();
+                //.AddTransient<ITeacherService, TeacherService>();
         }
 
 
@@ -60,6 +65,10 @@ namespace TaskExecutionSystem
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseHsts();
             }
 
             app.UseCors(MyAllowSpecificOrigins);
@@ -87,6 +96,11 @@ namespace TaskExecutionSystem
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.Run(async (context) =>
+            {
+                await context.Response.WriteAsync("Could Not Find Anything");
             });
         }
     }
