@@ -129,6 +129,10 @@ class Main extends React.Component {
             return null
     }
 
+    componentDidMount() {
+        this.props.fetchMain()
+    }
+
     render() {
         return (
             <Frame active_index={1}>

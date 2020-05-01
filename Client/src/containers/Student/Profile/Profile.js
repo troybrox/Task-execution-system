@@ -1,28 +1,38 @@
 import React from 'react'
 import ProfileComponent from '../../../components/User/ProfileComponent/ProfileComponent'
+import { connect } from 'react-redux'
+import { fetchProfile, onChangeProfile, updateProfile, updateData } from '../../../store/actions/student'
 
 class ProfileTeacher extends React.Component {
-    state = {
-        faculties: ['Информатики','Математики','Социологии'],
-        groups: ['6100-010909A', '6202-020302F', '6002-010201D'],
-		fields: [
-			{ value: 'Студен 1', label: 'Имя пользователя', type: 'text', serverName: 'UserName', valid: true },
-			{ value: 'Фамилия Имя Отчество', label: 'ФИО', type: 'text', serverName: 'FullName', valid: true },
-            { value: '6100-010909A', label: 'Группа', type: 'select', serverName: 'Group', valid: true },
-            { value: 'Информатики', label: 'Факультет', type: 'select', serverName: 'Faculty', valid: true },
-            { value: 'user@domain.com', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true }
-		]
+    componentDidMount() {
+        this.props.fetchProfile()
     }
     
     render() {
         return (
             <ProfileComponent 
-                faculties={this.state.faculties}
-                groups={this.state.groups}
-                fields={this.state.fields}
+                fields={this.props.profileData}
+                onChangeProfile={this.props.onChangeProfile}
+                updateData={this.props.updateData}
+                updateProfile={this.props.updateProfile}
             />
         )
     }
 }
 
-export default ProfileTeacher
+function mapStateToProps(state) {
+    return {
+        profileData: state.student.profileData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchProfile: () => dispatch(fetchProfile()),
+        onChangeProfile: (value, index) => dispatch(onChangeProfile(value, index)),
+        updateProfile: () => dispatch(updateProfile()),
+        updateData: (data, path) => dispatch(updateData(data, path))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileTeacher)

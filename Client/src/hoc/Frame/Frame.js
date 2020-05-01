@@ -1,7 +1,9 @@
 import React from 'react'
 import './Frame.scss'
+import Error from '../../components/Error/Error'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+import { errorWindow } from '../../store/actions/teacher'
 
 
 class Frame extends React.Component {
@@ -41,6 +43,13 @@ class Frame extends React.Component {
     render() {
         return (
             <div className='frame'>
+                { this.props.errorShow ?
+                    <Error
+                        errorMessage={this.props.errorMessage}
+                        errorWindow={() => this.props.errorWindow(false, [])}
+                    /> : 
+                    null
+                }
                 <header className='frame_header'>
                     {this.renderHeader()}
                     <div className='bell_side'>
@@ -53,6 +62,7 @@ class Frame extends React.Component {
                 <main>
                     {this.props.children}
                 </main>
+
             </div>
         )
     }
@@ -60,8 +70,16 @@ class Frame extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        role: state.auth.role
+        role: state.auth.role,
+        errorShow: state.teacher.errorShow,
+        errorMessage: state.teacher.errorMessage
     }
 }
 
-export default connect(mapStateToProps)(Frame)
+function mapDispatchToProps(dispatch) {
+    return {
+        errorWindow: (errorShow, errorMessage) => dispatch(errorWindow(errorShow, errorMessage))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Frame)
