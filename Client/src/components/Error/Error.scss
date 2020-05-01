@@ -4,11 +4,13 @@
     width: 100%;
     height: 100%;
     background: rgba(49, 49, 49, 0.671);
+    z-index: 100;
 
     .error_window {
         text-align: center;
         margin: auto;
         min-width: 400px;
+        max-width: 700px;
         height: max-content;
         display: block;
         background: rgb(255, 255, 255);

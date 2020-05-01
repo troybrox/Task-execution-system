@@ -1,84 +1,97 @@
 import React from 'react'
 import './ProfileComponent.scss'
 import Frame from '../../../hoc/Frame/Frame'
-import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 import Label from '../../UI/Label/Label'
 import Input from '../../UI/Input/Input'
-import Select from '../../UI/Select/Select'
+import Button from '../../UI/Button/Button'
 
 class ProfileComponent extends React.Component {
     state = {
-        data_password: [
+        dataPassword: [
             {value: '', label: 'Старый пароль', type: 'password', serverName: 'OldPassword', valid: true},
             {value: '', label: 'Новый пароль', type: 'password', serverName: 'NewPassword', valid: true},
             {value: '', label: 'Подтвердите новый пароль', type: 'password', serverName: 'RepeatPassword', valid: true},
-        ]
+        ],
+        flagPassword: false,
+        flagInfo: false
     }
 
     renderLabels(fields) {
 		return fields.map((item, index) => {
-			return <Label key={index} label={item.label} />
+            if ('element' in item)
+			    return <Label key={index} label={item.element.label} />
+            else 
+                return <Label key={index} label={item.label} />
 		})
     }
 
-    renderOptionRole(options) {
-		return options.map((el, index) => {
-			return (
-				<option 
-					key={index} 
-				>
-					{el}
-				</option>
-			)
-		})
-	}
-
-    selectShow = (item, index) => {
-        let options = this.props.groups
-        switch (item.serverName) {
-            case 'Faculty':
-                options = this.props.faculties
-                break;
-            case 'Department':
-                options = this.props.departments               
-                break;
-            default:
-                break;
-        }
-
-        const select = (
-            <Auxiliary key={index}>
-                <Select 
-                        typeSelect='blue'
-                        onChangeSelect={event => this.props.onSelect(event)} 
-                >
-                    { this.renderOptionRole(options) }
-                </Select><br />
-            </Auxiliary>
-        )
-        return select
+    renderProfileInputs(fields) {
+        return fields.map(item => {
+            if ('type' in item.element) {
+                return (
+                    <Input
+                        key={item.index} 
+                        type={item.element.type} 
+                        value={item.element.value}
+                        valid={item.element.valid}
+                        classUser={true}
+                        onChange={event => this.onChangeProfileHandler(event, item.index)}
+                    />
+                )
+            } else {
+                return (
+                    <p 
+                        key={item.index}
+                        className='static_field'
+                    >
+                        {item.element.value}
+                    </p>
+                )
+            }
+        })
     }
 
-    renderInputs(fields, hide) {
+    onChangeProfileHandler = (event, index) => {
+        this.props.onChangeProfile(event.target.value, index)
+
+        this.setState({
+            flagInfo: true
+        })
+    }
+
+    renderPasswordInputs(fields, hide) {
         return fields.map((item, index) => {
-            return item.type === 'select' ? 
-                this.selectShow(item, index) : 
-                <Input
+                return <Input
                     key={index} 
                     type={item.type} 
                     value={item.value}
                     valid={item.valid}
                     classUser={hide}
-                    onChange={event => this.props.onChange(event, index)}
+                    onChange={event => this.onChangePasswords(event, index)}
                 />
+        })
+    }
+
+    onChangePasswords = (event, index) => {
+        const dataPassword = [...this.state.dataPassword]
+        let flagPassword = true
+        dataPassword[index].value = event.target.value
+        dataPassword.forEach(el => {
+            el.valid = true
+            flagPassword = flagPassword && el.value !== ''
+        })
+
+        this.setState({
+            dataPassword,
+            flagPassword
         })
     }
     
     
     renderInfo() {
         const fields = []
-        this.props.fields.forEach(el => {
-            if (el.type !== 'email') fields.push(el)
+        this.props.fields.forEach((el, num) => {
+            if (el.type !== 'email') fields.push({element: el, index: num})
         })
 
         return (
@@ -87,7 +100,7 @@ class ProfileComponent extends React.Component {
                     {this.renderLabels(fields)}
                 </div>
                 <div className='input_info'>
-                    {this.renderInputs(fields, true)}
+                    {this.renderProfileInputs(fields)}
                 </div>
             </div>
         )
@@ -95,8 +108,8 @@ class ProfileComponent extends React.Component {
 
     renderContact() {
         const fields = []
-        this.props.fields.forEach(el => {
-            if (el.type === 'email') fields.push(el)
+        this.props.fields.forEach((el, num) => {
+            if (el.type === 'email') fields.push({element: el, index: num})
         })
 
         return (
@@ -105,14 +118,14 @@ class ProfileComponent extends React.Component {
                     {this.renderLabels(fields)}
                 </div>
                 <div className='input_info'>
-                    {this.renderInputs(fields, 'hide')}
+                    {this.renderProfileInputs(fields)}
                 </div>
             </div>
         )
     }
 
     renderPasswords() {
-        const fields = [...this.state.data_password]
+        const fields = [...this.state.dataPassword]
         
         return (
             <div className='info'>
@@ -120,10 +133,36 @@ class ProfileComponent extends React.Component {
                     {this.renderLabels(fields)}
                 </div>
                 <div className='input_info'>
-                    {this.renderInputs(fields)}
+                    {this.renderPasswordInputs(fields, false)}
                 </div>
             </div>
         )
+    }
+
+    updatePasswordHandler = () => {
+        const dataPassword = [...this.state.dataPassword]
+        const data = []
+        let newPassNum, repeatPassNum
+
+        dataPassword.forEach((el, number) => {
+            if (el.serverName === 'NewPassword') newPassNum = number
+            if (el.serverName === 'RepeatPassword') repeatPassNum = number
+            
+            const object = {}
+            object[el.serverName] = el.value
+            data.push(object)
+        })
+
+        if (dataPassword[newPassNum].value === dataPassword[repeatPassNum].value) {
+            this.props.updateData(data, 'updatepassword')
+        } else {
+            dataPassword[newPassNum].valid = false
+            dataPassword[repeatPassNum].valid = false
+
+            this.setState({
+                dataPassword
+            })
+        }
     }
 
     render() {
@@ -138,8 +177,22 @@ class ProfileComponent extends React.Component {
                             {this.renderInfo()}
                         <h3>Контактная информация</h3>
                             {this.renderContact()}
+                        <div className='buttons_profile'>
+                            <Button
+                                typeButton={this.state.flagInfo ? 'blue' : 'disactive'}
+                                onClickButton={this.props.updateProfile}
+                                value='Изменить профиль' 
+                            />
+                        </div>
                         <h3>Изменить пароль</h3>
                             {this.renderPasswords()}
+                        <div className='buttons_profile'>
+                            <Button
+                                typeButton={this.state.flagPassword ? 'blue' : 'disactive'}
+                                onClickButton={this.updatePasswordHandler}
+                                value='Изменить пароль' 
+                            />
+                        </div>
                     </div>
                 </div>
             </Frame>

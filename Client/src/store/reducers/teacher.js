@@ -1,6 +1,14 @@
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE } from "../actions/actionTypes"
 
 const initialState = {
+    profileData: [
+		{ value: 'pasha_terminator', label: 'Имя пользователя', type: 'text', serverName: 'UserName', valid: true },
+		{ value: 'Павел Карпович Александров', label: 'Фамилия Имя Отчество'},
+		{ value: 'Кайфовый', label: 'Факультет'},
+		{ value: 'Топовая 😎', label: 'Кафедра'},
+        { value: 'Доцент', label: 'Должность'},
+        { value: 'aaa@aa.aa', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true }
+    ],
     mainData: [
         {
             value: 'Моделирование сложных систем', 
@@ -108,6 +116,10 @@ const initialState = {
 
 export default function teacherReducer(state = initialState, action) {
     switch (action.type) {
+        case SUCCESS_PROFILE:
+            return {
+                ...state, profileData: action.profileData
+            }
         case SUCCESS_MAIN:
             return {
                 ...state, mainData: action.mainData

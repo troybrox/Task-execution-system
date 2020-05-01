@@ -1,29 +1,39 @@
 import React from 'react'
 import ProfileComponent from '../../../components/User/ProfileComponent/ProfileComponent'
+import { connect } from 'react-redux'
+import { fetchProfile, updateData, updateProfile, onChangeProfile } from '../../../store/actions/teacher'
 
-class ProfileTeacher extends React.Component {
-    state = {
-        faculties: ['Информатики','Математики','Социологии'],
-        departments: ['Программных систем', 'Ракетно-космической техники'],
-		fields: [
-			{ value: 'Преподаватель 1', label: 'Имя пользователя', type: 'text', serverName: 'UserName', valid: true },
-			{ value: 'Фамилия Имя Отчество', label: 'ФИО', type: 'text', serverName: 'FullName', valid: true },
-			{ value: 'Информатики', label: 'Факультет', type: 'select', serverName: 'Faculty', valid: true },
-			{ value: 'Программных систем', label: 'Кафедра', type: 'select', serverName: 'Department', valid: true },
-            { value: 'Заведующий кафедрой', label: 'Должность', type: 'text', serverName: 'Position', valid: true },
-            { value: 'user@domain.com', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true }
-		]
+class ProfileTeacher extends React.Component {   
+    componentDidMount() {
+        this.props.fetchProfile()
     }
-    
+
     render() {
         return (
             <ProfileComponent
-                faculties={this.state.faculties}
-                departments={this.state.departments}
-                fields={this.state.fields}
+                fields={this.props.profileData}
+                onChangeProfile={this.props.onChangeProfile}
+                updateData={this.props.updateData}
+                updateProfile={this.props.updateProfile}
             />
         )
     }
 }
 
-export default ProfileTeacher
+function mapStateToProps(state) {
+    return {
+        profileData: state.teacher.profileData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchProfile: () => dispatch(fetchProfile()),
+        onChangeProfile: (value, index) => dispatch(onChangeProfile(value, index)),
+        updateProfile: () => dispatch(updateProfile()),
+        updateData: (data, path) => dispatch(updateData(data, path))
+    }
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileTeacher)

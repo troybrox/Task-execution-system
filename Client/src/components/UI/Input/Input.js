@@ -2,6 +2,7 @@ import React from 'react'
 import './Input.scss'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 
+
 const Input = props => {
     const cls = ['input_fields']
 
@@ -16,7 +17,15 @@ const Input = props => {
                 value={props.value}
                 onChange={props.onChange}
             />
-            {props.classUser ? <img className='pen' src='images/pen-square-solid.svg' alt='' /> : null}
+            {
+                props.classUser ? 
+                <img 
+                    className='pen' 
+                    src='images/pen-square-solid.svg' 
+                    alt='' 
+                /> :
+                null
+            }
             <br />
         </Auxiliary>
 

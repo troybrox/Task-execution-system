@@ -32,13 +32,15 @@
                 }
 
                 .name {
-                    margin: 0 0 7px 10px;
+                    margin: 0 0 4px 10px;
                 }
 
                 .additional {
+                    display: block;
+                    margin-top: 3px;
                     font-size: 14px;
                     color: rgb(136, 136, 136);
-                    margin-left: 5px;
+                    // margin-left: 5px;
                 }
 
                 &:after {

@@ -42,9 +42,25 @@
                 text-align: left;
                 margin-left: 10px;
                 width: 50%;
+
+                .static_field {
+                    padding: 0 3px;
+                    margin: 10px 0 0 10px;
+                    line-height: 20px;
+                    height: 20px;
+                    border: 2px solid white;
+                    font-size: 13px;
+                }
             }
         }
 
+        .buttons_profile {
+            border-top: 2px solid rgb(95, 95, 95);
+
+            button {
+                margin: 15px 20px
+            }
+        }
 
     }
 }
