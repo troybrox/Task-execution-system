@@ -1,41 +1,39 @@
 import React from 'react'
 import TasksComponent from '../../../components/User/TasksComponent/TasksComponent'
+import { connect } from 'react-redux'
+import { fetchTaskFilters, choiceSubjectTask, fetchListTasks } from '../../../store/actions/student'
 
 class Tasks extends React.Component {
-    state = {
-        subjects: [
-            {value: 'Моделирование сложных систем', open: false},
-            {value: 'ЭВМ', open: false}
-        ],
-        labs: [
-            {name: 'Лабораторная работа №1',  countComments: 3, lastOpen: ['2 недели', 'Студент1']},
-            {name: 'Лабораторная работа №2',  countComments: 2, lastOpen: ['1 месяц', 'Студент2']},
-            {name: 'Лабораторная работа №3',  countComments: 10, lastOpen: ['3 дня', 'Студент3 Студент4']},
-        ]
-    }
-
-    choiceSubjectHandler = index => {
-        const subjects = [...this.state.subjects]
-        subjects.forEach(el => {
-            el.open = false
-        })
-
-        subjects[index].open = true
-
-        this.setState({
-            subjects
-        })
+    componentDidMount() {
+        this.props.fetchTaskFilters()
     }
     
     render() {
         return (
             <TasksComponent 
-                subjects={this.state.subjects}
-                labs={this.state.labs}
-                choiceSubject={this.choiceSubjectHandler}
+                subjects={this.props.taskData.subjects}
+                types={this.props.taskData.types}
+                labs={this.props.labs}
+                choiceSubjectTask={this.props.choiceSubjectTask}
+                fetchListTasks={this.props.fetchListTasks}
             />
         )
     }
 }
 
-export default Tasks
+function mapStateToProps(state) {
+    return {
+        taskData: state.student.taskData,
+        labs: state.student.labs
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchTaskFilters: () => dispatch(fetchTaskFilters()),
+        choiceSubjectTask: (indexSubject) => dispatch(choiceSubjectTask(indexSubject)),
+        fetchListTasks: (filters) => dispatch(fetchListTasks(filters))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Tasks)

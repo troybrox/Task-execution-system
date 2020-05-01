@@ -39,8 +39,8 @@ class App extends React.Component {
 					<Switch>
 						<Route path='/logout' component={Logout} />
 						<Route path='/profile' component={ProfileStudent} />
-						<Route path='/tasks' component={TasksStudent} />
-						<Route path='/task/:id' component={TaskAdditionalStudent} />
+						<Route path='/tasks' exact component={TasksStudent} />
+						<Route path='/tasks/:id' component={TaskAdditionalStudent} />
 						<Route path='/repository' component={RepositoryStudent} />
 						<Redirect to={'/tasks'} />
 					</Switch>
@@ -50,8 +50,8 @@ class App extends React.Component {
 					<Switch>
 						<Route path='/logout' component={Logout} />
 						<Route path='/profile' component={ProfileTeacher} />
-						<Route path='/tasks' component={TasksTeacher} />
-						<Route path='/task/:id' component={TaskAdditionalTeacher} />
+						<Route path='/tasks' exact component={TasksTeacher} />
+						<Route path='/tasks/:id' component={TaskAdditionalTeacher} />
 						<Route path='/repository' component={RepositoryTeacher} />
 						<Route path='/create_repository' component={CreateRepository} />
 						<Route path='/create_task' component={CreateTask} />

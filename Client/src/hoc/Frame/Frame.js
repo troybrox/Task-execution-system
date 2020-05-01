@@ -18,7 +18,7 @@ class Frame extends React.Component {
 
     renderHeader() {
         const headerItems = [...this.state.headerItems]
-        if (this.props.role === 'student')
+        if (localStorage.getItem('role') === 'student')
             headerItems.forEach(el => {
                 if (el.title === 'Главная') el.show = false
             })
@@ -70,7 +70,6 @@ class Frame extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        role: state.auth.role,
         errorShow: state.teacher.errorShow,
         errorMessage: state.teacher.errorMessage
     }

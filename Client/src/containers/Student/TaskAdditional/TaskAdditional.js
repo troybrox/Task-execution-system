@@ -1,7 +1,7 @@
 import React from 'react'
 import OneTaskComponent from '../../../components/User/OneTaskComponent/OneTaskComponent'
 // import { connect } from 'react-redux'
-// import {fetchTaskById} from '../../store/actions/common'
+// import {fetchTaskById} from '../../store/actions/student'
 
 class TasksComponent extends React.Component {    
     // componentDidMount() {

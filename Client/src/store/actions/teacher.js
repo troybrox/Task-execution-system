@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from './actionTypes'
 import { commonURL } from './actionURL'
 
 export function fetchProfile() {
@@ -130,7 +130,7 @@ export function fetchMain() {
     }
 }
 
-export function choiceSubjectHandler(indexSubject) {
+export function choiceSubjectMain(indexSubject) {
     return (dispatch, getState) => {
         const state = getState().teacher
         const mainData = [...state.mainData]
@@ -140,7 +140,7 @@ export function choiceSubjectHandler(indexSubject) {
     }
 }
 
-export function choiceGroupHandler(indexSubject, indexGroup) {
+export function choiceGroupMain(indexSubject, indexGroup) {
     return (dispatch, getState) => {
         const state = getState().teacher
         const mainData = [...state.mainData]
@@ -167,7 +167,112 @@ export function choiceStudentHandler(indexSubject, indexGroup, indexStudent) {
     }
 }
 
-// export function fetchTasks() {}
+export function fetchTaskFilters() {
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/teacher/task/filters`
+            const response = await axios.get(url)
+            const data = response.data
+
+            if (data.succeeded) {
+                const taskData = {
+                    subjects: [],
+                    types: [{id: null, name: 'Все'}]
+                }
+
+                data.data.subjects.forEach((el) => {
+                    const object = {id: el.id, name: el.name, groups: []}
+                    el.groups.forEach(element => {
+                        object.groups.push({id: element.id, number: element.number})
+                    })
+                    taskData.subjects.push(object)
+                })
+
+                data.data.types.forEach(el => {
+                    taskData.types.push(el)
+                })
+
+                dispatch(successTask(taskData))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function choiceSubjectTask(indexSubject) {
+    return (dispatch, getState) => {
+        const state = getState().teacher
+        const taskData = state.taskData
+        taskData.subjects[indexSubject].open = !taskData.subjects[indexSubject].open
+
+        dispatch(successTask(taskData))
+    }
+}
+
+export function choiceGroupTask(indexSubject, indexGroup) {
+    return async (dispatch, getState) => {
+        const state = getState().teacher
+        const taskData = state.taskData
+        taskData.subjects.forEach(el => {
+            if ('groups' in el)
+                el.groups.forEach(element => {
+                    element.open = false
+                })
+        })    
+        taskData.subjects[indexSubject].groups[indexGroup].open = true
+
+        const filters = {
+            subjectId: String(taskData.subjects[indexSubject].id),
+            groupId: String(taskData.subjects[indexSubject].groups[indexGroup].id)
+        }
+
+        await dispatch(fetchListTasks(filters))
+
+        dispatch(successTask(taskData))
+    }
+}
+
+export function fetchListTasks(filters) {
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/teacher/task`
+            const response = await axios.post(url, filters)
+            const data = response.data
+
+            if (data.succeeded) {
+                const labs = []
+                data.data.forEach(el => {
+                    const object = {type: el.type, name: el.name, dateOpen: el.beginDate}
+                    let countAnswers = 0
+                    el.students.forEach(element => {
+                        if (element.solution !== null)
+                            countAnswers++
+                    })
+                    object.countAnswers = countAnswers
+
+                    labs.push(object)
+                })
+
+                dispatch(successLabs(labs))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
 
 export function fetchTaskById(id) {
     return async dispatch => {
@@ -207,10 +312,24 @@ export function successMain(mainData) {
     }
 }
 
-export function successTaskAddition(taskData) {
+export function successTask(taskData) {
+    return {
+        type: SUCCESS_TASK,
+        taskData
+    }
+}
+
+export function successLabs(labs) {
+    return {
+        type: SUCCESS_LABS,
+        labs
+    }
+}
+
+export function successTaskAddition(taskAdditionData) {
     return {
         type: SUCCESS_TASK_ADDITION,
-        taskData
+        taskAdditionData
     }
 }
 

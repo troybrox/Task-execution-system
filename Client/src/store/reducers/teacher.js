@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [
@@ -70,6 +70,38 @@ const initialState = {
         }
     ],
     taskData: {
+        subjects: [
+            {
+                id: 1,
+                name: 'Моделирование сложных систем', 
+                groups: [
+                    {id: 1, number: '6001-020304D', open: false}, 
+                    {id: 2, number: '6002-020304D', open: false}
+                ], 
+                open: false
+            },
+            {
+                id: 2,
+                name: 'ЭВМ', 
+                groups: [
+                    {id: 3, number: '6005-020304D', open: false}, 
+                    {id: 4, number: '6004-020304D', open: false}
+                ], 
+                open: false
+            }
+        ],
+        types: [
+            {id: null, name: 'Все'},
+            {id: 1, name: 'Лабораторная работа'},
+            {id: 2, name: 'Домашняя работа'},
+        ],
+    },
+    labs: [
+        {type: 'Лабораторная работа', name: '№1',  countAnswers: 3, dateOpen: '2 дня'},
+        {type: 'Лабораторная работа', name: '№2',  countAnswers: 2, dateOpen: '1 месяц'},
+        {type: 'Лабораторная работа', name: '№3',  countAnswers: 10, dateOpen: '3 дня'},
+    ],
+    taskAdditionData: {
         teaherName: "Xxx",
         teaherSurname: "Xxx",
         teaherPatronymic: "Xxx",
@@ -124,9 +156,17 @@ export default function teacherReducer(state = initialState, action) {
             return {
                 ...state, mainData: action.mainData
             }
-        case SUCCESS_TASK_ADDITION:
+        case SUCCESS_TASK:
             return {
                 ...state, taskData: action.taskData
+            }
+        case SUCCESS_LABS:
+            return {
+                ...state, labs: action.labs
+            }
+        case SUCCESS_TASK_ADDITION:
+            return {
+                ...state, taskAdditionData: action.taskAdditionData
             }
         case ERROR_WINDOW:
             return {

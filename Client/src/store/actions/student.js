@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ERROR_WINDOW, SUCCESS_PROFILE } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from './actionTypes'
 import { commonURL } from './actionURL'
 
 export function fetchProfile() {
@@ -93,10 +93,107 @@ export function updateProfile() {
     }
 }
 
+export function fetchTaskFilters() {
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/student/task/filters`
+            const response = await axios.get(url)
+            const data = response.data
+
+            if (data.succeeded) {
+                const taskData = {
+                    subjects: [],
+                    types: [{id: null, name: 'Все'}]
+                }
+
+                data.data.subjects.forEach((el) => {
+                    taskData.subjects.push({id: el.id, name: el.name})
+                })
+
+                data.data.types.forEach(el => {
+                    taskData.types.push(el)
+                })
+
+                dispatch(successTask(taskData))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function choiceSubjectTask(indexSubject) {
+    return async(dispatch, getState) => {
+        const state = getState().student
+        const taskData = state.taskData
+        taskData.subjects.forEach(el => {
+            if (el.id === indexSubject)
+                el.open = true
+            else 
+                el.open = false
+        })
+
+        const filters = {
+            subjectId: String(indexSubject),
+        }
+
+        await dispatch(fetchListTasks(filters))
+
+        dispatch(successTask(taskData))
+    }
+}
+
+export function fetchListTasks(filters) {
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/student/task`
+            const response = await axios.post(url, filters)
+            const data = response.data
+
+            if (data.succeeded) {
+                const labs = []
+                data.data.forEach(el => {
+                    labs.push({type: el.type, name: el.name, dateOpen: el.beginDate})
+                })
+
+                dispatch(successLabs(labs))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
 export function successProfile(profileData) {
     return {
         type: SUCCESS_PROFILE,
         profileData
+    }
+}
+
+export function successTask(taskData) {
+    return {
+        type: SUCCESS_TASK,
+        taskData
+    }
+}
+
+export function successLabs(labs) {
+    return {
+        type: SUCCESS_LABS,
+        labs
     }
 }
 

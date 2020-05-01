@@ -18,5 +18,7 @@ export const SUCCESS_TASK_ADDITION = 'SUCCESS_TASK_ADDITION'
 
 // Универсально
 export const SUCCESS_PROFILE = 'SUCCESS_PROFILE'
+export const SUCCESS_TASK = 'SUCCESS_TASK'
+export const SUCCESS_LABS = 'SUCCESS_LABS'
 export const ERROR_WINDOW = 'ERROR_WINDOW'
 export const LOADING_START = 'LOADING_START'
