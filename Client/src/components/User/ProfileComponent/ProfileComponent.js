@@ -1,7 +1,6 @@
 import React from 'react'
 import './ProfileComponent.scss'
 import Frame from '../../../hoc/Frame/Frame'
-import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 import Label from '../../UI/Label/Label'
 import Input from '../../UI/Input/Input'
 import Button from '../../UI/Button/Button'
