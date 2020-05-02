@@ -11,19 +11,18 @@ class OneTaskComponent extends React.Component {
         subjectId: null,
         groupId: null,
         typeId: null,
-        studentsId: [1,2,3],
+        studentIds: [],
         titleInput: '',
         descriptionInput: '',
         files: null,
         beginDate: null,
-        finishDate: null
+        finishDate: null,
+        checkAll: false
     }
 
     choiceSubject = event => {
         const index = event.target.options.selectedIndex
         let subjectId = event.target.options[index].getAttribute('index')
-        if (subjectId !== null)
-            subjectId = +subjectId
 
         this.setState({
             subjectId
@@ -33,8 +32,6 @@ class OneTaskComponent extends React.Component {
     choiceType = event => {
         const index = event.target.options.selectedIndex
         let typeId = event.target.options[index].getAttribute('index')
-        if (typeId !== null)
-            typeId = +typeId
 
         this.setState({
             typeId
@@ -44,12 +41,13 @@ class OneTaskComponent extends React.Component {
     choiceGroup = event => {
         const index = event.target.options.selectedIndex
         let groupId = event.target.options[index].getAttribute('index')
-        if (groupId !== null)
-            groupId = +groupId
-
+        if (index !== 0)
+            this.props.changeChecked(index, null, false)
 
         this.setState({
-            groupId
+            groupId,
+            studentIds: [],
+            checkAll: false
         })
     }
 
@@ -89,51 +87,83 @@ class OneTaskComponent extends React.Component {
         }
     }
 
+    changeCheckedHandler = (groupIndex, flag, studentIndex, id) => {
+        const studentIds = [...this.state.studentIds]
+        let checkAll = false
 
-    
-    renderMemberCreate() {
-        const subjectId = this.state.subjectId
-        const groupId = this.state.groupId
-
-        let subjectIndex = 0
-        let groupIndex = 0
-
-        this.props.subjects.forEach((el, index) => {
-            if (subjectId === null || el.id === null) return
-            if (el.id === subjectId) {
-                subjectIndex = index
-                el.groups.forEach((item, num) => {
-                    if (groupId === null || item.id === null) return
-                    if (item.id === groupId) 
-                    groupIndex = num 
-
+        if (flag === 'all') {
+            this.props.changeChecked(groupIndex, null, !this.state.checkAll)
+            checkAll = !this.state.checkAll
+            studentIds.length = 0
+            if (checkAll) {
+                this.props.groups[groupIndex].students.forEach(el => {
+                    studentIds.push(el.id)
                 })
             }
+        } else {
+            this.props.changeChecked(groupIndex, studentIndex)
+
+            const checkIndex = studentIds.indexOf(id)
+            if (checkIndex === -1) {
+                studentIds.push(id)           
+            } else {
+                studentIds.splice(checkIndex, 1)
+            }
+        }
+
+        this.setState({
+            studentIds,
+            checkAll
+        })
+    }
+
+    removeFile = () => {
+        this.setState({
+            files: null
+        })
+    }
+
+    renderMemberCreate() {
+        const groupId = this.state.groupId
+        let groupIndex = 0
+
+        this.props.groups.forEach((item, num) => {
+            if (groupId !== null && item.id !== null && item.id === +groupId) 
+                groupIndex = num
         })
 
-        const select = subjectIndex !== 0 ?        
-            this.props.subjects[subjectIndex].groups.map(item => {
-                return (
-                    <option
-                        key={item.id}
-                        index={item.id}
-                    >
-                        {item.name}
-                    </option>
-                )
-            }) : null
+        const select = this.props.groups.map(item => {
+            return (
+                <option
+                    key={item.id}
+                    index={item.id}
+                >
+                    {item.number}
+                </option>
+            )
+        })
         
         const check = groupId !== null ? 
             <div className='check_all'>
-                <input type='checkbox' id='all_check' className='student_checkbox' />
-                <label htmlFor='all_check' className='label_all student_label_check'>
+                <input 
+                    type='checkbox' 
+                    id='all_check' 
+                    className='student_checkbox'
+                    checked={this.state.checkAll}
+                    readOnly
+                />
+                <label 
+                    htmlFor='all_check' 
+                    className='label_all student_label_check'
+                    onClick={() => this.changeCheckedHandler(groupIndex, 'all')}
+                >
                     <span>Назначить всю группу</span>
                 </label>
             </div>
         : null
 
         const users = groupId !== null ? 
-            this.props.subjects[subjectIndex].groups[groupIndex].students.map((item)=>{
+            this.props.groups[groupIndex].students.map((item, index)=>{
                 return (
                     <li
                         key={item.id}
@@ -144,13 +174,16 @@ class OneTaskComponent extends React.Component {
                             type='checkbox' 
                             className='student_checkbox' 
                             id={`student_${item.id}`}
+                            checked={item.check}
+                            readOnly
                         />
                         <label 
                             className='student_label student_label_check' 
                             htmlFor={`student_${item.id}`}
+                            onClick={() => this.changeCheckedHandler(groupIndex, '', index, item.id)}
                         >
                             <img src='/images/card.svg' alt='' />
-                            <span>{item.name}</span>
+                            <span>{item.surname} {item.name}</span>
                         </label>
                     </li>
                 )
@@ -218,12 +251,17 @@ class OneTaskComponent extends React.Component {
                 <p className='date_p_create'>Дата начала:</p>
                 <input 
                     type='datetime-local'
+                    min={(new Date()).toJSON().substr(0, 16)}
+                    // max={this.state.finishDate}
+                    required
                     className='date_input_create' 
                     onChange={(event) => this.changeDate(event, 'begin')}
                 />
                 <p className='date_p_create'>Дата сдачи:</p>
                 <input 
                     type='datetime-local'
+                    min={this.state.beginDate || (new Date()).toJSON().substr(0, 16)}
+                    required
                     className='date_input_create' 
                     onChange={(event) => this.changeDate(event, 'end')}
                 />
@@ -257,7 +295,7 @@ class OneTaskComponent extends React.Component {
             )
         })
 
-        const selectType = this.props.type.map(item => {
+        const selectType = this.props.types.map(item => {
             return (
                 <option
                     key={item.id}
@@ -267,6 +305,9 @@ class OneTaskComponent extends React.Component {
                 </option>
             )
         })
+
+        const clsForFile = ['label_file']
+        if (this.state.files !== null) clsForFile.push('ready_file')
 
         return (
             <div className='contain_create'>
@@ -297,18 +338,37 @@ class OneTaskComponent extends React.Component {
                     defaultValue={this.state.descriptionInput}
                     onChange={event => this.onChangeDescription(event)}
                 />
-                <label className='label_file'>
-                    <span className='title_file'>
-                        Перетащите файл в это поле или кликните сюда для загрузки
-                        {/*Сменная надпись на Успешно загружено <name> или Неверный формат*/}
-                    </span><br />
-                    <input 
-                        type='file' 
-                        accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
-                        onChange={event => this.onLoadFile(event)}
-                    />
+                <label 
+                    className={clsForFile.join(' ')}
+                >
+                    {this.state.files === null ?
+                        <Auxiliary>
+                            <span className='title_file'>
+                                Перетащите файл в это поле или кликните сюда для загрузки
+                            </span><br />
+                            <input 
+                                type='file' 
+                                accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
+                                onChange={event => this.onLoadFile(event)}
+                            />
+                        </Auxiliary> :
+                        <Auxiliary>
+                            <span className='title_file'>
+                                Файл успешно загружен
+                            </span><br />
+                            <p>
+                                <img src='/images/file-solid.svg' alt='' /><br />
+                                <span>{this.state.files.name}</span>  
+                            </p><br />
+                            <span 
+                                className='delete_file'
+                                onClick={this.removeFile}
+                            >
+                                Удалить файл
+                            </span>
+                        </Auxiliary>
+                    }
                 </label>
-                {this.state.files ? <p>Файл загружен если чо <span role='img'>😎😎😎</span>)) Я доделаю это место, чтобы было красиво, это так сделано по фасту))</p> : null}
             </div>
         )
     }   
@@ -328,18 +388,18 @@ class OneTaskComponent extends React.Component {
             this.state.subjectId !== null && 
             this.state.typeId !== null && 
             this.state.groupId !== null &&
-            this.state.studentsId.length !== 0 &&
+            this.state.studentIds.length !== 0 &&
             this.state.titleInput.trim() !== '' &&
             this.state.descriptionInput.trim() !== '' &&
             this.state.beginDate !== null &&
             this.state.finishDate !== null      
             ) {
-                createTask.task.subjectId = this.state.subjectId 
-                createTask.task.typeId = this.state.typeId 
-                createTask.task.groupId = this.state.groupId
+                createTask.task.subjectId = +this.state.subjectId 
+                createTask.task.typeId = +this.state.typeId 
+                createTask.task.groupId = +this.state.groupId
                 createTask.task.name = this.state.titleInput 
                 createTask.task.contentText = this.state.descriptionInput
-                createTask.task.studentId = this.state.studentsId
+                createTask.task.studentIds = this.state.studentIds
                 createTask.task.beginDate = this.state.beginDate
                 createTask.task.finishDate = this.state.finishDate
 

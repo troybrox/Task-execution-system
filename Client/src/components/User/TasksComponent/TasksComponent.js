@@ -14,6 +14,17 @@ class TasksComponent extends React.Component {
         search: ''
     }
 
+    componentDidMount() {
+        const activeSubjectIndex = this.props.subjects[0].id
+        const activeGroupIndex = this.props.subjects[0].groups[0].id
+        const title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].number
+        this.setState({
+            activeSubjectIndex,
+            activeGroupIndex,
+            title
+        })
+    }
+
     choiceSubjectTeacher = indexSubject => {
         this.props.choiceSubjectTask(indexSubject)
         this.setState({})
@@ -165,11 +176,11 @@ class TasksComponent extends React.Component {
     onChangeSelect = event => {
         const index = event.target.options.selectedIndex
         const typeId = event.target.options[index].getAttribute('index')
-        const filters = {
-            subjectId: String(this.state.activeSubjectIndex), 
-            groupId: String(this.state.activeGroupIndex),
-            typeId
-        }
+        const filters = [
+            {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
+            {name: 'groupId', value: String(this.state.activeGroupIndex)},
+            {name: 'typeId', value: typeId}
+        ]
 
         this.props.fetchListTasks(filters)
     }
@@ -184,11 +195,11 @@ class TasksComponent extends React.Component {
 
     onSearchHandler = () => {
         if (this.state.search.trim() !== '') {
-            const filters = {
-                subjectId: String(this.state.activeSubjectIndex), 
-                groupId: String(this.state.activeGroupIndex),
-                searchString: this.state.search
-            }
+            const filters = [
+                {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
+                {name: 'groupId', value: String(this.state.activeGroupIndex)},
+                {name: 'searchString', value: this.state.search}
+            ]
             this.props.fetchListTasks(filters)
         }
     }

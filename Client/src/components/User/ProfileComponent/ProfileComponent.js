@@ -141,16 +141,17 @@ class ProfileComponent extends React.Component {
 
     updatePasswordHandler = () => {
         const dataPassword = [...this.state.dataPassword]
-        const data = []
+        const data = {}
         let newPassNum, repeatPassNum
 
         dataPassword.forEach((el, number) => {
             if (el.serverName === 'NewPassword') newPassNum = number
-            if (el.serverName === 'RepeatPassword') repeatPassNum = number
+            if (el.serverName === 'RepeatPassword') {
+                repeatPassNum = number
+                return
+            }
             
-            const object = {}
-            object[el.serverName] = el.value
-            data.push(object)
+            data[el.serverName] = el.value
         })
 
         if (dataPassword[newPassNum].value === dataPassword[repeatPassNum].value) {

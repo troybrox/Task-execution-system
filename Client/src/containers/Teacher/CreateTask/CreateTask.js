@@ -1,10 +1,9 @@
 import React from 'react'
 import OneTaskComponent from '../../../components/User/OneTaskComponent/OneTaskComponent'
 import { connect } from 'react-redux'
-import { onSendCreate } from '../../../store/actions/teacher'
-// import Label from '../../../components/UI/Label/Label'
-// import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
-// import Input from '../../../components/UI/Input/Input'
+import { onSendCreate, fetchTaskCreate, changeChecked } from '../../../store/actions/teacher'
+import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
+import AfterCreate from '../../../components/AfterCreate/AfterCreate'
 
 class CreateTask extends React.Component {
     state = {
@@ -111,33 +110,43 @@ class CreateTask extends React.Component {
         ]
     }
 
-    // onCheckStudents = () => {
-
-    // }
+    componentDidMount() {
+        this.props.fetchTaskCreate()
+    }
 
     render() {
         return (
-            <OneTaskComponent
-                typeTask='create'
-                type={this.state.type}
-                subjects={this.state.subjects} 
-                onSendCreate={this.props.onSendCreate}
-            >
-
-            </OneTaskComponent>
+            <Auxiliary>
+                {this.props.successId !== null ?
+                    <AfterCreate id={this.props.successId}/> : 
+                    null
+                }
+            
+                <OneTaskComponent
+                    typeTask='create'
+                    types={this.props.createData.types}
+                    subjects={this.props.createData.subjects} 
+                    groups={this.props.createData.groups}
+                    onSendCreate={this.props.onSendCreate}
+                    changeChecked={this.props.changeChecked}
+                />
+            </Auxiliary>
         )
     }
 }
 
 function mapStateToProps(state) {
     return {
-
+        createData: state.teacher.createData,
+        successId: state.teacher.successId
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        onSendCreate: (task) => dispatch(onSendCreate(task))
+        fetchTaskCreate: () => dispatch(fetchTaskCreate()),
+        onSendCreate: (task) => dispatch(onSendCreate(task)),
+        changeChecked: (studentIndex, groupIndex, val) => dispatch(changeChecked(studentIndex, groupIndex, val))
     }
 }
 

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from './actionTypes'
 import { commonURL } from './actionURL'
 
 export function fetchProfile() {
@@ -82,13 +82,10 @@ export function updateProfile() {
     return async (dispatch, getState) => {
         const state = getState().teacher
         const profileData = [...state.profileData]
-        const data = []
+        const data = {}
         profileData.forEach(el => {
-            if ('serverName' in el) {
-                const object = {}
-                object[el.serverName] = el.value
-                data.push(object)
-            }
+            if ('serverName' in el)
+                data[el.serverName] = el.value
         })
         dispatch(updateData(data, 'update'))
     }
@@ -228,10 +225,10 @@ export function choiceGroupTask(indexSubject, indexGroup) {
         })    
         taskData.subjects[indexSubject].groups[indexGroup].open = true
 
-        const filters = {
-            subjectId: String(taskData.subjects[indexSubject].id),
-            groupId: String(taskData.subjects[indexSubject].groups[indexGroup].id)
-        }
+        const filters = [
+            {name: 'subjectId', value: String(taskData.subjects[indexSubject].id)},
+            {name: 'groupId', value: String(taskData.subjects[indexSubject].groups[indexGroup].id)}
+        ]
 
         await dispatch(fetchListTasks(filters))
 
@@ -296,13 +293,57 @@ export function fetchTaskById(id) {
     }
 }
 
-// export function fetchTaskCreate() {}
+export function fetchTaskCreate() {
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/teacher/task/add/filters`
+            const response = await axios.get(url)
+            const data = response.data
+
+            if (data.succeeded) {
+                const createData = {}
+                for (let key in data.data) {
+                    createData[key] = data.data[key]
+                }
+                createData.subjects.unshift({id: null, name: 'Выберите предмет'})
+                createData.types.unshift({id: null, name: 'Выберите тип'})
+                createData.groups.unshift({id: null, name: 'Выберите группу'})
+                dispatch(successCreateData(data.data))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function changeChecked(groupIndex, studentIndex, val) {
+    return (dispatch, getState) => {
+        const state = getState().teacher
+        const createData = state.createData
+
+        if (studentIndex !== null)
+            createData.groups[groupIndex].students[studentIndex].check = !createData.groups[groupIndex].students[studentIndex].check
+        else {
+
+            createData.groups[groupIndex].students.forEach(el => {
+                el.check = val
+            })
+        }
+        dispatch(successCreateData(createData))
+    }
+}
 
 export function onSendCreate(task) {
     console.log(task)
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/add`
+            const url = `${commonURL}/api/teacher/task/add`
             const response = await axios.post(url, task)
             const data = response.data
 
@@ -351,6 +392,20 @@ export function successLabs(labs) {
     return {
         type: SUCCESS_LABS,
         labs
+    }
+}
+
+export function successCreateData(createData) {
+    return {
+        type: SUCCESS_CREATE_DATA,
+        createData
+    }
+}
+
+export function successCreate(successId) {
+    return {
+        type: SUCCESS_CREATE,
+        successId
     }
 }
 
