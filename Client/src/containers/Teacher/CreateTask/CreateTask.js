@@ -115,6 +115,7 @@ class CreateTask extends React.Component {
     }
 
     render() {
+        console.log(this.props.successId)
         return (
             <Auxiliary>
                 {this.props.successId !== null ?

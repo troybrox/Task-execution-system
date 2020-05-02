@@ -7,7 +7,6 @@ import axios from 'axios'
 //     return matches ? decodeURIComponent(matches[1]) : undefined;
 // }
 
-// console.log(document.cookie)
 export default axios.create({
     baseURL: 'https://localhost:44303/',
     // headers: {

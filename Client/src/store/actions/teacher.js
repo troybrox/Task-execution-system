@@ -273,7 +273,7 @@ export function fetchListTasks(filters) {
 export function fetchTaskById(id) {
     return async dispatch => {
         try {
-            const url = 'api/teacher/task/${id}'
+            const url = `api/teacher/task/${id}`
             const response = await axios.get(url)
             const data = response.data
 
@@ -339,7 +339,6 @@ export function changeChecked(groupIndex, studentIndex, val) {
 }
 
 export function onSendCreate(task) {
-    console.log(task)
     return async dispatch => {
         try {
             const url = 'api/teacher/task/add'
@@ -347,9 +346,10 @@ export function onSendCreate(task) {
             const data = response.data
 
             if (data.succeeded) {
-                const err = ['Это временное окно, чтобы видно было, что сервер работает. Доделаю.']
-                err.unshift('Успешно создано!')
-                dispatch(errorWindow(true, err))
+                dispatch(successCreate(data.id))
+                // const err = ['Задача создана']
+                // err.unshift('Успешно создано!')
+                // dispatch(errorWindow(true, err))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
