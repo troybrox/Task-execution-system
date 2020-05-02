@@ -3,40 +3,37 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.BLL.Interfaces;
+using TaskExecutionSystem.DAL.Entities.Identity;
+using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
 
 namespace TaskExecutionSystem.Controllers
 {
     // todo: скинуть Олегу объекты
 
     // api/teacher/profile
-
     // api/teacher/profile/update [POST]
-
     // api/teacher/profile/updatepassword
 
     // api/teacher/main
 
-
     // api/teacher/task/add/filters [список групп - у каждой студенты; список типов заданий]
-
-    // api/teacher/task/add [POST (filters)]
-
+    // api/teacher/task/add [POST]  (filters)
     // api/teacher/task/filters [список предметов - у каждого группы; список типов заданий]
-
-    // api/teacher/task [POST  (filters)]
-
+    // api/teacher/task     [POST]  (filters)
     // api/teacher/task/{id}
-
     // api/teacher/task/{id}/close
 
 
-
+    [AutoValidateAntiforgeryToken]
+    [Authorize(Policy = TeacherUserPolicy)]
     [Route("api/teacher")]
     [ApiController]
     public class TeacherController : ControllerBase
@@ -49,18 +46,26 @@ namespace TaskExecutionSystem.Controllers
         private readonly ITaskService _taskService;
         private readonly ITeacherService _teacherService;
         public static IWebHostEnvironment _environment;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<User> _userManager;
 
         public TeacherController(ITaskService taskService, IWebHostEnvironment environment, 
-            ITeacherService teacherService)
+            ITeacherService teacherService, IHttpContextAccessor httpContextAccessor,
+            UserManager<User> userManager)
         {
             _taskService = taskService;
             _environment = environment;
+            _teacherService = teacherService;
+            _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
         }
 
 
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfileDataAsync()
         {
+            var testUser = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+
             var res = await _teacherService.GetProfileDataAsync();
             return Ok(res);
         }
@@ -72,6 +77,10 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+
+        // todo: update Password
+
+
         [HttpGet("main")]
         public async Task<IActionResult> GetMainPageDataAsync()
         {
@@ -81,7 +90,7 @@ namespace TaskExecutionSystem.Controllers
 
 
         [HttpPost("task/filters")]
-        public async Task<IActionResult> GetTaskListFiltersAsync()
+        public async Task<IActionResult> GetTaskFiltersAsync()
         {
             var res = await _teacherService.GetTaskFiltersAsync();
             return Ok(res);

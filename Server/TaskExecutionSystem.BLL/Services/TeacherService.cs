@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TaskExecutionSystem.BLL.DTO;
@@ -30,29 +31,30 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
         private readonly ITaskService _taskService;
+        private readonly SignInManager<User> _signInManager;
 
-        public TeacherService(DataContext context, IHttpContextAccessor httpContextAccessor, 
-            UserManager<User> userManager, ITaskService taskService)
+       public TeacherService(DataContext context, IHttpContextAccessor httpContextAccessor, 
+            UserManager<User> userManager, ITaskService taskService, SignInManager<User> signInManager)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _taskService = taskService;
+            _signInManager = signInManager;
         }
 
-
+        // fixed => TEST
         // user.Include(u => u.Teacher) ??
+        // getting current teacher => GetCurrentTeacherEntityAsync
         public async Task<OperationDetailDTO<TeacherDTO>> GetProfileDataAsync()
         {
             var detail = new OperationDetailDTO<TeacherDTO>();
             try
             {
                 var currentUserEntity = await GetCurrentUser();
-                
-                // wtf?? -> check
                 var teacher = _context.Users.Include(t => t.Teacher).Where(u => u.Id == currentUserEntity.Id).FirstOrDefault();
-                
-                var dto = TeacherDTO.Map(teacher.Teacher);
+                var currentTeacherEntity = await GetCurrentTeacherEntityAsync();
+                var dto = TeacherDTO.Map(currentTeacherEntity);
 
                 // если без включения
                 var teacherEntity = await _context.Teachers
@@ -62,7 +64,7 @@ namespace TaskExecutionSystem.BLL.Services
 
                 detail.Succeeded = true;
                 detail.Data = dto;
-                return detail;
+                //return detail;
             }
             catch (Exception e)
             {
@@ -70,6 +72,7 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
                 return detail;
             }
+            return detail;
         }
 
         public async Task<OperationDetailDTO> UpdateProfileDataAsync(TeacherDTO newTeacherDTO)
@@ -120,6 +123,50 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        public async Task<OperationDetailDTO<TaskAddingFiltersModelDTO>> GetAddingTaskFiltersAsync()
+        {
+            var detail = new OperationDetailDTO<TaskAddingFiltersModelDTO>();
+
+            try
+            {
+                var types = await _context.TaskTypes.AsNoTracking().ToListAsync();
+                var subjects = await _context.Subjects.AsNoTracking().ToListAsync();
+                var groups = await _context.Groups
+                    .Include(g => g.Students)
+                    .ToListAsync();
+                var typeList = new List<TypeOfTaskDTO>();
+                var subjectList = new List<SubjectDTO>();
+                var groupList = new List<GroupDTO>();
+
+                foreach (var t in types)
+                {
+                    typeList.Add(TypeOfTaskDTO.Map(t));
+                }
+                foreach (var s in subjects)
+                {
+                    subjectList.Add(SubjectDTO.Map(s));
+                }
+                foreach (var g in groups)
+                {
+                    groupList.Add(GroupDTO.Map(g));
+                }
+                detail.Data = new TaskAddingFiltersModelDTO
+                {
+                    Subjects = subjectList,
+                    Groups = groupList,
+                    Types = typeList
+                };
+                detail.Succeeded = true;
+                return detail;
+            }
+
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+        }
+
         // todo: adding file [?]
         public async Task<OperationDetailDTO<TaskDTO>> CreateNewTaskAsync(TaskCreateModelDTO dto = null)
         {
@@ -154,6 +201,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // GROUPS error ---
         public async Task<OperationDetailDTO<List<SubjectDTO>>> GetMainDataAsync()
         {
             var detail = new OperationDetailDTO<List<SubjectDTO>>();
@@ -190,7 +238,7 @@ namespace TaskExecutionSystem.BLL.Services
 
 
                 // из всех задач препода получить список предметов по которым у препода есть задачи
-                foreach (var task in teacherTaskQueryList)
+                 foreach (var task in teacherTaskQueryList)
                 {
                     // добавляем группу в список для всех групп с задачами текущего препода
                     resGroupEntityList.Add(task.Group);
@@ -199,17 +247,19 @@ namespace TaskExecutionSystem.BLL.Services
                     var exSubject = new Subject();
                     if ((exSubject = resSubjectEntityList.FirstOrDefault(s => s == task.Subject)) != null)
                     {
-                        if (!exSubject.Groups.Contains(task.Group))
-                        {
-                            exSubject.Groups.Add(task.Group);
-                        }
+                        // GROUPS error ---
+                        //if (!exSubject.Groups.Contains(task.Group))
+                        //{
+                        //    exSubject.Groups.Add(task.Group);
+                        //}
                     }
                     // если нет - добавляем предмет и к нему группу
                     else
                     {
                         var newSubject = new Subject();
                         newSubject = task.Subject;
-                        newSubject.Groups.Add(task.Group);
+                        // GROUPS error ---
+                        //newSubject.Groups.Add(task.Group);
                         resSubjectEntityList.Add(task.Subject);
                     }
 
@@ -241,33 +291,35 @@ namespace TaskExecutionSystem.BLL.Services
                 // получение задач
                 foreach (var subject in resSubjectEntityList)
                 {
-                    foreach (var group in subject.Groups) // студенты подгружены
-                    {
-                        foreach (var student in group.Students)
-                        {
-                            var tSItem = await _context.TaskStudentItems
-                                .Include(ts => ts.Task)
-                                .ThenInclude(t => t.Solutions)
-                                .Where(ts => ts.StudentId == student.Id)
-                                .Where(ts => ts.Task.TeacherId == currentTeacher.Id)
-                                .ToListAsync();
+                    // GROUPS error ---
+                    //foreach (var group in subject.Groups) // студенты подгружены
+                    //{
+                    //    foreach (var student in group.Students)
+                    //    {
+                    //        var tSItem = await _context.TaskStudentItems
+                    //            .Include(ts => ts.Task)
+                    //            .ThenInclude(t => t.Solutions)
+                    //            .Where(ts => ts.StudentId == student.Id)
+                    //            .Where(ts => ts.Task.TeacherId == currentTeacher.Id)
+                    //            .ToListAsync();
 
-                            var tasks = await _context.TaskModels
-                            .Include(t => t.Group)
-                            .Include(t => t.Subject)
-                            .Include(t => t.TaskStudentItems == tSItem) // сравнение списков связующих сущностей
-                            .Where(t => t.Subject.Id == subject.Id)
-                            .Where(t => t.Group.Id == group.Id)
-                            .ToListAsync();
+                    //        var tasks = await _context.TaskModels
+                    //        .Include(t => t.Group)
+                    //        .Include(t => t.Subject)
+                    //        .Include(t => t.TaskStudentItems == tSItem) // сравнение списков связующих сущностей
+                    //        .Where(t => t.Subject.Id == subject.Id)
+                    //        .Where(t => t.Group.Id == group.Id)
+                    //        .ToListAsync();
 
-                        }
-                    }
+                    //    }
+                    //}
                 }
 
                 foreach (var subject in resSubjectEntityList)
                 {
                     var subDTO = SubjectDTO.Map(subject);
-                    subDTO.Groups = GroupDTO.Map(subject.Groups);
+                    // GROUPS error ---
+                    //subDTO.Groups = GroupDTO.Map(subject.Groups);
                     resSubjectDTOList.Add(SubjectDTO.Map(subject));
                 }
 
@@ -285,6 +337,58 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         public async Task<OperationDetailDTO<List<SubjectDTO>>> GetTaskFiltersAsync()
+        {
+            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+            try
+            {
+                var resSubjectDTOList = new List<SubjectDTO>();
+
+                var currentUser = await GetCurrentUser();
+                var currentTeacher = currentUser.Teacher;
+
+                IQueryable<Subject> subjects = from s in _context.Subjects select s;
+
+                // все задачи текущего преподавателя
+                IQueryable<TaskModel> teacherTaskQueryList = from t in _context.TaskModels
+                                     .Include(t => t.TeacherId == currentTeacher.Id)
+                                     .Include(t => t.Group)
+                                     .Include(t => t.Subject)
+                                                             select t;
+
+                var currentGroupEntityList = new List<Group>();
+
+                foreach (var task in teacherTaskQueryList)
+                {
+                    currentGroupEntityList.Add(task.Group);
+
+                    var subjectDTO = new SubjectDTO();
+                    if ((subjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
+                    {
+                        var groupDTO = GroupDTO.Map(task.Group);
+                        if (!subjectDTO.Groups.Contains(groupDTO))
+                        {
+                            subjectDTO.Groups.Add(groupDTO);
+                        }
+                    }
+                    else
+                    {
+                        var newSubjectDTO = SubjectDTO.Map(task.Subject);
+                        resSubjectDTOList.Add(newSubjectDTO);
+                    }
+                }
+                detail.Data = resSubjectDTOList;
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+        }
+
+        // GROUPS error ---
+        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetTaskFiltersAsync__error()
         {
             var detail = new OperationDetailDTO<List<SubjectDTO>>();
 
@@ -320,17 +424,19 @@ namespace TaskExecutionSystem.BLL.Services
                 var exSubject = new Subject();
                 if ((exSubject = resSubjectEntityList.FirstOrDefault(s => s == task.Subject)) != null)
                 {
-                    if (!exSubject.Groups.Contains(task.Group))
-                    {
-                        exSubject.Groups.Add(task.Group);
-                    }
+                    // GROUPS error ---
+                    //if (!exSubject.Groups.Contains(task.Group))
+                    //{
+                    //    exSubject.Groups.Add(task.Group);
+                    //}
                 }
                 // если нет - добавляем предмет и к нему группу
                 else
                 {
                     var newSubject = new Subject();
                     newSubject = task.Subject;
-                    newSubject.Groups.Add(task.Group);
+                    // GROUPS error ---
+                    //newSubject.Groups.Add(task.Group);
                     resSubjectEntityList.Add(task.Subject);
                 }
             }
@@ -362,6 +468,7 @@ namespace TaskExecutionSystem.BLL.Services
             //}
 
         }
+        // -----
 
         public async Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
         {
@@ -468,6 +575,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
+
         private async Task<Teacher> GetCurrentTeacherEntityAsync()
         {
             var currentUser = await GetCurrentUser();
@@ -475,6 +583,12 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         private async Task<User> GetCurrentUser() => await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+
+        //private async Task<User> GetCurrentUser_()
+        //{
+        //    var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+        //    //var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+        //}
 
         private async Task AddStudentsToTaskAsync(int taskID, int[] studentIDs)
         {
@@ -494,24 +608,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetAddingTaskFiltersAsync()
-        {
-            var detail = new OperationDetailDTO();
-            try
-            {
-                var types = _context.TaskTypes.AsNoTracking().ToListAsync();
-                var subjects = _context.Subjects.AsNoTracking().ToListAsync();
-                var groups = _context.Groups
-                    .Include(g => g.Students)
-                    .ToListAsync();
-
-            }
-            catch (Exception e)
-            {
-
-            }
-            throw new NotImplementedException();
-        }
+        
     }
 }
 

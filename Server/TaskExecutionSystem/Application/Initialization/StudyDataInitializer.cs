@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Identity;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities.Studies;
+using TaskExecutionSystem.DAL.Entities.Task;
 
 namespace TaskExecutionSystem.Application.Initialization
 {
@@ -21,6 +22,7 @@ namespace TaskExecutionSystem.Application.Initialization
             await InitializeGroups(context);
             await InitializeDepartments(context);
             await InitializeSubjects(context);
+            await InitializeTaskTypes(context);
         }
 
         private async Task InitializeFaculties(DataContext context)
@@ -127,6 +129,36 @@ namespace TaskExecutionSystem.Application.Initialization
                 await context.SaveChangesAsync();
             }
         }
+
+        private async Task InitializeTaskTypes(DataContext context)
+        {
+            try
+            {
+                if (!await context.TaskTypes.AnyAsync())
+                {
+                    context.TaskTypes.AddRange(
+                        new TypeOfTask
+                        {
+                            Name = "Лабораторная работа"
+                        },
+                        new TypeOfTask
+                        {
+                            Name = "Контрольная работа"
+                        },
+                        new TypeOfTask
+                        {
+                            Name = "Самостоятельная работа"
+                        },
+                        new TypeOfTask
+                        {
+                            Name = "Домашняя работа"
+                        });
+                }
+            }
+            catch(Exception e)
+            { Console.WriteLine("Ошибка при инициализации типов заданий. Подробнее:" + e.Message); }
+        }
+
 
         private async Task<Faculty> GetFacultyByNameAsync(string facultyName, DataContext context)
         {
