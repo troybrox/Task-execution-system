@@ -213,7 +213,8 @@ class OneTaskComponent extends React.Component {
     }
 
     renderMemberTask() {
-        const users = this.props.group.students.map((item, index)=>{
+        console.log(this.props.taskAdditionData)
+        const users = this.props.taskAdditionData.students.map((item, index)=>{
                 return (
                     <li
                         key={index}
@@ -228,7 +229,7 @@ class OneTaskComponent extends React.Component {
         return (
             <Auxiliary>
                 <h4>Группа</h4>
-                <p className='group_create'>{this.props.group.name}</p>
+                <p className='group_create'>{this.props.taskAdditionData.group}</p>
                 <h4>Участники {users.length}</h4>
                 <ul>
                     {users}
@@ -449,7 +450,7 @@ class OneTaskComponent extends React.Component {
                         { this.renderTitle() }
                     </div>
                 <div className='main_one_task'>
-                    <div className='task_options'>
+                    {/* <div className='task_options'>
                         { this.renderContain() }
                     </div>
                     <aside className='aside_one_task'>
@@ -464,7 +465,7 @@ class OneTaskComponent extends React.Component {
                             { this.renderDate() }
                             <p className='small_text_date'>Обратите внимание, что дата сдачи должна быть не ранее даты начала</p>
                         </div>
-                    </aside>
+                    </aside> */}
                 </div>
             </Frame>
         )

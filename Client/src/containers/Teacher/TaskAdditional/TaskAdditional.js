@@ -13,8 +13,7 @@ class TasksComponent extends React.Component {
     render() {
         return (
             <OneTaskComponent
-                teacherData={this.props.teacherData}
-                taskData={this.props.taskData}
+                taskAdditionData={this.props.taskAdditionData}
             >
                 {this.props.errorShow ? 
                     <Error 
@@ -31,8 +30,7 @@ class TasksComponent extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        teacherData: state.teacher.teacherData,
-        taskData: state.teacher.taskData,
+        taskAdditionData: state.teacher.taskAdditionData,
         errorShow: state.teacher.errorShow,
         errorMessage: state.teacher.errorMessage
     }
