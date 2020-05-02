@@ -221,7 +221,7 @@ class OneTaskComponent extends React.Component {
                         className='student_li'
                     >
                         <img src='/images/card.svg' alt='' />
-                        {item}
+                        <span>{item.surname} {item.name}</span>
                     </li>
                 )
             })
@@ -249,6 +249,10 @@ class OneTaskComponent extends React.Component {
     renderDateCreate() {
         return (
             <Auxiliary>
+                <h4>
+                    Срок выполнения
+                    <span className='need_field'>*</span>
+                </h4>
                 <p className='date_p_create'>Дата начала:</p>
                 <input 
                     type='datetime-local'
@@ -266,13 +270,17 @@ class OneTaskComponent extends React.Component {
                     className='date_input_create' 
                     onChange={(event) => this.changeDate(event, 'end')}
                 />
+                <p className='small_text_date'>Обратите внимание, что дата сдачи должна быть не ранее даты начала</p>
             </Auxiliary>
         )
     }
 
     renderDateTask() {
         return (
-            <div>Wait Task...</div>
+            <Auxiliary>
+                <h4>Срок выполнения</h4>
+            </Auxiliary>
+
         )
     }
 
@@ -374,13 +382,7 @@ class OneTaskComponent extends React.Component {
         )
     }   
 
-    renderContainTask() {
-        return (
-            <div>Opa</div>
-        )
-    }
-
-    renderContain() {
+    renderButtonCreate() {
         const cls = []
         const createTask = {
             task: {}
@@ -408,16 +410,28 @@ class OneTaskComponent extends React.Component {
                 cls.push('blue_big')
         } else 
             cls.push('disactive_big')
-        
+
+        return (
+            <Button 
+                typeButton={cls.join(' ')}
+                onClickButton={() => this.props.onSendCreate(createTask)}
+                value='Добавить задачу'
+            />
+        )
+    }
+
+    renderContainTask() {
+        return (
+            <div>Opa</div>
+        )
+    }
+
+    renderContain() {        
         if (this.props.typeTask === 'create') {
             return (
                 <Auxiliary>
                     {this.renderContainCreate()}
-                    <Button 
-                        typeButton={cls.join(' ')}
-                        onClickButton={() => this.props.onSendCreate(createTask)}
-                        value='Добавить задачу'
-                    />
+                    {this.renderButtonCreate()}
                 </Auxiliary>
             )
         } else {
@@ -450,7 +464,7 @@ class OneTaskComponent extends React.Component {
                         { this.renderTitle() }
                     </div>
                 <div className='main_one_task'>
-                    {/* <div className='task_options'>
+                    <div className='task_options'>
                         { this.renderContain() }
                     </div>
                     <aside className='aside_one_task'>
@@ -458,14 +472,9 @@ class OneTaskComponent extends React.Component {
                             { this.renderMembers() }
                         </div>
                         <div className='date_create'>
-                            <h4>
-                                Срок выполнения
-                                <span className='need_field'>*</span>
-                            </h4>
                             { this.renderDate() }
-                            <p className='small_text_date'>Обратите внимание, что дата сдачи должна быть не ранее даты начала</p>
                         </div>
-                    </aside> */}
+                    </aside>
                 </div>
             </Frame>
         )

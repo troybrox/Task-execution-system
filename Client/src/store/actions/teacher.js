@@ -347,9 +347,6 @@ export function onSendCreate(task) {
 
             if (data.succeeded) {
                 dispatch(successCreate(data.id))
-                // const err = ['Задача создана']
-                // err.unshift('Успешно создано!')
-                // dispatch(errorWindow(true, err))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
