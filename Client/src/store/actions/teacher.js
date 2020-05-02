@@ -296,6 +296,34 @@ export function fetchTaskById(id) {
     }
 }
 
+// export function fetchTaskCreate() {}
+
+export function onSendCreate(task) {
+    console.log(task)
+    return async dispatch => {
+        try {
+            const url = `${commonURL}/api/teacher/add`
+            const response = await axios.post(url, task)
+            const data = response.data
+
+            if (data.succeeded) {
+                const err = ['Это временное окно, чтобы видно было, что сервер работает. Доделаю.']
+                err.unshift('Успешно создано!')
+                dispatch(errorWindow(true, err))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
 // export function fetchRepository() {}
 
 export function successProfile(profileData) {

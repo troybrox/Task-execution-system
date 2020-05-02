@@ -11,9 +11,12 @@ class OneTaskComponent extends React.Component {
         subjectId: null,
         groupId: null,
         typeId: null,
-        studentsId: [],
+        studentsId: [1,2,3],
         titleInput: '',
-        descriptionInput: ''
+        descriptionInput: '',
+        files: null,
+        beginDate: null,
+        finishDate: null
     }
 
     choiceSubject = event => {
@@ -64,6 +67,26 @@ class OneTaskComponent extends React.Component {
         this.setState({
             descriptionInput
         })
+    }
+
+    onLoadFile = event => {
+        this.setState({
+            files: event.target.files[0]
+        })
+    }
+
+    changeDate = (event, type) => {
+        if (type === 'begin') {
+            let beginDate = null
+            if (event.target.value !== '')
+                beginDate = event.target.value
+            this.setState({beginDate})
+        } else {
+            let finishDate = null
+            if (event.target.value !== '')
+                finishDate = event.target.value
+            this.setState({finishDate})
+        }
     }
 
 
@@ -196,11 +219,13 @@ class OneTaskComponent extends React.Component {
                 <input 
                     type='datetime-local'
                     className='date_input_create' 
+                    onChange={(event) => this.changeDate(event, 'begin')}
                 />
                 <p className='date_p_create'>Дата сдачи:</p>
                 <input 
                     type='datetime-local'
                     className='date_input_create' 
+                    onChange={(event) => this.changeDate(event, 'end')}
                 />
             </Auxiliary>
         )
@@ -280,9 +305,10 @@ class OneTaskComponent extends React.Component {
                     <input 
                         type='file' 
                         accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
-                        // onLoad={}
+                        onChange={event => this.onLoadFile(event)}
                     />
                 </label>
+                {this.state.files ? <p>Файл загружен если чо <span role='img'>😎😎😎</span>)) Я доделаю это место, чтобы было красиво, это так сделано по фасту))</p> : null}
             </div>
         )
     }   
@@ -295,14 +321,32 @@ class OneTaskComponent extends React.Component {
 
     renderContain() {
         const cls = []
+        const createTask = {
+            task: {}
+        }
         if (
             this.state.subjectId !== null && 
             this.state.typeId !== null && 
-            // this.state.studentsId.length !== 0 &&
+            this.state.groupId !== null &&
+            this.state.studentsId.length !== 0 &&
             this.state.titleInput.trim() !== '' &&
-            this.state.descriptionInput.trim() !== ''
-            ) cls.push('blue_big')
-        else cls.push('disactive_big')
+            this.state.descriptionInput.trim() !== '' &&
+            this.state.beginDate !== null &&
+            this.state.finishDate !== null      
+            ) {
+                createTask.task.subjectId = this.state.subjectId 
+                createTask.task.typeId = this.state.typeId 
+                createTask.task.groupId = this.state.groupId
+                createTask.task.name = this.state.titleInput 
+                createTask.task.contentText = this.state.descriptionInput
+                createTask.task.studentId = this.state.studentsId
+                createTask.task.beginDate = this.state.beginDate
+                createTask.task.finishDate = this.state.finishDate
+
+                createTask.file = this.state.files
+                cls.push('blue_big')
+        } else 
+            cls.push('disactive_big')
         
         if (this.props.typeTask === 'create') {
             return (
@@ -310,7 +354,7 @@ class OneTaskComponent extends React.Component {
                     {this.renderContainCreate()}
                     <Button 
                         typeButton={cls.join(' ')}
-                        onClickButton={()=>{console.log('ok')}}
+                        onClickButton={() => this.props.onSendCreate(createTask)}
                         value='Добавить задачу'
                     />
                 </Auxiliary>
