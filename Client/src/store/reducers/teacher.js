@@ -174,26 +174,38 @@ const initialState = {
             {
                 id: 1,
                 name: "Подзаголовкин",
-                surname: "Лупа",
-                solution: {
-                    contentText: "xxxxxxx",
-                    creationDate: "dd.mm.yyyy",
-                    fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
-                    isExpired: false
-                }
+                surname: "Лупа"
             },
             {
                 id: 2,
                 name: "Заголовкин",
-                surname: "Пупа",
-                solution: {
-                    contentText: "xxxxxxx",
-                    creationDate: "dd.mm.yyyy",
-                    fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
-                    isExpired: false
-                }
+                surname: "Пупа"
             }
         ],
+        solutions: [
+            {
+                contentText: "xxxxxxx",
+                creationDate: "dd.mm.yyyy",
+                fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
+                isExpired: false,
+                student: {
+                    id: 1,
+                    name: "Подзаголовкин",
+                    surname: "Лупа"
+                }
+            },
+            {
+                contentText: "xxxxxxx",
+                creationDate: "dd.mm.yyyy",
+                fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
+                isExpired: false,
+                student: {
+                    id: 2,
+                    name: "Заголовкин",
+                    surname: "Пупа"
+                }
+            }
+        ]
     },
 
     successId: null,
