@@ -9,6 +9,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 {
     public class TaskDTO
     {
+        public int Id { get; set; }
         public string Type { get; set; }
         public string Subject { get; set; }
         public string Name { get; set; }
@@ -27,6 +28,8 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 
         public string Group { get; set; }
 
+        public int SolutionsCount { get; set; }
+
         public List<StudentDTO> Students { get; set; }
         public List<SolutionDTO> Solutions { get; set; }
 
@@ -43,16 +46,41 @@ namespace TaskExecutionSystem.BLL.DTO.Task
             {
                 Type = entity.Type.Name,
                 Subject = entity.Subject.Name,
+
                 ContentText = entity.ContentText,
                 IsOpen = entity.IsOpen,
                 FileURI = entity.File.FileURI,
+
                 TeacherName = entity.Teacher.Name,
                 TeacherSurname = entity.Teacher.Surname,
                 TeacherPatronymic = entity.Teacher.Patronymic,
+
                 BeginDate = entity.BeginDate,
                 FinishDate = entity.FinishDate,
                 UpdateDate = entity.UpdateDate,
+
                 Group = entity.Group.NumberName
+            };
+            return dto;
+        }
+
+        public static TaskDTO MapForTeacherList(TaskModel entity)
+        {
+            var dto = new TaskDTO
+            {
+                Id = entity.Id,
+                Type = entity.Type.Name,
+                //Subject = entity.Subject.Name,
+
+                ContentText = entity.ContentText,
+                IsOpen = entity.IsOpen,
+                FileURI = entity.File.FileURI,
+
+                BeginDate = entity.BeginDate,
+                FinishDate = entity.FinishDate,
+                UpdateDate = entity.UpdateDate,
+
+                SolutionsCount = entity.Solutions.Count
             };
             return dto;
         }

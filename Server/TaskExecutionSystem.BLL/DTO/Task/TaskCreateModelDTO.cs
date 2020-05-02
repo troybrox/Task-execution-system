@@ -16,7 +16,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 
         public DateTime FinishDate { get; set; }
 
-        public int TeacherId { get; set; }
+        //public int TeacherId { get; set; }
 
         public int TypeId { get; set; }
 
@@ -36,7 +36,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
                 BeginDate = dto.BeginDate,
                 FinishDate = dto.FinishDate,
                 TypeId = dto.TypeId,
-                TeacherId = dto.TeacherId,
+                //TeacherId = dto.TeacherId,
                 SubjectId = dto.SubjectId,
                 GroupId = dto.GroupId
             };
