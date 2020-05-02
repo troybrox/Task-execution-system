@@ -12,7 +12,7 @@ console.log(cookie.load('.AspNetCore.Application.Id'))
 
 export default axios.create({
     baseURL: 'https://localhost:44303/',
-    // headers: {
-    //     Authorization:'Bearer '.concat(cookie.load('.AspNetCore.Application.Id'))
-    // }
+    headers: {
+        Authorization:'Bearer '.concat(cookie.load('.AspNetCore.Application.Id'))
+    }
 })
