@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.Interfaces;
 using Newtonsoft.Json;
+using TaskExecutionSystem.Identity.JWT.Interfaces;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace TaskExecutionSystem.Controllers
 {
@@ -12,10 +15,12 @@ namespace TaskExecutionSystem.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAccountService _accountService;
+        private readonly IJWTTokenGenerator _jwtTokenGenerator;
 
-        public AccountController(IAccountService accountService)
+        public AccountController(IAccountService accountService, IJWTTokenGenerator tokenGenerator)
         {
             _accountService = accountService;
+            _jwtTokenGenerator = tokenGenerator;
         }
 
 
@@ -54,10 +59,20 @@ namespace TaskExecutionSystem.Controllers
             if (!serviceResult.Succeeded)
             {
                 detailResult = new OperationDetailDTO<SignInDetailDTO> { Succeeded = false, ErrorMessages = serviceResult.ErrorMessages };
+                return Unauthorized(detailResult);
             }
                 
             else
             {
+                var userRoles = serviceResult.Data.UserRoles;
+                var tokenResult = _jwtTokenGenerator.Generate(serviceResult.Data.User, userRoles);
+
+                HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
+
+                //return Ok(tokenResult.Expires);
+
+
+
                 detailResult = new OperationDetailDTO<SignInDetailDTO>
                 {
                     Succeeded = true,
@@ -67,8 +82,11 @@ namespace TaskExecutionSystem.Controllers
                         IdToken = "server_token"
                     },
                 };
+
+                //return Ok(tokenResult.Expires);
+                return Ok(detailResult);
             }
-            return Ok(detailResult);
+            //return Ok(detailResult);
         }
 
 

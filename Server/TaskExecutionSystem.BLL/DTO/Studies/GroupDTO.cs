@@ -21,12 +21,21 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
         }
 
 
-        public static GroupDTO Map(Group entity) => new GroupDTO
+        public static GroupDTO Map(Group entity)
         {
-            Id = entity.Id,
-            Name = entity.NumberName,
-            FacultyId = entity.FacultyId
-        };
+            var dto = new GroupDTO
+            {
+                Id = entity.Id,
+                Name = entity.NumberName,
+                FacultyId = entity.FacultyId
+            };
+            foreach(var s in entity.Students)
+            {
+                dto.Students.Add(StudentDTO.Map(s));
+            }
+            return dto;
+        }
+        
 
         public static List<GroupDTO> Map(List<Group> entities)
         {
