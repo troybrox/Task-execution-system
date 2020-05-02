@@ -1,4 +1,7 @@
 import axios from 'axios'
+import cookie from 'react-cookies'
+
+console.log(cookie.load('.AspNetCore.Application.Id'))
 
 // function getCookie(name) {
 //     let matches = document.cookie.match(new RegExp(
@@ -10,6 +13,6 @@ import axios from 'axios'
 export default axios.create({
     baseURL: 'https://localhost:44303/',
     // headers: {
-    //     Authorization:'Bearer '.concat(USER_TOKEN)
+    //     Authorization:'Bearer '.concat(cookie.load('.AspNetCore.Application.Id'))
     // }
 })
