@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios from '../../axios/axiosRole'
 import { 
     AUTH_SUCCESS, 
     LOGOUT, 
@@ -7,7 +7,6 @@ import {
     PUSH_FILTERS, 
     ERROR_WINDOW,
     LOADING_START } from './actionTypes'
-import { commonURL } from './actionURL'
 
 export function registr(url, data) {
     return async dispatch => {
@@ -36,7 +35,7 @@ export function auth(data) {
     return async dispatch => {
         dispatch(loadingStart())
         try {
-            const url = `${commonURL}/api/account/login`
+            const url = 'api/account/login'
             const response = await axios.post(url, data)
             const respData = response.data
             localStorage.setItem('token', respData.data.idToken)
@@ -60,7 +59,7 @@ export function auth(data) {
 export function loadingFilters() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/account/filters`
+            const url = 'api/account/filters'
             const response = await axios.get(url)
             const data = response.data
 
@@ -97,7 +96,7 @@ export function loadingFilters() {
 export function logoutHandler() {
     return async dispatch => {
         try {
-            await axios.get(`${commonURL}/api/account/signout`)
+            await axios.get('api/account/signout')
             localStorage.removeItem('token')
             localStorage.removeItem('role')
             dispatch(logout())

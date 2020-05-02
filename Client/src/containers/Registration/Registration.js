@@ -5,8 +5,6 @@ import { registr, loadingFilters } from '../../store/actions/auth'
 import Success from '../Success/Success'
 import Loader from '../../components/UI/Loader/Loader'
 import Button from '../../components/UI/Button/Button'
-import { commonURL } from '../../store/actions/actionURL'
-
 
 class Registration extends React.Component {
 	state = {
@@ -79,7 +77,7 @@ class Registration extends React.Component {
 				data[item.serverName] = item.value
 			}
 		})
-		const url = `${commonURL}/api/account/register/${role}`
+		const url = `api/account/register/${role}`
 
 		this.props.registr(url, data)
 	}

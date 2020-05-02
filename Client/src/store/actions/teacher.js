@@ -1,11 +1,10 @@
-import axios from 'axios'
+import axios from '../../axios/axiosRole'
 import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from './actionTypes'
-import { commonURL } from './actionURL'
 
 export function fetchProfile() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/profile`
+            const url = 'api/teacher/profile'
             const response = await axios.get(url)
             const data = response.data
             if (data.succeeded) {
@@ -60,7 +59,7 @@ export function onChangeProfile(value, index) {
 export function updateData(data, path) {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/profile/${path}`
+            const url = `api/teacher/profile/${path}`
             const response = await axios.post(url, data)
             const respData = response.data
             if (respData.succeeded) {
@@ -94,7 +93,7 @@ export function updateProfile() {
 export function fetchMain() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/main`
+            const url = 'api/teacher/main'
             const response = await axios.get(url)
             const data = response.data
 
@@ -167,7 +166,7 @@ export function choiceStudentHandler(indexSubject, indexGroup, indexStudent) {
 export function fetchTaskFilters() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/task/filters`
+            const url = 'api/teacher/task/filters'
             const response = await axios.get(url)
             const data = response.data
 
@@ -239,7 +238,7 @@ export function choiceGroupTask(indexSubject, indexGroup) {
 export function fetchListTasks(filters) {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/task`
+            const url = 'api/teacher/task'
             const response = await axios.post(url, filters)
             const data = response.data
 
@@ -274,7 +273,7 @@ export function fetchListTasks(filters) {
 export function fetchTaskById(id) {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/task/${id}`
+            const url = `api/teacher/task/${id}`
             const response = await axios.get(url)
             const data = response.data
 
@@ -296,7 +295,7 @@ export function fetchTaskById(id) {
 export function fetchTaskCreate() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/task/add/filters`
+            const url = 'api/teacher/task/add/filters'
             const response = await axios.get(url)
             const data = response.data
 
@@ -340,17 +339,17 @@ export function changeChecked(groupIndex, studentIndex, val) {
 }
 
 export function onSendCreate(task) {
-    console.log(task)
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/teacher/task/add`
+            const url = 'api/teacher/task/add'
             const response = await axios.post(url, task)
             const data = response.data
 
             if (data.succeeded) {
-                const err = ['Это временное окно, чтобы видно было, что сервер работает. Доделаю.']
-                err.unshift('Успешно создано!')
-                dispatch(errorWindow(true, err))
+                dispatch(successCreate(data.id))
+                // const err = ['Задача создана']
+                // err.unshift('Успешно создано!')
+                // dispatch(errorWindow(true, err))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

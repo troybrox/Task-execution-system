@@ -1,11 +1,10 @@
-import axios from 'axios'
+import axios from '../../axios/axiosRole'
 import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from './actionTypes'
-import { commonURL } from './actionURL'
 
 export function fetchProfile() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/student/profile`
+            const url = 'api/student/profile'
             const response = await axios.get(url)
             const data = response.data
             if (data.succeeded) {
@@ -59,7 +58,7 @@ export function onChangeProfile(value, index) {
 export function updateData(data, path) {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/student/profile/${path}`
+            const url = `api/student/profile/${path}`
             const response = await axios.post(url, data)
             const respData = response.data
             if (respData.succeeded) {
@@ -93,7 +92,7 @@ export function updateProfile() {
 export function fetchTaskFilters() {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/student/task/filters`
+            const url = 'api/student/task/filters'
             const response = await axios.get(url)
             const data = response.data
 
@@ -149,7 +148,7 @@ export function choiceSubjectTask(indexSubject) {
 export function fetchListTasks(filters) {
     return async dispatch => {
         try {
-            const url = `${commonURL}/api/student/task`
+            const url = 'api/student/task'
             const response = await axios.post(url, filters)
             const data = response.data
 
