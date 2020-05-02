@@ -15,6 +15,8 @@ namespace TaskExecutionSystem.BLL.DTO
 
         public List<SolutionDTO> Solutions { get; set; }
 
+        public List<TaskDTO> Tasks { get; set; }
+
 
         public static StudentDTO Map(StudentRegisterRequest entity) => new StudentDTO
         {

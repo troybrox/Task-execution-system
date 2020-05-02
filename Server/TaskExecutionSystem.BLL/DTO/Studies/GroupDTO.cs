@@ -12,6 +12,14 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
 
         public int FacultyId { get; set; }
 
+        public List<StudentDTO> Students { get; set; }
+
+        
+        public GroupDTO()
+        {
+            Students = new List<StudentDTO>();
+        }
+
 
         public static GroupDTO Map(Group entity) => new GroupDTO
         {

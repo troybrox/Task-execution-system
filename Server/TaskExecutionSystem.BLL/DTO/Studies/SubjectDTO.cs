@@ -29,5 +29,6 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
             };
             return dto;
         }
+
     }
 }

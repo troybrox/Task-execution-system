@@ -14,6 +14,8 @@ namespace TaskExecutionSystem.BLL.DTO
 
         public string DepartmentName { get; set; }
 
+        public string FacultyName { get; set; }
+
         public static TeacherDTO Map(TeacherRegisterRequest entity) => new TeacherDTO
         {
             Id = entity.Id,

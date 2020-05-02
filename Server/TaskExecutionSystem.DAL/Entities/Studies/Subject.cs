@@ -19,11 +19,14 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
 
         public List<Solution> Solutions { get; set; } // [?]
 
+        public List<Group> Groups { get; set; }
+
         public Subject()
         {
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
             Tasks = new List<TaskModel>();
             Solutions = new List<Solution>();
+            Groups = new List<Group>();
         }
 
         public Subject(string name)
@@ -32,6 +35,7 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
             Tasks = new List<TaskModel>();
             Solutions = new List<Solution>();
+            Groups = new List<Group>();
         }
     }
 }

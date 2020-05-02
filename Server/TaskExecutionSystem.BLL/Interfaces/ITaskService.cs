@@ -11,9 +11,8 @@ namespace TaskExecutionSystem.BLL.Interfaces
 {
     public interface ITaskService
     {
-        public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters);
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
-        public Task<OperationDetailDTO> CreateTaskAsync(TaskCreateModelDTO dto);
+
         public Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string fileName);
         public Task<OperationDetailDTO> UpdateTaskAsync();
 

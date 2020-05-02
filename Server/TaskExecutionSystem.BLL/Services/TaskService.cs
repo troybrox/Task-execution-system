@@ -16,6 +16,7 @@ using TaskExecutionSystem.DAL.Entities.Identity;
 using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.File;
 using TaskExecutionSystem.BLL.DTO.Filters;
+using TaskExecutionSystem.BLL.DTO.Studies;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -56,40 +57,10 @@ namespace TaskExecutionSystem.BLL.Services
             return detail;
         }
 
-        // todo: adding file [?]
-        public async Task<OperationDetailDTO> CreateTaskAsync(TaskCreateModelDTO dto)
-        {
-            var detail = new OperationDetailDTO { Succeeded = false };
-            try
-            {
-                if(dto != null)
-                {
-                    var newTask = TaskCreateModelDTO.Map(dto);
-                    var newTSItems = new List<TaskStudentItem>();
+        
+       
 
-                    await _context.TaskModels.AddAsync(newTask);
-                    await _context.SaveChangesAsync();
-
-
-                    await AddStudentsToTaskAsync(newTask.Id, dto.StudentIds);
-                    
-                    detail.Succeeded = true;
-                    return detail;
-                }
-                else
-                {
-                    detail.ErrorMessages.Add("Параметр модели создаваемой задачи был равен NULL");
-                    return detail;
-                }
-                
-            }
-            catch (Exception e)
-            {
-                detail.ErrorMessages.Add(e.Message);
-                return detail;
-            }
-        }
-
+        // foreign key ??
         public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string fileName)
         {
             var detail = new OperationDetailDTO();
