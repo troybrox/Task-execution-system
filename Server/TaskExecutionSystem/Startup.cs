@@ -12,6 +12,7 @@ using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.BLL.Services;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.Identity.JWT.Extensions;
+using TaskExecutionSystem.Identity.JWT.Options;
 
 namespace TaskExecutionSystem
 {
@@ -21,7 +22,8 @@ namespace TaskExecutionSystem
         {
             Configuration = configuration;
         }
-        
+
+        public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
 
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -32,7 +34,11 @@ namespace TaskExecutionSystem
             services.AddDbContext<DataContext>(optionsBuilder => 
                 optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Connection")));
 
-            services.AddApiJwtAuthentication();
+            var section = Configuration.GetSection("AuthOptions");
+            var options = section.Get<AuthOptions>();
+            var jwtOptions = new JWTOptions(options.Issuer, options.Audience, options.Secret, options.Lifetime);
+            services.AddApiJwtAuthentication(jwtOptions);
+
             services.Configure<SeedOptions>(Configuration.GetSection("Seed"));
             services.AddAsyncInitializer<IdentityInitializer>()
                 .AddAsyncInitializer<StudyDataInitializer>();
@@ -54,7 +60,8 @@ namespace TaskExecutionSystem
             services.AddTransient<IAccountService, AuthService>()
                 .AddTransient<IAdminService, AdminService>()
                 .AddTransient<ITaskService, TaskService>()
-                .AddTransient<ITeacherService, TeacherService>();
+                .AddTransient<ITeacherService, TeacherService>()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
 
@@ -79,9 +86,12 @@ namespace TaskExecutionSystem
             app.UseStaticFiles();
 
             app.UseRouting();
-            app.UseAuthorization();
 
             app.UseAuthorization();
+
+            app.UseSecureJwt();
+
+            app.UseAuthentication();
 
             app.UseCookiePolicy(new CookiePolicyOptions 
             {
@@ -90,7 +100,6 @@ namespace TaskExecutionSystem
                 Secure = CookieSecurePolicy.Always
             });
 
-            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {

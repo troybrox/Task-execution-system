@@ -18,7 +18,6 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
             Groups = new List<GroupDTO>();
         }
 
-
         // поиск групп, у кого есть задиния по данному предмет
         public static SubjectDTO Map(Subject entity)
         {

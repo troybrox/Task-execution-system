@@ -11,7 +11,7 @@ namespace TaskExecutionSystem.Identity.Extensions
     public static class UserAccountExtension
     {
         public static ClaimsIdentity BuildClaims<T>(this T user, IList<string> roles)
-            where T : IdentityUser
+            where T : User
         {
             var roleClaims = roles.Select(role => new Claim(ClaimsIdentity.DefaultRoleClaimType, role)).ToList();
 
