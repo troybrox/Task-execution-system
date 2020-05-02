@@ -5,7 +5,7 @@ import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { fetchMain } from '../../../store/actions/teacher'
-import { choiceGroupHandler, choiceSubjectHandler, choiceStudentHandler } from '../../../store/actions/teacher'
+import { choiceGroupMain, choiceSubjectMain, choiceStudentHandler } from '../../../store/actions/teacher'
 
 class Main extends React.Component {
     state = {
@@ -15,11 +15,11 @@ class Main extends React.Component {
     }
 
     choiceSubject = indexSubject => {
-        this.props.choiceSubjectHandler(indexSubject)
+        this.props.choiceSubjectMain(indexSubject)
     }
 
     choiceGroup = (indexSubject, indexGroup) => {
-        this.props.choiceGroupHandler(indexSubject, indexGroup)
+        this.props.choiceGroupMain(indexSubject, indexGroup)
 
         const nameSubject = this.props.mainData[indexSubject].value
         const nameGroup = this.props.mainData[indexSubject].groups[indexGroup].value
@@ -159,10 +159,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchMain: () => dispatch(fetchMain()),
-        choiceSubjectHandler: (indexSubject) => 
-            dispatch(choiceSubjectHandler(indexSubject)),
-        choiceGroupHandler: (indexSubject, indexGroup) => 
-            dispatch(choiceGroupHandler(indexSubject, indexGroup)),
+        choiceSubjectMain: (indexSubject) => 
+            dispatch(choiceSubjectMain(indexSubject)),
+        choiceGroupMain: (indexSubject, indexGroup) => 
+            dispatch(choiceGroupMain(indexSubject, indexGroup)),
         choiceStudentHandler: (indexSubject, indexGroup, indexStudent) => 
             dispatch(choiceStudentHandler(indexSubject, indexGroup, indexStudent)),
     }

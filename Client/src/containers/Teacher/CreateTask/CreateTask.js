@@ -1,6 +1,7 @@
 import React from 'react'
-import './CreateTask.scss'
 import OneTaskComponent from '../../../components/User/OneTaskComponent/OneTaskComponent'
+import { connect } from 'react-redux'
+import { onSendCreate } from '../../../store/actions/teacher'
 // import Label from '../../../components/UI/Label/Label'
 // import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 // import Input from '../../../components/UI/Input/Input'
@@ -120,12 +121,24 @@ class CreateTask extends React.Component {
                 typeTask='create'
                 type={this.state.type}
                 subjects={this.state.subjects} 
+                onSendCreate={this.props.onSendCreate}
             >
 
             </OneTaskComponent>
         )
     }
-
 }
 
-export default CreateTask
+function mapStateToProps(state) {
+    return {
+
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        onSendCreate: (task) => dispatch(onSendCreate(task))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreateTask)
