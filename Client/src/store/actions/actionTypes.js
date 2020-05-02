@@ -13,6 +13,8 @@ export const CHANGE_CONDITION = 'CHANGE_CONDITION'
 // Для teacher
 export const SUCCESS_MAIN = 'SUCCESS_MAIN'
 export const SUCCESS_TASK_ADDITION = 'SUCCESS_TASK_ADDITION'
+export const SUCCESS_CREATE_DATA = 'SUCCESS_CREATE_DATA'
+export const SUCCESS_CREATE = 'SUCCESS_CREATE'
 
 // Для student
 

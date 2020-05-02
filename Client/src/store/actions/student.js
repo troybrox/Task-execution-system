@@ -81,13 +81,10 @@ export function updateProfile() {
     return async (dispatch, getState) => {
         const state = getState().student
         const profileData = [...state.profileData]
-        const data = []
+        const data = {}
         profileData.forEach(el => {
-            if ('serverName' in el) {
-                const object = {}
-                object[el.serverName] = el.value
-                data.push(object)
-            }
+            if ('serverName' in el) 
+                data[el.serverName] = el.value
         })
         dispatch(updateData(data, 'update'))
     }

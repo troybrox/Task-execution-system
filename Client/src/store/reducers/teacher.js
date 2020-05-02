@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [
@@ -11,10 +11,10 @@ const initialState = {
     ],
     mainData: [
         {
-            value: 'Моделирование сложных систем', 
+            name: 'Моделирование сложных систем', 
             groups: [
                 {
-                    value: '6001-020304D', 
+                    number: '6001-020304D', 
                     students: [
                         {
                             name: 'Студент 1', 
@@ -33,10 +33,10 @@ const initialState = {
                             open: false, 
                         }
                     ],
-                    open: false
+                    open: true
                 }, 
                 {
-                    value: '6002-020304D', 
+                    number: '6002-020304D', 
                     students: [
                         {
                             name: 'Студент 3', 
@@ -58,13 +58,13 @@ const initialState = {
                     open: false
                 }
             ], 
-            open: false
+            open: true
         },
         {
-            value: 'ЭВМ', 
+            name: 'ЭВМ', 
             groups: [
-                {value: '6005-020304D', open: false}, 
-                {value: '6004-020304D', open: false}
+                {number: '6005-020304D', open: false}, 
+                {number: '6004-020304D', open: false}
             ], 
             open: false
         }
@@ -75,10 +75,10 @@ const initialState = {
                 id: 1,
                 name: 'Моделирование сложных систем', 
                 groups: [
-                    {id: 1, number: '6001-020304D', open: false}, 
+                    {id: 1, number: '6001-020304D', open: true}, 
                     {id: 2, number: '6002-020304D', open: false}
                 ], 
-                open: false
+                open: true
             },
             {
                 id: 2,
@@ -101,6 +101,60 @@ const initialState = {
         {type: 'Лабораторная работа', name: '№2',  countAnswers: 2, dateOpen: '1 месяц'},
         {type: 'Лабораторная работа', name: '№3',  countAnswers: 10, dateOpen: '3 дня'},
     ],
+    createData: {
+        subjects:[
+            {
+                id: null, 
+                name: 'Выберите предмет',
+            },
+            {
+                id: 1,
+                name: "Алгебра"
+            }
+        ],
+        types: [
+            {
+                id: null, 
+                name: 'Выберите тип',
+            },
+            {
+                id: 1,
+                name: "Лабораторная работа"
+            },
+            {
+                id: 2,
+                name: "Самостоятельная работа"
+            }
+        ],
+        groups: [
+            {
+                id: null,
+                number: 'Все'
+            },
+            {
+                id: 14,
+                number: "6246-020304D",
+                students: [
+                    {
+                        id: 1,
+                        name: "Семён",
+                        surname: "Александров",
+                        patronymic: "Петрович",
+                        groupId: 14,
+                        check: false
+                    },
+                    {
+                        id: 2,
+                        name: "Семён",
+                        surname: "Александров",
+                        patronymic: "Петрович",
+                        groupId: 14,
+                        check: false
+                    }
+                ]
+            }
+        ]
+    },
     taskAdditionData: {
         teaherName: "Xxx",
         teaherSurname: "Xxx",
@@ -142,6 +196,7 @@ const initialState = {
         ],
     },
 
+    successId: null,
     errorShow: false,
     errorMessage: [],
 }
@@ -158,11 +213,19 @@ export default function teacherReducer(state = initialState, action) {
             }
         case SUCCESS_TASK:
             return {
-                ...state, taskData: action.taskData
+                ...state, taskData: action.taskData, successId: null
             }
         case SUCCESS_LABS:
             return {
                 ...state, labs: action.labs
+            }
+        case SUCCESS_CREATE_DATA:
+            return {
+                ...state, createData: action.createData
+            }
+        case SUCCESS_CREATE:
+            return {
+                ...state, successId: action.successId
             }
         case SUCCESS_TASK_ADDITION:
             return {

@@ -21,8 +21,8 @@ class Main extends React.Component {
     choiceGroup = (indexSubject, indexGroup) => {
         this.props.choiceGroupMain(indexSubject, indexGroup)
 
-        const nameSubject = this.props.mainData[indexSubject].value
-        const nameGroup = this.props.mainData[indexSubject].groups[indexGroup].value
+        const nameSubject = this.props.mainData[indexSubject].name
+        const nameGroup = this.props.mainData[indexSubject].groups[indexGroup].number
 
         const title = nameSubject + '. Группа ' + nameGroup
         
@@ -44,7 +44,7 @@ class Main extends React.Component {
                     onClick={this.choiceGroup.bind(this, indexSubject, index)}
                 >
                     <img src='images/folder-regular.svg' alt='' />
-                    {item.value}
+                    {item.number}
                 </li>
             )
         })
@@ -64,7 +64,7 @@ class Main extends React.Component {
                         onClick={() => this.choiceSubject(index)}
                     >
                         {<img src={src} alt='' />}
-                        {item.value}
+                        {item.name}
                     </li>
 
                     {item.open && 'groups' in item ? 
@@ -130,6 +130,14 @@ class Main extends React.Component {
     }
 
     componentDidMount() {
+        const activeSubjectIndex = 0
+        const activeGroupIndex = 0
+        const title = this.props.mainData[0].name + '. Группа ' + this.props.mainData[0].groups[0].number
+        this.setState({
+            activeSubjectIndex,
+            activeGroupIndex,
+            title
+        })
         this.props.fetchMain()
     }
 
