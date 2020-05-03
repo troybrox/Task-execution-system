@@ -1,6 +1,7 @@
 import React from 'react'
 import './Button.scss'
 
+// Компонент отображения кнопки
 const Button = props => {
     const cls = ['button']
     let disable = false

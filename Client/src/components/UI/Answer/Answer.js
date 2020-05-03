@@ -1,6 +1,7 @@
 import React from 'react'
 import './Answer.scss'
 
+// Компонент отображения ответов на странице задачи
 class Answer extends React.Component {
     render() {
         return (

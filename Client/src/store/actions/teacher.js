@@ -10,23 +10,20 @@ export function fetchProfile() {
             if (data.succeeded) {
                 const labels = [
                     { label: 'Имя пользователя', serverName: 'userName', type: 'text'},
-                    { label: 'Фамилия Имя Отчество', serverName: 'surname name patronymic'},
+                    { label: 'Фамилия', serverName: 'surname'},
+                    { label: 'Имя', serverName: 'name'},
+                    { label: 'Отчество', serverName: 'patronymic'},
                     { label: 'Факультет', serverName: 'facultyName'},
                     { label: 'Кафедра', serverName: 'departmentName'},
-                    { label: 'Должность', serverName: 'position'},
+                    { label: 'Должность', serverName: 'position', type: 'text'},
                     { label: 'Адрес эл. почты', serverName: 'email', type: 'email'}
                 ]
 
                 const profileData = []
                 labels.forEach(el => {
-                    const value = []
-                    el.serverName.split(' ').forEach((item) => {
-                        value.push(data.data[item])
-                    })
-                    const obj = {label: el.label, value: value.join(' ')}
+                    const obj = {label: el.label, value: data.data[el.serverName], serverName: el.serverName}
                     if ('type' in el) {
                         obj.type = el.type
-                        obj.serverName = el.serverName 
                         obj.valid = true
                     }
                     

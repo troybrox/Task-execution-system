@@ -1,6 +1,7 @@
 import React from 'react'
 import './Select.scss'
 
+// Компонент выпадающего меню
 const Select = props => {
     const cls = ['select']
 

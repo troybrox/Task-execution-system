@@ -1,6 +1,7 @@
 import React from 'react'
 import './Condition.scss'
 
+// Компонент отображения сообщения успеха при добавлении/удалении пользователя админом
 class Condition extends React.Component {  
     render() {
         let title = 'Обработка'

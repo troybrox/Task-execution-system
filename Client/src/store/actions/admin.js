@@ -139,19 +139,12 @@ export function actionUsersHandler(url) {
     }
 }
 
-export function deleteGroupHandler(url) {
-    return async (dispatch, getState) => {
+export function deleteGroupHandler(url, groupId) {
+    return async dispatch => {
         dispatch(changeCondition('loading'))
 
-        const idList = []
-        const state = getState().admin
-
-        state.users.forEach(el => {
-            idList.push(el.id)
-        })
-
         try {
-            const response = await axios.post(url, idList)
+            const response = await axios.post(url, groupId)
             const data = response.data
             if (data.succeeded) {
                 dispatch(changeCondition('ready'))

@@ -3,10 +3,12 @@ import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUC
 const initialState = {
     profileData: [
 		{ value: 'pasha_terminator', label: 'Имя пользователя', type: 'text', serverName: 'UserName', valid: true },
-		{ value: 'Павел Карпович Александров', label: 'Фамилия Имя Отчество'},
-		{ value: 'Кайфовый', label: 'Факультет'},
-		{ value: 'Топовая 😎', label: 'Кафедра'},
-        { value: 'Доцент', label: 'Должность'},
+        { value: 'Александров', label: 'Фамилия', serverName: 'Surname' },
+        { value: 'Павел', label: 'Имя', serverName: 'Name' },
+        { value: 'Карпович', label: 'Отчество', serverName: 'Patronymic'},
+		{ value: 'Кайфовый', label: 'Факультет',serverName: 'Faculty'},
+		{ value: 'Топовая 😎', label: 'Кафедра', serverName: 'Department'},
+        { value: 'Доцент', label: 'Должность', type: 'text', serverName: 'Position', valid: true},
         { value: 'aaa@aa.aa', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true }
     ],
     mainData: [

@@ -2,6 +2,7 @@ import React from 'react'
 import './Error.scss'
 import Button from '../UI/Button/Button'
 
+// Компонент отображения ошибки
 class Error extends React.Component {
     renderMessage() {
         return this.props.errorMessage.map((item, index) => {

@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { logoutHandler } from '../../store/actions/auth'
 
+// Компонент переадресации на выход
 class Logout extends React.Component {
     componentDidMount() {
         this.props.logoutHandler()

@@ -191,7 +191,7 @@ class Admin extends React.Component {
         if (success) {
             const url = 'api/admin/delete_group'
 
-            await this.props.deleteGroupHandler(url)
+            await this.props.deleteGroupHandler(url, this.state.groupId)
             this.requestUserHandler()
             this.requestListHandler()
         }
@@ -414,8 +414,8 @@ function mapDispatchToProps(dispatch) {
             dispatch(errorWindow(errorShow, errorMessage)),
         actionUsersHandler: (url) => 
             dispatch(actionUsersHandler(url)),
-        deleteGroupHandler: (url) =>
-            dispatch(deleteGroupHandler(url))
+        deleteGroupHandler: (url, groupId) =>
+            dispatch(deleteGroupHandler(url, groupId))
     }
 }
 

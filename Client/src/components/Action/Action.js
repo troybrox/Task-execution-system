@@ -4,6 +4,7 @@ import Loader from '../UI/Loader/Loader'
 import { connect } from 'react-redux'
 import { changeCheckedHandler } from '../../store/actions/admin'
 
+// Компонент отображения пользователей для админа
 class Action extends React.Component {
     changeCheckedHandler = index => {
         this.props.changeChecked(index)

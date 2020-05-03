@@ -2,7 +2,7 @@ import React from 'react'
 import './Input.scss'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 
-
+// Компонент отображения полей для заполнения
 const Input = props => {
     const cls = ['input_fields']
 
