@@ -16,8 +16,14 @@ class TasksComponent extends React.Component {
 
     componentDidMount() {
         const activeSubjectIndex = this.props.subjects[0].id
-        const activeGroupIndex = this.props.subjects[0].groups[0].id
-        const title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].number
+        let activeGroupIndex = null
+        let title = ''
+        if (localStorage.getItem('role') === 'teacher') {
+            activeGroupIndex = this.props.subjects[0].groups[0].id
+            title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].number
+        } else {
+            title = this.props.subjects[0].name
+        }
         this.setState({
             activeSubjectIndex,
             activeGroupIndex,

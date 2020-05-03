@@ -26,6 +26,9 @@ const Button = props => {
             cls.push('disactive_button', 'big_button')
             disable = true
             break;
+        case 'close':
+            cls.push('close_button')
+            break;
         default:
             break;
     }

@@ -19,6 +19,38 @@
     }
 }
 
+.header_task {
+    .each_labs {
+        display: flex;
+        align-items: flex-end;
+        border-bottom: 2px solid grey;
+        padding: 0 20px;
+        min-width: 510px;
+    
+        .labs_left {
+            margin-top: 40px;
+    
+            .subject_for_lab {
+                background: rgb(143, 210, 255);
+                border-radius: 30px;
+                border: 1px solid grey;
+                padding: 10px 5px;
+                margin-right: 10px;
+            }
+
+            .small_text {
+                margin: 20px 0 10px 10px;
+                font-size: 13px;
+                color: gray;
+            }
+        }
+    }
+
+    button {
+        margin: 0 150px 10px auto;
+    }
+}
+
 .main_one_task {
     display: flex;
     min-width: 805px;
@@ -128,6 +160,19 @@
             }
         }
 
+        .contain_task {
+            margin: 0 0 50px 50px;
+
+            ul {
+                margin-left: 150px;
+                color: rgb(75, 75, 75);
+
+                li {
+                    margin-top: 20px;
+                }
+            }
+        }
+
         button {
             margin: 10px 30px;
         }
@@ -141,6 +186,7 @@
         width: 30%;
         min-width: 300px;
         max-width: 500px;
+        height: max-content;
 
 
         .memebers {
@@ -238,6 +284,26 @@
 
             .date_p_create {
                 margin-top: 10px;
+                color: grey;
+
+                span {
+                    font-size: 18px;
+                    margin-left: 5px;
+                    color: black;
+                }
+
+                .time_bar {
+                    font-size: 15px;
+                    padding: 2px 0;
+                    display: inline-block;
+                    border: 1px solid black;
+                    width: 100px;
+                    background: linear-gradient(90deg, rgb(81, 163, 201) 50%, white 50%);
+                }
+            }
+
+            button {
+                margin-top: 40px;
             }
 
             .date_input_create {

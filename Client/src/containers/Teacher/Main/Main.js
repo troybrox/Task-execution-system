@@ -89,7 +89,7 @@ class Main extends React.Component {
                 <div key={index} className='labs'>
                     <Link 
                         className='title'
-                        to={`task/${item.id}`}
+                        to={`tasks/${item.id}`}
                     >
                         {item.name}
                     </Link>

@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_TASK_ADDITION } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -172,6 +172,28 @@ export function fetchListTasks(filters) {
     }
 }
 
+export function fetchTaskById(id) {
+    return async dispatch => {
+        try {
+            const url = `api/student/task/${id}`
+            const response = await axios.get(url)
+            const data = response.data
+
+            if (data.succeeded) {
+                dispatch(successTaskAddition(data.data))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
 export function successProfile(profileData) {
     return {
         type: SUCCESS_PROFILE,
@@ -190,6 +212,13 @@ export function successLabs(labs) {
     return {
         type: SUCCESS_LABS,
         labs
+    }
+}
+
+export function successTaskAddition(taskAdditionData) {
+    return {
+        type: SUCCESS_TASK_ADDITION,
+        taskAdditionData
     }
 }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import OneTaskComponent from '../../../components/User/OneTaskComponent/OneTaskComponent'
 import Error from '../../../components/Error/Error'
 import { connect } from 'react-redux'
-import {fetchTaskById, errorWindow} from '../../../store/actions/teacher'
+import {fetchTaskById, errorWindow, onCloseTask} from '../../../store/actions/teacher'
 
 class TasksComponent extends React.Component { 
   
@@ -13,7 +13,9 @@ class TasksComponent extends React.Component {
     render() {
         return (
             <OneTaskComponent
+                typeTask='task'
                 taskAdditionData={this.props.taskAdditionData}
+                onCloseTask={() => this.props.onCloseTask(this.props.match.params.id)}
             >
                 {this.props.errorShow ? 
                     <Error 
@@ -22,7 +24,6 @@ class TasksComponent extends React.Component {
                     /> : 
                     null
                 }
-                <div>Оппаааа</div>
             </OneTaskComponent>
         )
     }
@@ -39,7 +40,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchTaskById: id => dispatch(fetchTaskById(id)),
-        errorWindow: (errorShow, errorMessage) => dispatch(errorWindow(errorShow, errorMessage))
+        errorWindow: (errorShow, errorMessage) => dispatch(errorWindow(errorShow, errorMessage)),
+        onCloseTask: (id) => dispatch(onCloseTask(id))
     }
 }
 

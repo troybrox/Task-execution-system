@@ -361,6 +361,25 @@ export function onSendCreate(task) {
     }
 }
 
+export function onCloseTask(id) {
+    return async dispatch => {
+        try {
+            const response = await axios.get(`api/teacher/task/${id}/close`)
+            const data = response.data
+            if (data.succeeded) {
+                dispatch(fetchTaskById(id))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
 // export function fetchRepository() {}
 
 export function successProfile(profileData) {
