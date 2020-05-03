@@ -1,0 +1,30 @@
+.answer_block {
+    display: flex;
+    align-items: flex-end;
+    margin-top: 20px;
+
+    img {
+        height: 70px;
+        border: 1px solid rgb(163, 163, 163);
+        border-radius: 10px;
+    }
+
+    .text_block {
+        border: 1px solid grey;
+        border-radius: 5px;
+        margin-left: 10px;
+        width: 75%;
+
+        h4 {
+            border-bottom: 1px dotted grey;
+            padding: 3px 10px;
+            color: rgb(131, 131, 131);
+            font-size: 14px;
+        }
+
+        p {
+            height: 100px;
+            padding: 10px;
+        }
+    }
+}

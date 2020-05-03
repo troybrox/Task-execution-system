@@ -5,6 +5,7 @@ import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 import Select from '../../UI/Select/Select'
 import Button from '../../UI/Button/Button'
 import { Link } from 'react-router-dom'
+import Answer from '../../UI/Answer/Answer'
 
 class OneTaskComponent extends React.Component {
     state = {
@@ -213,14 +214,14 @@ class OneTaskComponent extends React.Component {
     }
 
     renderMemberTask() {
-        const users = this.props.group.students.map((item, index)=>{
+        const users = this.props.taskAdditionData.students.map((item, index)=>{
                 return (
                     <li
                         key={index}
                         className='student_li'
                     >
                         <img src='/images/card.svg' alt='' />
-                        {item}
+                        <span>{item.surname} {item.name}</span>
                     </li>
                 )
             })
@@ -228,7 +229,7 @@ class OneTaskComponent extends React.Component {
         return (
             <Auxiliary>
                 <h4>Группа</h4>
-                <p className='group_create'>{this.props.group.name}</p>
+                <p className='group_create'>{this.props.taskAdditionData.group}</p>
                 <h4>Участники {users.length}</h4>
                 <ul>
                     {users}
@@ -248,6 +249,10 @@ class OneTaskComponent extends React.Component {
     renderDateCreate() {
         return (
             <Auxiliary>
+                <h4>
+                    Срок выполнения
+                    <span className='need_field'>*</span>
+                </h4>
                 <p className='date_p_create'>Дата начала:</p>
                 <input 
                     type='datetime-local'
@@ -265,13 +270,39 @@ class OneTaskComponent extends React.Component {
                     className='date_input_create' 
                     onChange={(event) => this.changeDate(event, 'end')}
                 />
+                <p className='small_text_date'>Обратите внимание, что дата сдачи должна быть не ранее даты начала</p>
             </Auxiliary>
         )
     }
 
     renderDateTask() {
         return (
-            <div>Wait Task...</div>
+            <Auxiliary>
+                <h4>Срок выполнения</h4>
+                <div>
+                    
+                    <p className='date_p_create'>
+                        Дата начала:
+                        <span>{this.props.taskAdditionData.beginDate}</span>
+                    </p>
+                    <p className='date_p_create'>
+                        Дата сдачи:
+                        <span>{this.props.taskAdditionData.finishDate}</span>
+                    </p>
+                    <p className='date_p_create'>
+                        Осталось: <span className='time_bar'>{this.props.taskAdditionData.timeBar} дней</span>
+                    </p>
+                    {localStorage.getItem('role') === 'teacher' ?
+                        <Button 
+                            typeButton='close'
+                            onClickButton={this.props.onCloseTask}
+                            value='Закрыть задачу'
+                        /> :
+                        null
+                    }
+                </div>
+            </Auxiliary>
+
         )
     }
 
@@ -373,13 +404,7 @@ class OneTaskComponent extends React.Component {
         )
     }   
 
-    renderContainTask() {
-        return (
-            <div>Opa</div>
-        )
-    }
-
-    renderContain() {
+    renderButtonCreate() {
         const cls = []
         const createTask = {
             task: {}
@@ -407,16 +432,118 @@ class OneTaskComponent extends React.Component {
                 cls.push('blue_big')
         } else 
             cls.push('disactive_big')
+
+        return (
+            <Button 
+                typeButton={cls.join(' ')}
+                onClickButton={() => this.props.onSendCreate(createTask)}
+                value='Добавить задачу'
+            />
+        )
+    }
+
+    renderContainTask() {
+        const all = this.props.taskAdditionData.solutions.map((item, index) => {
+            return (
+                <Answer 
+                    key={index}
+                    source='user.svg'
+                    data={item}
+                />
+            )
+        })
+
+        const teacherObject = {
+            contentText: this.props.taskAdditionData.contentText,
+            creationDate: this.props.taskAdditionData.beginDate,
+            fileURI: this.props.taskAdditionData.fileURI,
+            // isExpired: false,
+            student: {
+                id: 1,
+                name: this.props.taskAdditionData.teacherName,
+                surname: this.props.taskAdditionData.teacherSurname
+            }    
+        }                
         
+        const students = this.props.taskAdditionData.students.map((item) => {
+            return (
+                <li key={item.id}>
+                    {item.surname} {item.name} {' '} был назначен недели назад
+                </li>
+            )
+        })
+
+        return (
+            <div className='contain_task'>
+                <Answer
+                    source='user-tie-solid.svg' 
+                    data={teacherObject}
+                />
+                <ul>
+                    {students}
+                </ul>
+                {localStorage.getItem('role') === 'teacher' ? all : null}
+                {/* {this.renderAnswerField()} */}
+            </div>
+        )
+    }
+
+    renderAnswerField() {
+        const clsForFile = ['label_file']
+        if (this.state.files !== null) clsForFile.push('ready_file')
+
+        return (
+            <div className='contain_create'>
+                <textarea
+                    type='text' 
+                    className='description_textarea text_block' 
+                    placeholder='Добавьте описание задачи...'
+                    defaultValue={this.state.descriptionInput}
+                    onChange={event => this.onChangeDescription(event)}
+                />
+                <label 
+                    className={clsForFile.join(' ')}
+                >
+                    {this.state.files === null ?
+                        <Auxiliary>
+                            <span className='title_file'>
+                                Перетащите файл в это поле или кликните сюда для загрузки
+                            </span><br />
+                            <input 
+                                type='file' 
+                                accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
+                                onChange={event => this.onLoadFile(event)}
+                            />
+                        </Auxiliary> :
+                        <Auxiliary>
+                            <span className='title_file'>
+                                Файл успешно загружен
+                            </span><br />
+                            <p>
+                                <img src='/images/file-solid.svg' alt='' /><br />
+                                <span>{this.state.files.name}</span>  
+                            </p><br />
+                            <span 
+                                className='delete_file'
+                                onClick={this.removeFile}
+                            >
+                                Удалить файл
+                            </span>
+                        </Auxiliary>
+                    }
+                </label>
+            </div>
+        )
+    }
+        
+                
+        
+    renderContain() {        
         if (this.props.typeTask === 'create') {
             return (
                 <Auxiliary>
                     {this.renderContainCreate()}
-                    <Button 
-                        typeButton={cls.join(' ')}
-                        onClickButton={() => this.props.onSendCreate(createTask)}
-                        value='Добавить задачу'
-                    />
+                    {this.renderButtonCreate()}
                 </Auxiliary>
             )
         } else {
@@ -436,18 +563,51 @@ class OneTaskComponent extends React.Component {
         } 
     }
 
+    renderHeader() {
+        return (
+            <div
+                className='each_labs' 
+            >
+                <div className='labs_left'>
+                    <span className='subject_for_lab'>{this.props.taskAdditionData.subject}</span>
+                    <span>{this.props.taskAdditionData.type} {this.props.taskAdditionData.name}</span>
+                    <p className='small_text'>
+                        Открыта {this.props.taskAdditionData.beginDate}
+                        <span className='small_text'>
+                            Кол-во ответов: 
+                            {this.props.taskAdditionData.students.length}
+                        </span>
+                    </p>
+                </div>
+                {localStorage.getItem('role') === 'teacher' ?
+                    <Button 
+                        typeButton='blue_big'
+                        value='Изменить'
+                    /> :
+                    null
+                }
+            </div>
+    )
+    }
+
     render() {
         return (
             <Frame>
-                    <div className='big_title_task'>
-                        <Link
-                            className='back_task'
-                            to='/tasks'
-                        >
-                            Вернуться к списку задач
-                        </Link>
-                        { this.renderTitle() }
-                    </div>
+                <div className='big_title_task'>
+                    <Link
+                        className='back_task'
+                        to='/tasks'
+                    >
+                        Вернуться к списку задач
+                    </Link>
+                    { this.renderTitle() }
+                </div>
+                <div className='header_task'>
+                    { this.props.typeTask !== 'create' ? 
+                        this.renderHeader() :
+                        null
+                    }
+                </div>    
                 <div className='main_one_task'>
                     <div className='task_options'>
                         { this.renderContain() }
@@ -457,12 +617,7 @@ class OneTaskComponent extends React.Component {
                             { this.renderMembers() }
                         </div>
                         <div className='date_create'>
-                            <h4>
-                                Срок выполнения
-                                <span className='need_field'>*</span>
-                            </h4>
                             { this.renderDate() }
-                            <p className='small_text_date'>Обратите внимание, что дата сдачи должна быть не ранее даты начала</p>
                         </div>
                     </aside>
                 </div>

@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_TASK_ADDITION } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [
@@ -13,7 +13,7 @@ const initialState = {
             {
                 id: 1,
                 name: 'Моделирование сложных систем', 
-                open: false
+                open: true
             },
             {
                 id: 2,
@@ -32,6 +32,58 @@ const initialState = {
         {type: 'Лабораторная работа', name: '№2', dateOpen: '1 месяц'},
         {type: 'Лабораторная работа', name: '№3', dateOpen: '3 дня'},
     ],
+    taskAdditionData: {
+        teacherName: "Xxx",
+        teacherSurname: "Xxx",
+        teacherPatronymic: "Xxx",
+        subject: "Моделирование",
+        type: "Лабораторная работа",
+        name: "№33",
+        contentText: "xxxxxxx",
+        fileURI: "https://localhost44303/files/taskFile/Math_Lab1_task.docx",
+        group: "6315-020304D",
+        beginDate: "11.12.2019",
+        finishDate: "11.12.2020",
+        updateDate: "dd.mm.yyyy",
+        isOpen: true,
+        timeBar: 12,
+        students: [
+            {
+                id: 1,
+                name: "Подзаголовкин",
+                surname: "Лупа"
+            },
+            {
+                id: 2,
+                name: "Заголовкин",
+                surname: "Пупа"
+            }
+        ],
+        solutions: [
+            {
+                contentText: "xxxxxxx",
+                creationDate: "dd.mm.yyyy",
+                fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
+                isExpired: false,
+                student: {
+                    id: 1,
+                    name: "Подзаголовкин",
+                    surname: "Лупа"
+                }
+            },
+            {
+                contentText: "xxxxxxx",
+                creationDate: "dd.mm.yyyy",
+                fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
+                isExpired: false,
+                student: {
+                    id: 2,
+                    name: "Заголовкин",
+                    surname: "Пупа"
+                }
+            }
+        ]
+    },
 
     errorShow: false,
     errorMessage: [],
@@ -50,6 +102,10 @@ export default function studentReducer(state = initialState, action) {
         case SUCCESS_LABS:
             return {
                 ...state, labs: action.labs
+            }
+        case SUCCESS_TASK_ADDITION:
+            return {
+                ...state, taskAdditionData: action.taskAdditionData
             }
         case ERROR_WINDOW:
             return {
