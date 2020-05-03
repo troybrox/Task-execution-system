@@ -9,12 +9,12 @@ export function fetchProfile() {
             const data = response.data
             if (data.succeeded) {
                 const labels = [
-                    { label: 'Имя пользователя', serverName: 'UserName', type: 'text'},
-                    { label: 'Фамилия Имя Отчество', serverName: 'Surname Name Patronymic'},
-                    { label: 'Факультет', serverName: 'FacultyName'},
-                    { label: 'Кафедра', serverName: 'DepartmentName'},
-                    { label: 'Должность', serverName: 'Position'},
-                    { label: 'Адрес эл. почты', serverName: 'Email', type: 'email'}
+                    { label: 'Имя пользователя', serverName: 'userName', type: 'text'},
+                    { label: 'Фамилия Имя Отчество', serverName: 'surname name patronymic'},
+                    { label: 'Факультет', serverName: 'facultyName'},
+                    { label: 'Кафедра', serverName: 'departmentName'},
+                    { label: 'Должность', serverName: 'position'},
+                    { label: 'Адрес эл. почты', serverName: 'email', type: 'email'}
                 ]
 
                 const profileData = []
