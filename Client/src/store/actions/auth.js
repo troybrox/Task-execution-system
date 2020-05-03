@@ -38,6 +38,7 @@ export function auth(data) {
             const url = 'api/account/login'
             const response = await axios.post(url, data)
             const respData = response.data
+            document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
             localStorage.setItem('token', respData.data.idToken)
             localStorage.setItem('role', respData.data.role)
 
