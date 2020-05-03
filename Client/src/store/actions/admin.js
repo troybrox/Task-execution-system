@@ -144,7 +144,7 @@ export function deleteGroupHandler(url, groupId) {
         dispatch(changeCondition('loading'))
 
         try {
-            const response = await axios.post(url, groupId)
+            const response = await axios.post(url, {groupId})
             const data = response.data
             if (data.succeeded) {
                 dispatch(changeCondition('ready'))
