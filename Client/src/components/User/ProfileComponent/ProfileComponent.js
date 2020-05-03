@@ -5,6 +5,7 @@ import Label from '../../UI/Label/Label'
 import Input from '../../UI/Input/Input'
 import Button from '../../UI/Button/Button'
 
+// Компонент отображения профиля для препода и студента
 class ProfileComponent extends React.Component {
     state = {
         dataPassword: [

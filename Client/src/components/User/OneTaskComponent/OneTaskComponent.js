@@ -7,6 +7,7 @@ import Button from '../../UI/Button/Button'
 import { Link } from 'react-router-dom'
 import Answer from '../../UI/Answer/Answer'
 
+// Компонент отображения отдельного окна задач(создание задачи и открытая задача) для препода и студента
 class OneTaskComponent extends React.Component {
     state = {
         subjectId: null,
@@ -535,9 +536,7 @@ class OneTaskComponent extends React.Component {
             </div>
         )
     }
-        
-                
-        
+   
     renderContain() {        
         if (this.props.typeTask === 'create') {
             return (

@@ -6,6 +6,7 @@ import Button from '../../UI/Button/Button'
 import { Link } from 'react-router-dom'
 import Select from '../../UI/Select/Select'
 
+// Компонент отображения страницы задач для препода и студента
 class TasksComponent extends React.Component {
     state = {
         activeSubjectIndex: null,

@@ -28,7 +28,7 @@ const initialState = {
     errorMessage: [],
 
     loading: false,
-    actionCondition: null // 'loading', 'ready'
+    actionCondition: null
 }
 
 export default function adminReducer(state = initialState, action) {

@@ -3,6 +3,7 @@ import './RepositoryComponent.scss'
 import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 
+// Компонент отображения репозиториев для препода и студента
 class RepositoryComponent extends React.Component {
     state = {
         active: false,

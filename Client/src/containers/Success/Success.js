@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { success } from '../../store/actions/auth'
 
+// Окно отображения успеха при регистрации и формы забытого пароля
 class Success extends React.Component {    
     render() {
         return (

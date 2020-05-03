@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { errorWindow } from '../../store/actions/teacher'
 
-
+// Компонент высшего порядка - отображение хедера для страниц препода и студента
 class Frame extends React.Component {
     state = {
         headerItems: [
