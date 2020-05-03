@@ -53,8 +53,8 @@ class Frame extends React.Component {
                 <header className='frame_header'>
                     {this.renderHeader()}
                     <div className='bell_side'>
-                        <img src='images/bell-solid.svg' alt='' />
-                        <span>2</span>
+                        {/* <img src='images/bell-solid.svg' alt='' /> */}
+                        {/* <span>2</span> */}
                     </div>
                     <Link className='frame_header_items exit_frame' to='/logout'>Выход</Link>
                 </header>
