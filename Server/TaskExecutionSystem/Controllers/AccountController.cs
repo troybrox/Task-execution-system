@@ -11,6 +11,7 @@ using System;
 
 namespace TaskExecutionSystem.Controllers
 {
+    // контроллер, предоставляющий эндпоинты для рабаты с регистраицей и авторизацией пользователей 
     [Route("api/account")]
     public class AccountController : ControllerBase
     {
@@ -67,11 +68,8 @@ namespace TaskExecutionSystem.Controllers
                 var userRoles = serviceResult.Data.UserRoles;
                 var tokenResult = _jwtTokenGenerator.Generate(serviceResult.Data.User, userRoles);
 
-                HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id", tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
-
-                //return Ok(tokenResult.Expires);
-
-
+                HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id",
+                    tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) }); ;
 
                 detailResult = new OperationDetailDTO<SignInDetailDTO>
                 {
@@ -79,14 +77,12 @@ namespace TaskExecutionSystem.Controllers
                     Data = new SignInDetailDTO
                     {
                         Role = serviceResult.Data.UserRoles.FirstOrDefault().ToLowerInvariant(),
-                        IdToken = "server_token"
+                        IdToken = tokenResult.AccessToken
                     },
                 };
 
-                //return Ok(tokenResult.Expires);
                 return Ok(detailResult);
             }
-            //return Ok(detailResult);
         }
 
 

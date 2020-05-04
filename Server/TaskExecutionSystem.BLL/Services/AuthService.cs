@@ -22,10 +22,6 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly SignInManager<User> _signInManager;
         private readonly DataContext _context;
 
-        //private const string _serverErrorMessage = "Ошибка, произошло исключение на сервере. Подробнее: ";
-        //private const string _signInErrorMessage = 
-        //    "Ошибка при авторизации. Неверное имя пользователя/электронная почта или пароль. Проверьте правильность ввода и повторите попытку.";
-
         public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, DataContext context)
         {
             _context = context;
@@ -33,7 +29,6 @@ namespace TaskExecutionSystem.BLL.Services
             _signInManager = signInManager;
         }
 
-        // todo: return token
         // авторизация пользователя в системе 
         public async Task<OperationDetailDTO<SignInUserDetailDTO>> SignInAsync(UserLoginDTO dto)
         {
@@ -81,6 +76,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // выход пользователя из системы
         public async Task<OperationDetailDTO> SignOutAsync()
         {
             try
@@ -94,7 +90,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-
+        // создание заявки студента
         public async Task<OperationDetailDTO> CreateStudentRegisterRequestAsync(StudentRegisterDTO dto)
         {
             List<string> errorMessages = new List<string>();
@@ -122,6 +118,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // создание заявки препода
         public async Task<OperationDetailDTO> CreateTeacherRegisterRequestAsync(TeacherRegisterDTO dto)
         {
             List<string> errorMessages = new List<string>();
@@ -149,7 +146,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-
+        // получение дерева-объекта для выбора фильтров при регистрации
         public async Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudiesAsync()
         {
             var resFacultyDTOList = new List<FacultyDTO>();
@@ -172,7 +169,8 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        
+        // методы для конвертации >>
+
         private StudentRegisterRequest GetStudentRegEntityFromDTO(StudentRegisterDTO dto) => new StudentRegisterRequest
         {
             GroupId = dto.GroupId,
@@ -225,7 +223,8 @@ namespace TaskExecutionSystem.BLL.Services
         };
 
 
-        // приём заявки студента
+        // [в настоящий момент методы не используются]
+        // --приём заявки студента
         public async Task<OperationDetailDTO> CreateStudentAsync(List<int> registerEntityIdList)
         {
             OperationDetailDTO resultDetail = new OperationDetailDTO();
@@ -274,7 +273,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // приём заявки  преподавтеля
+        // --приём заявки  преподавтеля
         public async Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterRequest registerEntity)
         {
             OperationDetailDTO resultDetail;

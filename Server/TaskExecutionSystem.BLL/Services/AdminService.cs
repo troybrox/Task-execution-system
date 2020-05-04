@@ -35,7 +35,7 @@ namespace TaskExecutionSystem.BLL.Services
             _userManager = userManager;
         }
 
-
+        
         public async Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudyFiletrsAsync()
         {
             var resFacultyDTOList = new List<FacultyDTO>();
@@ -58,6 +58,9 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // списки-фильтры по типу сущностей
+        // для заявок только те подразделения факультета, где есть заявки 
+        // для существующих факультеты со всех их подразделениями показываются только если в факультете есть подраздения, количество людей не учитывается
         public async Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudyFiltersAsync(string userType)
         {
             var resFacultyDTOList = new List<FacultyDTO>();
@@ -147,7 +150,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-
+        // список заявок студентов
         public async Task<OperationDetailDTO<List<StudentDTO>>> GetStudentRegisterRequestsAsync()
         {
             var resultList = new List<StudentDTO>();
@@ -170,6 +173,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // список заявок преподов
         public async Task<OperationDetailDTO<List<TeacherDTO>>> GetTeacherRegisterRequestsAsync()
         {
             var resultList = new List<TeacherDTO>();
@@ -192,6 +196,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // список существующих студентов 
         public async Task<OperationDetailDTO<List<StudentDTO>>> GetExistStudentsAsync()
         {
             var resultList = new List<StudentDTO>();
@@ -214,6 +219,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // список существующих преподов
         public async Task<OperationDetailDTO<List<TeacherDTO>>> GetExistTeachersAsync()
         {
             var resultList = new List<TeacherDTO>();
@@ -237,6 +243,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
+        // отклонение (удаление из БД) заявки преподов
         public async Task<OperationDetailDTO> RejectTeacherRequestsAsync(int[] registerEntityIdList)
         {
             try
@@ -256,6 +263,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // отклонение (удаление из БД) заявки студентов
         public async Task<OperationDetailDTO> RejectStudentRequestsAsync(int[] registerEntityIdList)
         {
             try
@@ -275,6 +283,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // принятие (добавление пользователя в систему) заявки преподов
         public async Task<OperationDetailDTO> AcceptTeacherRequestsAsync(int[] registerEntityIdList)
         {
             OperationDetailDTO resultDetail = new OperationDetailDTO();
@@ -330,6 +339,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // принятие (добавление пользователя в систему) заявки студентов
         public async Task<OperationDetailDTO> AcceptStudentRequestsAsync(int[] registerEntityIdList)
         {
             OperationDetailDTO resultDetail = new OperationDetailDTO();
@@ -380,6 +390,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
+        // удаление из БД студентов
         public async Task<OperationDetailDTO> DeleteExistStudentsAsync(int[] entityIdList)
         {
             try
@@ -398,6 +409,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // удаление из БД преподов
         public async Task<OperationDetailDTO> DeleteExistTeachersAsync(int[] entityIdList)
         {
             try
@@ -415,6 +427,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // удаление из БД группы
         public async Task<OperationDetailDTO> DeleteGroupAsync(int id)
         {
             try
@@ -441,6 +454,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
+        // отфильтрованный список заявок студентов
         public async Task<OperationDetailDTO<List<StudentDTO>>> GetStudentRegisterRequestsAsync(FilterDTO[] filters = null)
         {
             var resultList = new List<StudentDTO>();
@@ -505,6 +519,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // отфильтрованный список заявок преподов
         public async Task<OperationDetailDTO<List<TeacherDTO>>> GetTeacherRegisterRequestsAsync(FilterDTO[] filters = null)
         {
             var resultList = new List<TeacherDTO>();
@@ -568,6 +583,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // отфильтрованный список существующих студентов
         public async Task<OperationDetailDTO<List<StudentDTO>>> GetExistStudentsAsync(FilterDTO[] filters = null)
         {
             var resultList = new List<StudentDTO>();
@@ -631,6 +647,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // отфильтрованный список существующих преподов
         public async Task<OperationDetailDTO<List<TeacherDTO>>> GetExistTeachersAsync(FilterDTO[] filters = null)
         {
             var resultList = new List<TeacherDTO>();
@@ -694,6 +711,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
+        // [тестовый метод] -- testing
         public async Task<OperationDetailDTO<List<TeacherDTO>>> GetTeacherRegisterRequestsAsync_copy(FilterDTO[] filters = null)
         {
             var resultList = new List<TeacherDTO>();
@@ -758,7 +776,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
-        // Add User Map()
+        // методы конвертации >>
         private User GetTeacherUserFromRegEntity(TeacherRegisterRequest teacherRegister) => new User
         {
             Teacher = new Teacher

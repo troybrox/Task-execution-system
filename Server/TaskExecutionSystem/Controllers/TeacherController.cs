@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskExecutionSystem.BLL.DTO;
+using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Entities.Identity;
@@ -32,8 +34,8 @@ namespace TaskExecutionSystem.Controllers
     // api/teacher/task/{id}/close
 
 
-    [AutoValidateAntiforgeryToken]
-    [Authorize(Policy = TeacherUserPolicy)]
+    // контроллер, предоставляющий эндпоинты для рабаты пользователя с ролью преподавателя 
+    [Authorize(TeacherUserPolicy)]
     [Route("api/teacher")]
     [ApiController]
     public class TeacherController : ControllerBase
@@ -48,6 +50,7 @@ namespace TaskExecutionSystem.Controllers
         public static IWebHostEnvironment _environment;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
+       // private HttpContext _httpContext;
 
         public TeacherController(ITaskService taskService, IWebHostEnvironment environment, 
             ITeacherService teacherService, IHttpContextAccessor httpContextAccessor,
@@ -58,13 +61,14 @@ namespace TaskExecutionSystem.Controllers
             _teacherService = teacherService;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            //_httpContext = context;
         }
 
 
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfileDataAsync()
         {
-            var testUser = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            //var testUser = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
 
             var res = await _teacherService.GetProfileDataAsync();
             return Ok(res);
@@ -77,26 +81,44 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-
         // todo: update Password
 
 
         [HttpGet("main")]
         public async Task<IActionResult> GetMainPageDataAsync()
         {
+            //var test = this.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            //string user = test?.Value;
+            //var x = this.HttpContext.User;
+            //var user = await _teacherService.GetUserFromClaimsAsync(x);
             var res = await _teacherService.GetMainDataAsync();
             return Ok(res);
         }
 
 
-        [HttpPost("task/filters")]
+        [HttpGet("task/filters")]
         public async Task<IActionResult> GetTaskFiltersAsync()
         {
             var res = await _teacherService.GetTaskFiltersAsync();
             return Ok(res);
         }
 
-        [HttpPost("task/add/filters")]
+        [HttpPost("task")]
+        public async Task<IActionResult> GetFilteredTasksAsync([FromBody]FilterDTO[] filters)
+        {
+            var res = await _teacherService.GetTasksFromDBAsync(filters);
+            return Ok(res);
+        }
+
+
+        [HttpGet("task/{id}")]
+        public async Task<IActionResult> GetasksByIDAsync(int id)
+        {
+            var res = await _teacherService.GetTaskByIDAsync(id);
+            return Ok(res);
+        }
+
+        [HttpGet("task/add/filters")]
         public async Task<IActionResult> GetTaskAddingListFiltersAsync()
         {
             var res = await _teacherService.GetAddingTaskFiltersAsync();
@@ -133,8 +155,6 @@ namespace TaskExecutionSystem.Controllers
             }
             return Ok(detail);
         }
-
-
 
 
         [HttpPost("upload")]

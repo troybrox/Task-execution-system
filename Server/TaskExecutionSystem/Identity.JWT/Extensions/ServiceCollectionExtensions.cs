@@ -50,14 +50,14 @@ namespace TaskExecutionSystem.Identity.JWT.Extensions
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ClockSkew = TimeSpan.FromSeconds(5),
-                        ValidateAudience = false,
+                        ValidateAudience = true,
                         ValidAudience = tokenOptions.Audience,
-                        ValidateIssuer = false,
+                        ValidateIssuer = true,
                         ValidIssuer = tokenOptions.Issuer,
                         IssuerSigningKey = tokenOptions.SigningKey,
                         ValidateIssuerSigningKey = true,
                         RequireExpirationTime = true,
-                        ValidateLifetime = true
+                        ValidateLifetime = false
                     };
                 });
 

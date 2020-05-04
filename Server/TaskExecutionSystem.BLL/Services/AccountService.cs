@@ -15,6 +15,7 @@ using TaskExecutionSystem.DAL.Entities.Registration;
 
 namespace TaskExecutionSystem.BLL.Services
 {
+    // [этот класс не используется, используется другая реализация интерфейся - AuthService]
     public class AccountService
     {
         private readonly UserManager<User> _userManager;
@@ -136,7 +137,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // создание сущности преподавтеля и добавление в БД
+        
         public async Task<OperationDetailDTO> CreateTeacherAsync(TeacherRegisterDTO dto)
         {
             OperationDetailDTO resultDetail;

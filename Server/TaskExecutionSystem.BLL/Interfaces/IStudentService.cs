@@ -19,9 +19,6 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO<List<SubjectDTO>>> GetTaskFiltersAsync();
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
 
-        // данные для [главная]
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetMainDataAsync();
-
         // данные для [репозиторий]
         public Task<OperationDetailDTO> CreateNewRepositoryAsync(); // param: RepoDTO
         public Task<OperationDetailDTO> CreateNewThemeAsync();
