@@ -8,7 +8,7 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string Number { get; set; }
 
         public int FacultyId { get; set; }
 
@@ -26,7 +26,7 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
             var dto = new GroupDTO
             {
                 Id = entity.Id,
-                Name = entity.NumberName,
+                Number = entity.NumberName,
                 FacultyId = entity.FacultyId
             };
             foreach(var s in entity.Students)
@@ -35,7 +35,18 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
             }
             return dto;
         }
-        
+
+        public static GroupDTO MapWithoutStudents(Group entity)
+        {
+            var dto = new GroupDTO
+            {
+                Id = entity.Id,
+                Number = entity.NumberName,
+                FacultyId = entity.FacultyId
+            };
+            return dto;
+        }
+
 
         public static List<GroupDTO> Map(List<Group> entities)
         {

@@ -140,7 +140,7 @@ namespace TaskExecutionSystem.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    var fileRes = await _taskService.AddFileToTaskAsync(res.Data.Id, file.FileName);
+                    var fileRes = await _taskService.AddFileToTaskAsync(int.Parse(res.Data), file.FileName);
 
                     if (!fileRes.Succeeded)
                     {
