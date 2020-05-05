@@ -13,6 +13,8 @@ namespace TaskExecutionSystem.BLL.DTO
 
         public string GroupNumber { get; set; }
 
+        public SolutionDTO Solution { get; set; }
+
         public List<SolutionDTO> Solutions { get; set; }
 
         public List<TaskDTO> Tasks { get; set; }

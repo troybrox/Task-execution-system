@@ -37,6 +37,7 @@ namespace TaskExecutionSystem
             var section = Configuration.GetSection("AuthOptions");
             var options = section.Get<AuthOptions>();
             var jwtOptions = new JWTOptions(options.Issuer, options.Audience, options.Secret, options.Lifetime);
+
             services.AddApiJwtAuthentication(jwtOptions);
 
             services.Configure<SeedOptions>(Configuration.GetSection("Seed"));
@@ -77,29 +78,23 @@ namespace TaskExecutionSystem
                 app.UseHsts();
             }
 
-            app.UseCors(MyAllowSpecificOrigins);
-
-            app.UseRouting();
-
             app.UseHttpsRedirection();
-
             app.UseStaticFiles();
 
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseSecureJwt();
-
-            app.UseAuthentication();
-
-            app.UseCookiePolicy(new CookiePolicyOptions 
+            app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
                 HttpOnly = HttpOnlyPolicy.Always,
                 Secure = CookieSecurePolicy.Always
             });
 
+            app.UseCors(MyAllowSpecificOrigins);
+            app.UseSecureJwt();
+            app.UseAuthentication();
+            
+            app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

@@ -16,6 +16,9 @@ namespace TaskExecutionSystem.BLL.DTO
 
         public string FacultyName { get; set; }
 
+        public string Password { get; set; }
+
+
         public static TeacherDTO Map(TeacherRegisterRequest entity) => new TeacherDTO
         {
             Id = entity.Id,
@@ -33,14 +36,32 @@ namespace TaskExecutionSystem.BLL.DTO
         public static TeacherDTO Map(Teacher entity) => new TeacherDTO
         {
             Id = entity.Id,
-            Faculty = entity.Department.Faculty.Name,
+            Faculty = entity?.Department.Faculty.Name,
             UserId = entity.UserId,
             Name = entity.Name,
             Surname = entity.Surname,
             Patronymic = entity.Patronymic,
             Position = entity.Position,
             DepartmentId = entity.DepartmentId,
-            DepartmentName = entity.Department.Name,
+            DepartmentName = entity?.Department.Name,
+            UserName = entity.User.UserName,
+            Email = entity.User.Email,
+            FacultyName = entity?.Department.Faculty.Name,
+            Password = null
+        };
+
+        public static TeacherDTO MapProfile(Teacher entity) => new TeacherDTO
+        {
+            Id = entity.Id,
+            Faculty = entity?.Department.Faculty.Name,
+            FacultyName = entity?.Department.Faculty.Name,
+            UserId = entity.UserId,
+            Name = entity.Name,
+            Surname = entity.Surname,
+            Patronymic = entity.Patronymic,
+            Position = entity.Position,
+            DepartmentId = entity.DepartmentId,
+            DepartmentName = entity?.Department.Name,
             UserName = entity.User.UserName,
             Email = entity.User.Email,
         };

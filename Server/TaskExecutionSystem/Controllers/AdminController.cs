@@ -30,12 +30,9 @@ namespace TaskExecutionSystem.Controllers
 
     //api/admin/delete_group
 
-
-    // TODO: test accept methods
-    //[Authorize("AdministratorPolicy")]
-
+    // контроллер, предоставляющий эндпоинты для рабаты пользователя с ролью администратора 
+    [Authorize(AdministratorPolicy)]
     [Route("api/[controller]")]
-    //[Authorize(AdministratorPolicy)]
     public class AdminController : Controller
     {
         private readonly IAdminService _adminService;
@@ -93,7 +90,6 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
-        // todo: edit parameters => only FilterDTO[] filters
         [HttpPost("reg_teachers")]
         public async Task<IActionResult> GetRegTeachersAsync([FromBody]FilterDTO[] filters)
         {
@@ -121,10 +117,8 @@ namespace TaskExecutionSystem.Controllers
             var res = await _adminService.GetExistStudentsAsync(filters);
             return Ok(res);
         }
-        //
+        
 
-        // todo: edit params here and in service 
-        // validation for registration
         [HttpPost("add_reg_teachers")]
         public async Task<IActionResult> AcceptTeacherUsersAsync([FromBody]int[] idList)
         {
@@ -156,25 +150,22 @@ namespace TaskExecutionSystem.Controllers
         [HttpPost("delete_exist_teachers")]
         public async Task<IActionResult> DeleteTeachersAsync([FromBody]int[] idList)
         {
-            await _adminService.DeleteExistTeachersAsync(idList);
-            return Ok();
+            var result = await _adminService.DeleteExistTeachersAsync(idList);
+            return Ok(result);
         }
 
         [HttpPost("delete_exist_students")]
         public async Task<IActionResult> DeleteStudentsAsync([FromBody]int[] idList)
         {
-            await _adminService.DeleteExistStudentsAsync(idList);
-            return Ok();
+            var result = await _adminService.DeleteExistStudentsAsync(idList);
+            return Ok(result);
         }
 
         [HttpPost("delete_group")]
-        public async Task<IActionResult> DeleteGroupAstnc([FromBody]int id)
+        public async Task<IActionResult> DeleteGroupAstnc([FromBody]int groupId)
         {
-            await _adminService.DeleteGroupAsync(id);
-            return Ok();
+            var result = await _adminService.DeleteGroupAsync(groupId);
+            return Ok(result);
         }
-
-        // todo:
-        // delete group
     }
 }
