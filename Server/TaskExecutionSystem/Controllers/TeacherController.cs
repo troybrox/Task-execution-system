@@ -132,28 +132,37 @@ namespace TaskExecutionSystem.Controllers
             var res = await _teacherService.CreateNewTaskAsync(dto.Task);
             if (res.Succeeded)
             {
-                var file = dto.File;
-                if (file.Length > 0)
+                if(dto.File != null)
                 {
-                    var fileName = file.FileName;
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\TaskFiles\\" + fileName))
+                    var file = dto.File;
+                    if (file.Length > 0)
                     {
-                        file.CopyTo(fileStream);
-                    }
-                    var fileRes = await _taskService.AddFileToTaskAsync(int.Parse(res.Data), file.FileName);
+                        var fileName = file.FileName;
+                        using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\TaskFiles\\" + fileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        var fileRes = await _taskService.AddFileToTaskAsync(int.Parse(res.Data), file.FileName);
 
-                    if (!fileRes.Succeeded)
-                    {
-                        detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
-                        detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                    }
-                    else
-                    {
-                        detail.Succeeded = true;
+                        if (!fileRes.Succeeded)
+                        {
+                            detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
+                            detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
+                            return Ok(detail);
+                        }
+                        else
+                        {
+                            detail.Succeeded = true;
+                            return Ok(detail);
+                        }
                     }
                 }
+                else
+                {
+                    return Ok(res);
+                }
             }
-            return Ok(detail);
+            return Ok(res);
         }
 
 

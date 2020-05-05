@@ -48,10 +48,10 @@ namespace TaskExecutionSystem.DAL.Configurations
                 .HasDefaultValue(true)
                 .IsRequired();
 
-            builder.Property(t => t.TimePercentage)
-                .HasMaxLength(3)
-                .HasDefaultValue(100)
-                .IsRequired();
+            //builder.Property(t => t.TimePercentage)
+            //    .HasMaxLength(3)
+            //    .HasDefaultValue(100)
+            //    .IsRequired();
         }
     }
 }
