@@ -2,17 +2,19 @@ import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_TASK
 
 const initialState = {
     profileData: [
-		{ value: 'pasha_terminator', label: 'Имя пользователя', type: 'text', serverName: 'UserName', valid: true },
-        { value: 'Павел Карпович Александров', label: 'Фамилия Имя Отчество'},
-        { value: 'Топовая 😎', label: 'Группа'},
-		{ value: 'Кайфовый', label: 'Факультет'},
-        { value: 'aaa@aa.aa', label: 'Адрес эл. почты', type: 'email', serverName: 'Email', valid: true }
+		{ value: 'pasha_terminator', label: 'Имя пользователя', type: 'text', serverName: 'userName', valid: true },
+        { value: 'Александров', label: 'Фамилия', serverName: 'surname'},
+        { value: 'Павел', label: 'Имя', serverName: 'name'},
+        { value: 'Сидорович', label: 'Отчество', serverName: 'patronymic'},
+        { value: 'Топовая 😎', label: 'Группа', serverName: 'groupNumber'},
+		{ value: 'Кайфовый', label: 'Факультет', serverName: 'faculty'},
+        { value: 'aaa@aa.aa', label: 'Адрес эл. почты', type: 'email', serverName: 'email', valid: true }
     ],
     taskData: {
         subjects: [
             {
                 id: 1,
-                name: 'Моделирование сложных систем', 
+                name: 'Моделирование сложных систем',
                 open: true
             },
             {
@@ -109,8 +111,8 @@ export default function studentReducer(state = initialState, action) {
             }
         case ERROR_WINDOW:
             return {
-                ...state, 
-                errorShow: action.errorShow, 
+                ...state,
+                errorShow: action.errorShow,
                 errorMessage: action.errorMessage
             }
         default:

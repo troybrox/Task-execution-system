@@ -40,7 +40,7 @@ class Registration extends React.Component {
 			if (el.type === 'password') {
 				password.push(el.value)
 			}
-			success = !!el.value && success
+			success = !!el.value && el.valid && success
 		})
 
 		if (password[0] !== password[1]) {
@@ -57,7 +57,7 @@ class Registration extends React.Component {
 		}
 	}
 
-	// Процесс регистрации
+	// Процесc регистрации
 	registerHandler = async() => {
 		let role = ''
 		const data = {}
@@ -88,8 +88,11 @@ class Registration extends React.Component {
 		let control = fields[index]
 
 		control.value = event.target.value
-		control.type === 'password' ? 
-			fields[index].valid = control.value !== '' : 
+		if (control.type === 'password') {
+			this.state.fields.forEach((el, num) => {
+				if (el.type === 'password') fields[num].valid = true
+			})
+		} else
 			fields[index].valid = control.value.trim() !== ''
         fields[index] = control
 
@@ -116,7 +119,7 @@ class Registration extends React.Component {
 			if (facultyId !== null && roleId !== null)
 				switch (roleId) {
 					case '1':
-						for (let i = 1; i < 4; i++)	{
+						for (let i = 1; i < 3; i++)	{
 							fields[index - i].invisible = false
 						}
 						break;

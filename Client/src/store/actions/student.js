@@ -9,26 +9,23 @@ export function fetchProfile() {
             const data = response.data
             if (data.succeeded) {
                 const labels = [
-                    { label: 'Имя пользователя', serverName: 'UserName', type: 'text'},
-                    { label: 'Фамилия Имя Отчество', serverName: 'Surname Name Patronymic'},
-                    { label: 'Группа', serverName: 'GroupName'},
-                    { label: 'Факультет', serverName: 'FacultyName'},
-                    { label: 'Адрес эл. почты', serverName: 'Email', type: 'email'}
+                    { label: 'Имя пользователя', serverName: 'userName', type: 'text'},
+                    { label: 'Фамилия', serverName: 'surname'},
+                    { label: 'Имя', serverName: 'name'},
+                    { label: 'Отчество', serverName: 'patronymic'},
+                    { label: 'Группа', serverName: 'groupNumber'},
+                    { label: 'Факультет', serverName: 'faculty'},
+                    { label: 'Адрес эл. почты', serverName: 'email', type: 'email'}
                 ]
 
                 const profileData = []
                 labels.forEach(el => {
-                    const value = []
-                    el.serverName.split(' ').forEach((item) => {
-                        value.push(data.data[item])
-                    })
-                    const obj = {label: el.label, value: value.join(' ')}
+                    const obj = {label: el.label, value: data.data[el.serverName], serverName: el.serverName}
                     if ('type' in el) {
                         obj.type = el.type
-                        obj.serverName = el.serverName 
                         obj.valid = true
                     }
-                    
+
                     profileData.push(obj)
                 })
 
@@ -82,7 +79,7 @@ export function updateProfile() {
         const profileData = [...state.profileData]
         const data = {}
         profileData.forEach(el => {
-            if ('serverName' in el) 
+            if ('serverName' in el)
                 data[el.serverName] = el.value
         })
         dispatch(updateData(data, 'update'))
@@ -131,7 +128,7 @@ export function choiceSubjectTask(indexSubject) {
         taskData.subjects.forEach(el => {
             if (el.id === indexSubject)
                 el.open = true
-            else 
+            else
                 el.open = false
         })
 

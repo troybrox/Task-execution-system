@@ -26,7 +26,7 @@ export function fetchProfile() {
                         obj.type = el.type
                         obj.valid = true
                     }
-                    
+
                     profileData.push(obj)
                 })
 
@@ -97,11 +97,13 @@ export function fetchMain() {
             if (data.succeeded) {
                 const mainData = [...data.data]
 
-                mainData.forEach((item)=>{
-                    item.open = false
+                mainData.forEach((item, num)=>{
+                    if (num === 0) item.open = true
+                    else item.open = false
                     if ('groups' in item)
-                        item.groups.forEach((element)=>{
-                            element.open = false
+                        item.groups.forEach((element, index)=>{
+                            if (index === 0) element.open = true
+                            else element.open = false
                             if ('students' in element)
                                 element.students.forEach((el)=>{
                                     el.open = false
@@ -142,7 +144,7 @@ export function choiceGroupMain(indexSubject, indexGroup) {
                 el.groups.forEach(element => {
                     element.open = false
                 })
-        })    
+        })
         mainData[indexSubject].groups[indexGroup].open = true
 
         dispatch(successMain(mainData))
@@ -176,7 +178,7 @@ export function fetchTaskFilters() {
                 data.data.subjects.forEach((el) => {
                     const object = {id: el.id, name: el.name, groups: []}
                     el.groups.forEach(element => {
-                        object.groups.push({id: element.id, number: element.number})
+                        object.groups.push({id: element.id, name: element.name})
                     })
                     taskData.subjects.push(object)
                 })
@@ -218,7 +220,7 @@ export function choiceGroupTask(indexSubject, indexGroup) {
                 el.groups.forEach(element => {
                     element.open = false
                 })
-        })    
+        })
         taskData.subjects[indexSubject].groups[indexGroup].open = true
 
         const filters = [
@@ -343,7 +345,7 @@ export function onSendCreate(task) {
             const data = response.data
 
             if (data.succeeded) {
-                dispatch(successCreate(data.id))
+                dispatch(successCreate(+data.id))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

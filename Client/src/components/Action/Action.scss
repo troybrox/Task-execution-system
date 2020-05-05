@@ -1,4 +1,6 @@
 .action {
+    overflow-y: auto;
+
     ul {
         list-style: none;
 
@@ -40,7 +42,6 @@
                     margin-top: 3px;
                     font-size: 14px;
                     color: rgb(136, 136, 136);
-                    // margin-left: 5px;
                 }
 
                 &:after {

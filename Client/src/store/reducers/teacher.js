@@ -16,7 +16,7 @@ const initialState = {
             name: 'Моделирование сложных систем', 
             groups: [
                 {
-                    number: '6001-020304D', 
+                    name: '6001-020304D', 
                     students: [
                         {
                             name: 'Студент 1', 
@@ -38,7 +38,7 @@ const initialState = {
                     open: true
                 }, 
                 {
-                    number: '6002-020304D', 
+                    name: '6002-020304D', 
                     students: [
                         {
                             name: 'Студент 3', 
@@ -65,8 +65,8 @@ const initialState = {
         {
             name: 'ЭВМ', 
             groups: [
-                {number: '6005-020304D', open: false}, 
-                {number: '6004-020304D', open: false}
+                {name: '6005-020304D', open: false}, 
+                {name: '6004-020304D', open: false}
             ], 
             open: false
         }
@@ -77,8 +77,8 @@ const initialState = {
                 id: 1,
                 name: 'Моделирование сложных систем', 
                 groups: [
-                    {id: 1, number: '6001-020304D', open: true}, 
-                    {id: 2, number: '6002-020304D', open: false}
+                    {id: 1, name: '6001-020304D', open: true}, 
+                    {id: 2, name: '6002-020304D', open: false}
                 ], 
                 open: true
             },
@@ -86,8 +86,8 @@ const initialState = {
                 id: 2,
                 name: 'ЭВМ', 
                 groups: [
-                    {id: 3, number: '6005-020304D', open: false}, 
-                    {id: 4, number: '6004-020304D', open: false}
+                    {id: 3, name: '6005-020304D', open: false}, 
+                    {id: 4, name: '6004-020304D', open: false}
                 ], 
                 open: false
             }
@@ -131,11 +131,11 @@ const initialState = {
         groups: [
             {
                 id: null,
-                number: 'Все'
+                name: 'Все'
             },
             {
                 id: 14,
-                number: "6246-020304D",
+                name: "6246-020304D",
                 students: [
                     {
                         id: 1,

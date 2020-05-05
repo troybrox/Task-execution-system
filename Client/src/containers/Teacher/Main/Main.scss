@@ -15,7 +15,9 @@
     height: calc(100vh - 83px);
 
     .aside_subject {
-        border-right: 1px solid rgb(209, 209, 209);;
+        border-right: 1px solid rgb(209, 209, 209);
+        overflow-y: auto;
+        min-width: max-content;
 
         .big_list {
             list-style: none;

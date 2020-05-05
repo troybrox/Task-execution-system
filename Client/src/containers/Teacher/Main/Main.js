@@ -9,8 +9,8 @@ import { choiceGroupMain, choiceSubjectMain, choiceStudentHandler } from '../../
 
 class Main extends React.Component {
     state = {
-        activeSubjectIndex: null,
-        activeGroupIndex: null,
+        activeSubjectIndex: 0,
+        activeGroupIndex: 0,
         title: ''
     }
 
@@ -22,7 +22,7 @@ class Main extends React.Component {
         this.props.choiceGroupMain(indexSubject, indexGroup)
 
         const nameSubject = this.props.mainData[indexSubject].name
-        const nameGroup = this.props.mainData[indexSubject].groups[indexGroup].number
+        const nameGroup = this.props.mainData[indexSubject].groups[indexGroup].name
 
         const title = nameSubject + '. Группа ' + nameGroup
         
@@ -44,7 +44,7 @@ class Main extends React.Component {
                     onClick={this.choiceGroup.bind(this, indexSubject, index)}
                 >
                     <img src='images/folder-regular.svg' alt='' />
-                    {item.number}
+                    {item.name}
                 </li>
             )
         })
@@ -108,7 +108,7 @@ class Main extends React.Component {
         const indexGroup = this.state.activeGroupIndex
         const group = this.props.mainData[indexSubject].groups[indexGroup]
 
-        if ('students' in group)
+        if ('groups' in this.props.mainData[indexSubject] && 'students' in group)
             return group.students.map((item, index) => {
                 const cls = ['each_student']
                 if (item.open) cls.push('active_student')
@@ -132,7 +132,7 @@ class Main extends React.Component {
     componentDidMount() {
         const activeSubjectIndex = 0
         const activeGroupIndex = 0
-        const title = this.props.mainData[0].name + '. Группа ' + this.props.mainData[0].groups[0].number
+        const title = this.props.mainData[0].name + '. Группа ' + this.props.mainData[0].groups[0].name
         this.setState({
             activeSubjectIndex,
             activeGroupIndex,

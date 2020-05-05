@@ -21,7 +21,7 @@ class TasksComponent extends React.Component {
         let title = ''
         if (localStorage.getItem('role') === 'teacher') {
             activeGroupIndex = this.props.subjects[0].groups[0].id
-            title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].number
+            title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
         } else {
             title = this.props.subjects[0].name
         }
@@ -50,7 +50,7 @@ class TasksComponent extends React.Component {
         this.props.choiceGroupTask(indexSubject, indexGroup)
 
         const nameSubject = this.props.subjects[indexSubject].name
-        const nameGroup = this.props.subjects[indexSubject].groups[indexGroup].number
+        const nameGroup = this.props.subjects[indexSubject].groups[indexGroup].name
 
         const title = nameSubject + '. Группа ' + nameGroup
         
@@ -111,7 +111,7 @@ class TasksComponent extends React.Component {
                     onClick={this.choiceGroup.bind(this, indexSubject, index)}
                 >
                     <img src='images/folder-regular.svg' alt='' />
-                    {item.number}
+                    {item.name}
                 </li>
             )
         })
@@ -144,28 +144,31 @@ class TasksComponent extends React.Component {
 
     renderLabs() {
         const subject = this.state.title.split(' ')
-        return this.props.labs.map((item, index) => {
-            return (
-                    <Link
-                        to={`/tasks/${index}`}
-                        key={index}
-                        className='each_labs' 
-                    >
-                        <div className='labs_left'>
-                            <span className='subject_for_lab'>{subject[0]}</span>
-                            <span>{item.type} {item.name}</span><br />
-                            <span className='small_text'>Открыта {item.dateOpen} назад</span>
-                        </div>
-                        { localStorage.getItem('role') === 'teacher' ?
-                            <div className='labs_right'>
-                                <img src='images/comment-regular.svg' alt='' />
-                                <span>{item.countAnswers}</span>
-                            </div> :
-                            null
-                        }
-                    </Link>
-            )
-        })
+        if (this.props.labs !== undefined)
+            return this.props.labs.map((item, index) => {
+                return (
+                        <Link
+                            to={`/tasks/${index}`}
+                            key={index}
+                            className='each_labs' 
+                        >
+                            <div className='labs_left'>
+                                <span className='subject_for_lab'>{subject[0]}</span>
+                                <span>{item.type} {item.name}</span><br />
+                                <span className='small_text'>Открыта {item.dateOpen} назад</span>
+                            </div>
+                            { localStorage.getItem('role') === 'teacher' ?
+                                <div className='labs_right'>
+                                    <img src='images/comment-regular.svg' alt='' />
+                                    <span>{item.countAnswers}</span>
+                                </div> :
+                                null
+                            }
+                        </Link>
+                )
+            })
+        else 
+            return null
     }
 
     renderOptions() {

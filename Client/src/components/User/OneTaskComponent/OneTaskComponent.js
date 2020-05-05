@@ -140,7 +140,7 @@ class OneTaskComponent extends React.Component {
                     key={item.id}
                     index={item.id}
                 >
-                    {item.number}
+                    {item.name}
                 </option>
             )
         })
