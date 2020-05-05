@@ -22,11 +22,11 @@ namespace TaskExecutionSystem.DAL.Entities.Task
 
         public DateTime FinishDate { get; set; }
 
-        public DateTime UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
 
         public bool IsOpen { get; set; }
 
-        public int TimePercentage { get; set; }
+        //public int TimePercentage { get; set; }
 
         public TaskFile File { get; set; }
 

@@ -8,7 +8,7 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
     {
         public int Id { get; set; }
 
-        public string Number { get; set; }
+        public string Name { get; set; }
 
         public int FacultyId { get; set; }
 
@@ -26,12 +26,15 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
             var dto = new GroupDTO
             {
                 Id = entity.Id,
-                Number = entity.NumberName,
+                Name = entity.NumberName,
                 FacultyId = entity.FacultyId
             };
-            foreach(var s in entity.Students)
+            if(entity.Students != null)
             {
-                dto.Students.Add(StudentDTO.Map(s));
+                foreach (var s in entity.Students)
+                {
+                    dto.Students.Add(StudentDTO.Map(s));
+                }
             }
             return dto;
         }
@@ -41,7 +44,7 @@ namespace TaskExecutionSystem.BLL.DTO.Studies
             var dto = new GroupDTO
             {
                 Id = entity.Id,
-                Number = entity.NumberName,
+                Name = entity.NumberName,
                 FacultyId = entity.FacultyId
             };
             return dto;

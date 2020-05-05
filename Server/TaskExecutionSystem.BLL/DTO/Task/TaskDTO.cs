@@ -23,7 +23,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
         
         public DateTime BeginDate { get; set; }
         public DateTime FinishDate { get; set; }
-        public DateTime UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
         public int TimeBar { get; set; }
 
         public string Group { get; set; }
@@ -44,23 +44,31 @@ namespace TaskExecutionSystem.BLL.DTO.Task
         {
             var dto = new TaskDTO
             {
+                Name = entity.Name,
                 Type = entity.Type.Name,
                 Subject = entity.Subject.Name,
 
                 ContentText = entity.ContentText,
                 IsOpen = entity.IsOpen,
-                FileURI = entity.File.FileURI,
-
-                TeacherName = entity.Teacher.Name,
-                TeacherSurname = entity.Teacher.Surname,
-                TeacherPatronymic = entity.Teacher.Patronymic,
 
                 BeginDate = entity.BeginDate,
                 FinishDate = entity.FinishDate,
                 UpdateDate = entity.UpdateDate,
-
-                Group = entity.Group.NumberName
             };
+            if(entity.File != null)
+            {
+                dto.FileURI = entity.File.FileURI;
+            }
+            if(entity.Teacher != null)
+            {
+                dto.TeacherName = entity.Teacher.Name;
+                dto.TeacherSurname = entity.Teacher.Surname;
+                dto.TeacherPatronymic = entity.Teacher.Patronymic;
+            }
+            if (entity.Group != null)
+            {
+                dto.Group = entity.Group.NumberName;
+            }
             return dto;
         }
 

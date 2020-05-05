@@ -19,6 +19,12 @@ namespace TaskExecutionSystem.BLL.DTO
 
         public List<TaskDTO> Tasks { get; set; }
 
+        public StudentDTO()
+        {
+            Solutions = new List<SolutionDTO>();
+            Tasks = new List<TaskDTO>();
+        }
+
 
         public static StudentDTO Map(StudentRegisterRequest entity) => new StudentDTO
         {
@@ -32,18 +38,31 @@ namespace TaskExecutionSystem.BLL.DTO
             Email = entity.Email
         };
 
-        public static StudentDTO Map(Student entity) => new StudentDTO
+        public static StudentDTO Map(Student entity)
         {
-            Id = entity.Id,
-            UserId = entity.UserId,
-            Faculty = entity.Group.Faculty.Name,
-            Name = entity.Name,
-            Surname = entity.Surname,
-            Patronymic = entity.Patronymic,
-            GroupId = entity.GroupId,
-            GroupNumber = entity.Group.NumberName,
-            UserName = entity.User.UserName,
-            Email = entity.User.Email,
-        };
+            var dto = new StudentDTO()
+            {
+                Id = entity.Id,
+                UserId = entity.UserId,
+                Name = entity.Name,
+                Surname = entity.Surname,
+                Patronymic = entity.Patronymic,
+                GroupId = entity.GroupId
+            };
+            if(entity.Group != null)
+            {
+                dto.GroupNumber = entity.Group.NumberName;
+                if (entity.Group.Faculty != null)
+                {
+                    dto.Faculty = entity.Group.Faculty.Name;
+                }
+            }
+            if(entity.User != null)
+            {
+                dto.UserName = entity.User.UserName;
+                dto.Email = entity.User.Email;
+            }
+            return dto;
+        }
     }
 }

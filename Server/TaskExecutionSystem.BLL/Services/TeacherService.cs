@@ -278,6 +278,7 @@ namespace TaskExecutionSystem.BLL.Services
                                  .Include(t => t.Group)
                                  .ThenInclude(g => g.Students) // [?]
                                  .Include(t => t.Subject)
+                                 .Include(t => t.Type)
                                  //.ThenInclude(s => s.Tasks) // также задания от других учитетелей [-]
                                  .Include(t => t.TaskStudentItems)
                                  .Where(t => t.TeacherId == currentTeacher.Id)
