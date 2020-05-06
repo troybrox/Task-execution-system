@@ -51,30 +51,35 @@ class Main extends React.Component {
     }
     
     renderList() {
-        const list = this.props.mainData.map((item, index) => {
-            const cls = ['big_items']
-            let src = 'images/angle-right-solid.svg'
-            if (item.open) {
-                src = 'images/angle-down-solid.svg'
-            }
-            return (
-                <Auxiliary key={index}>
-                    <li 
-                        className={cls.join(' ')}
-                        onClick={() => this.choiceSubject(index)}
-                    >
-                        {<img src={src} alt='' />}
-                        {item.name}
-                    </li>
+        const list = this.props.mainData.length === 0 ? 
+            <p className='empty_field'>
+                <Link to='/create_task'>Создайте задачу</Link>,
+                чтобы видеть предметы и группы по созданным задачам
+            </p> : 
+            this.props.mainData.map((item, index) => {
+                const cls = ['big_items']
+                let src = 'images/angle-right-solid.svg'
+                if (item.open) {
+                    src = 'images/angle-down-solid.svg'
+                }
+                return (
+                    <Auxiliary key={index}>
+                        <li 
+                            className={cls.join(' ')}
+                            onClick={() => this.choiceSubject(index)}
+                        >
+                            {<img src={src} alt='' />}
+                            {item.name}
+                        </li>
 
-                    {item.open && 'groups' in item ? 
-                        <ul className='small_list'>
-                            {this.renderMiniList(item.groups, index)}
-                        </ul> : null
-                    }
-                </Auxiliary>
-            )
-        })
+                        {item.open && 'groups' in item ? 
+                            <ul className='small_list'>
+                                {this.renderMiniList(item.groups, index)}
+                            </ul> : null
+                        }
+                    </Auxiliary>
+                )
+            })
 
         return (
             <ul className='big_list'>{list}</ul>
@@ -106,9 +111,19 @@ class Main extends React.Component {
     renderStudents() {
         const indexSubject = this.state.activeSubjectIndex
         const indexGroup = this.state.activeGroupIndex
-        const group = this.props.mainData[indexSubject].groups[indexGroup]
+        let group
 
-        if ('groups' in this.props.mainData[indexSubject] && 'students' in group)
+        if (this.props.mainData.length !== 0)
+            if ('groups' in this.props.mainData[indexSubject])
+                group = this.props.mainData[indexSubject].groups[indexGroup]
+            else
+                return null
+                
+        else 
+            return null
+            
+
+        if ('students' in group)
             return group.students.map((item, index) => {
                 const cls = ['each_student']
                 if (item.open) cls.push('active_student')
@@ -127,18 +142,32 @@ class Main extends React.Component {
             })
         else 
             return null
+            
     }
 
-    componentDidMount() {
-        const activeSubjectIndex = 0
-        const activeGroupIndex = 0
-        const title = this.props.mainData[0].name + '. Группа ' + this.props.mainData[0].groups[0].name
+    async componentDidMount() {
+        await this.props.fetchMain()
+        
+        let activeSubjectIndex = null
+        let activeGroupIndex = null
+        let title = ''
+
+        if (this.props.mainData.length !== 0)
+            this.props.mainData.forEach((element, num) => {
+                if (num === 0)
+                    if ('groups' in element) {
+                        activeSubjectIndex = 0
+                        activeGroupIndex = 0
+                        title = element.name + '. Группа ' + element.groups[0].name
+                    }
+            })
+
+
         this.setState({
             activeSubjectIndex,
             activeGroupIndex,
             title
         })
-        this.props.fetchMain()
     }
 
     render() {

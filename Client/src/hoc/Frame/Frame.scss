@@ -1,76 +1,95 @@
-.frame_header {
-    display: flex;
-    border-bottom: 1px solid rgb(167, 167, 167);
-    
-    .frame_header_items {
+.frame {
+    .frame_header {
         display: flex;
-        padding: 10px 10px;
-        color: #000000;
-        text-decoration: none;
-        cursor: pointer;
+        border-bottom: 1px solid rgb(167, 167, 167);
+        
+        .frame_header_items {
+            display: flex;
+            padding: 10px 10px;
+            color: #000000;
+            text-decoration: none;
+            cursor: pointer;
 
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+
+            span {
+                line-height: 20px;
+            }
+
+            img {
+                margin-left: 5px;
+                width: 20px;
+                height: 20px;
+            }
+            
+            &:hover {
+                background: rgb(223, 223, 223);
+            }
+
+            &:active, &:focus {
+                outline: none;
+            }
+        }
+
+        .bell_side {
+            display: flex;
+            margin: auto 20px auto auto;
+            cursor: pointer;
+            
+            img {
+                width: 20px;
+                height: 20px;
+            }
+
+            span {
+                display: inline-block;
+                text-align: center;
+                line-height: 20px;
+                width: 20px;
+                height: 20px;
+                border-radius: 50%;
+                border: 2px solid rgb(68, 68, 68);
+            }
+        }
+
+        .exit_frame {
+            font-weight: bold;
+            color: rgb(209, 28, 28);
+            margin-right: 20px;
+
+            &:hover {
+                background: none;
+            }
+        }
+
+
+
+        .active_frame_header {
+            background: rgb(143, 210, 255);
+
+            &:hover {
+                background: rgb(143, 210, 255);
+            }
+        }
+    }
+
+    .empty_field {
+        color: grey;
+        text-align: center;
+        margin-top: 10px;
+        width: 250px;
+
+        
         -khtml-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
 
-        span {
-            line-height: 20px;
-        }
-
-        img {
-            margin-left: 5px;
-            width: 20px;
-            height: 20px;
-        }
-        
-        &:hover {
-            background: rgb(223, 223, 223);
-        }
-
-        &:active, &:focus {
-            outline: none;
-        }
-    }
-
-    .bell_side {
-        display: flex;
-        margin: auto 20px auto auto;
-        cursor: pointer;
-        
-        img {
-            width: 20px;
-            height: 20px;
-        }
-
-        span {
-            display: inline-block;
-            text-align: center;
-            line-height: 20px;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid rgb(68, 68, 68);
-        }
-    }
-
-    .exit_frame {
-        font-weight: bold;
-        color: rgb(209, 28, 28);
-        margin-right: 20px;
-
-        &:hover {
-            background: none;
-        }
-    }
-
-
-
-    .active_frame_header {
-        background: rgb(143, 210, 255);
-
-        &:hover {
-            background: rgb(143, 210, 255);
+        a {
+            color: blue;
         }
     }
 }

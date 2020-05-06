@@ -16,15 +16,28 @@ class TasksComponent extends React.Component {
     }
 
     componentDidMount() {
-        const activeSubjectIndex = this.props.subjects[0].id
+        let activeSubjectIndex = null
         let activeGroupIndex = null
         let title = ''
-        if (localStorage.getItem('role') === 'teacher') {
-            activeGroupIndex = this.props.subjects[0].groups[0].id
-            title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
-        } else {
-            title = this.props.subjects[0].name
+        let filters
+
+        if (this.props.subjects.length !== 0) {
+            activeSubjectIndex = this.props.subjects[0].id
+            if (localStorage.getItem('role') === 'teacher') {
+                if ('groups' in this.props.subjects[0]) {
+                    activeGroupIndex = this.props.subjects[0].groups[0].id
+                    title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
+                    filters = [
+                        {name: 'subjectId', value: String(this.props.subjects[activeSubjectIndex].id)},
+                        {name: 'groupId', value: String(this.props.subjects[activeSubjectIndex].groups[activeGroupIndex].id)}
+                    ]
+                    this.props.fetchListTasks(filters)
+                }
+            } else {
+                title = this.props.subjects[0].name
+            }
         }
+
         this.setState({
             activeSubjectIndex,
             activeGroupIndex,
@@ -70,30 +83,35 @@ class TasksComponent extends React.Component {
     }
 
     renderListTeacher() {
-        const list = this.props.subjects.map((item, index) => {
-            const cls = ['big_items']
-            let src = 'images/angle-right-solid.svg'
-            if (item.open) {
-                src = 'images/angle-down-solid.svg'
-            }
-            return (
-                <Auxiliary key={index}>
-                    <li 
-                        className={cls.join(' ')}
-                        onClick={() => this.choiceSubjectTeacher(index)}
-                    >
-                        {<img src={src} alt='' />}
-                        {item.name}
-                    </li>
+        const list = this.props.subjecs === undefined ? 
+            <p className='empty_field'>
+                <Link to='/create_task'>Создайте задачу</Link>,
+                чтобы видеть предметы и группы по созданным задачам
+            </p> : 
+            this.props.subjects.map((item, index) => {
+                const cls = ['big_items']
+                let src = 'images/angle-right-solid.svg'
+                if (item.open) {
+                    src = 'images/angle-down-solid.svg'
+                }
+                return (
+                    <Auxiliary key={index}>
+                        <li 
+                            className={cls.join(' ')}
+                            onClick={() => this.choiceSubjectTeacher(index)}
+                        >
+                            {<img src={src} alt='' />}
+                            {item.name}
+                        </li>
 
-                    {item.open && 'groups' in item ? 
-                        <ul className='small_list'>
-                            {this.renderMiniList(item.groups, index)}
-                        </ul> : null
-                    }
-                </Auxiliary>
-            )
-        })
+                        {item.open && 'groups' in item ? 
+                            <ul className='small_list'>
+                                {this.renderMiniList(item.groups, index)}
+                            </ul> : null
+                        }
+                    </Auxiliary>
+                )
+            })
 
         return (
             <ul className='big_list'>{list}</ul>
@@ -118,24 +136,28 @@ class TasksComponent extends React.Component {
     }
 
     renderListStudent() {
-        const list = this.props.subjects.map((item) => {
-            const cls = ['big_items']
-            let src = 'images/folder-regular.svg'
-            if (item.open) {
-                cls.push('active_big')
-            }
-            return (
-                <Auxiliary key={item.id}>
-                    <li 
-                        className={cls.join(' ')}
-                        onClick={() => this.choiceSubjectStudent(item.id, item.name)}
-                    >
-                        {<img src={src} alt='' />}
-                        {item.name}
-                    </li>
-                </Auxiliary>
-            )
-        })
+        const list = this.props.subjects === undefined ?
+            <p className='empty_field'>
+                Здесь будет список предметов ваших задач, пока задач нет
+            </p> :
+            this.props.subjects.map((item) => {
+                const cls = ['big_items']
+                let src = 'images/folder-regular.svg'
+                if (item.open) {
+                    cls.push('active_big')
+                }
+                return (
+                    <Auxiliary key={item.id}>
+                        <li 
+                            className={cls.join(' ')}
+                            onClick={() => this.choiceSubjectStudent(item.id, item.name)}
+                        >
+                            {<img src={src} alt='' />}
+                            {item.name}
+                        </li>
+                    </Auxiliary>
+                )
+            })
 
         return (
             <ul className='big_list'>{list}</ul>

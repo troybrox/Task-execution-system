@@ -96,20 +96,22 @@ export function fetchMain() {
 
             if (data.succeeded) {
                 const mainData = [...data.data]
-
-                mainData.forEach((item, num)=>{
-                    if (num === 0) item.open = true
-                    else item.open = false
-                    if ('groups' in item)
-                        item.groups.forEach((element, index)=>{
-                            if (index === 0) element.open = true
-                            else element.open = false
-                            if ('students' in element)
-                                element.students.forEach((el)=>{
-                                    el.open = false
-                                })
-                        })
-                })
+                if (mainData !== [])
+                    mainData.forEach((item, num)=>{
+                        if (num === 0) 
+                            item.open = true
+                        else 
+                            item.open = false
+                        if ('groups' in item)
+                            item.groups.forEach((element, index)=>{
+                                if (index === 0) element.open = true
+                                else element.open = false
+                                if ('students' in element)
+                                    element.students.forEach((el)=>{
+                                        el.open = false
+                                    })
+                            })
+                    })
 
                 dispatch(successMain(mainData))
             } else {
@@ -174,18 +176,34 @@ export function fetchTaskFilters() {
                     subjects: [],
                     types: [{id: null, name: 'Все'}]
                 }
+                
+                if ('subjects' in data.data)
+                    data.data.subjects.forEach((el, num) => {
+                        const object = {id: el.id, name: el.name, groups: [], open: false}
+                        if (num === 0)
+                            object.open = true
+                        
+                        if ('groups' in el)
+                            el.groups.forEach((element, index) => {
+                                const group = {
+                                    id: element.id, 
+                                    name: element.name, 
+                                    open: false
+                                }
 
-                data.data.subjects.forEach((el) => {
-                    const object = {id: el.id, name: el.name, groups: []}
-                    el.groups.forEach(element => {
-                        object.groups.push({id: element.id, name: element.name})
+                                if (index === 0)
+                                    group.open = true
+                            
+                                object.groups.push(group)
+                            })
+
+                        taskData.subjects.push(object)
                     })
-                    taskData.subjects.push(object)
-                })
 
-                data.data.types.forEach(el => {
-                    taskData.types.push(el)
-                })
+                if ('types' in data.data)
+                    data.data.types.forEach(el => {
+                        taskData.types.push(el)
+                    })
 
                 dispatch(successTask(taskData))
             } else {
@@ -243,17 +261,19 @@ export function fetchListTasks(filters) {
 
             if (data.succeeded) {
                 const labs = []
-                data.data.forEach(el => {
-                    const object = {type: el.type, name: el.name, dateOpen: el.beginDate}
-                    let countAnswers = 0
-                    el.students.forEach(element => {
-                        if (element.solution !== null)
-                            countAnswers++
+                if (data.data.length !== 0) {
+                    data.data.forEach(el => {
+                        const object = {type: el.type, name: el.name, dateOpen: el.beginDate}
+                        let countAnswers = 0
+                        el.students.forEach(element => {
+                            if (element.solution !== null)
+                                countAnswers++
+                        })
+                        object.countAnswers = countAnswers
+    
+                        labs.push(object)
                     })
-                    object.countAnswers = countAnswers
-
-                    labs.push(object)
-                })
+                }
 
                 dispatch(successLabs(labs))
             } else {
@@ -338,6 +358,7 @@ export function changeChecked(groupIndex, studentIndex, val) {
 }
 
 export function onSendCreate(task) {
+    console.log(task)
     return async dispatch => {
         try {
             const url = 'api/teacher/task/add'
