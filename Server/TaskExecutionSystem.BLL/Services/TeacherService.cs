@@ -24,6 +24,7 @@ using TaskExecutionSystem.DAL.Entities.Relations;
 
 namespace TaskExecutionSystem.BLL.Services
 {
+    // TODO: CLOSE TASK
     public class TeacherService : ITeacherService
     {
         private readonly DataContext _context;
@@ -303,12 +304,33 @@ namespace TaskExecutionSystem.BLL.Services
                 var currentSubjectDTO = new SubjectDTO();
                 var currentGroupDTO = GroupDTO.Map(task.Group); // 
                 var newStudentDTO = new StudentDTO();
+                // наполнить студентов
                 if ((currentSubjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
                 {
-                    if((currentGroupDTO = currentSubjectDTO.Groups.FirstOrDefault(g => g.Id == currentGroupDTO.Id)) != null) { }
+                    if((currentGroupDTO = currentSubjectDTO.Groups.FirstOrDefault(g => g.Id == currentGroupDTO.Id)) != null) 
+                    {
+                        foreach (var student in currentGroupDTO.Students)
+                        {
+                            var ts = new TaskStudentItem();
+                            if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                            {
+                                student.Tasks.Add(TaskDTO.Map(task));
+                                student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                            }
+                        }
+                    }
                     else
                     {
                         currentSubjectDTO.Groups.Add(currentGroupDTO);
+                        foreach (var student in currentGroupDTO.Students)
+                        {
+                            var ts = new TaskStudentItem();
+                            if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                            {
+                                student.Tasks.Add(TaskDTO.Map(task));
+                                student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                            }
+                        }
                     }
                 } // есть дерево предметов и групп
 
@@ -487,7 +509,8 @@ namespace TaskExecutionSystem.BLL.Services
                     var subjectDTO = new SubjectDTO();
                     if ((subjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
                     {
-                        if (!subjectDTO.Groups.Contains(groupDTO))
+                        // куда добавляется группа
+                        if (!subjectDTO.Groups.Contains(groupDTO)) // добавить проверку по id
                         {
                             subjectDTO.Groups.Add(groupDTO);
                         }
@@ -497,6 +520,10 @@ namespace TaskExecutionSystem.BLL.Services
                         var newSubjectDTO = SubjectDTO.Map(task.Subject);
                         newSubjectDTO.Groups.Add(groupDTO);
                         resSubjectDTOList.Add(newSubjectDTO);
+                        //if (resSubjectDTOList.Find((s => s.Id == newSubjectDTO.Id)) == null)
+                        //{
+                        //    resSubjectDTOList.Add(newSubjectDTO);
+                        //}
                     }
                 }
                 detail.Data = resSubjectDTOList;
@@ -609,6 +636,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // TODO: progressBar count
         public async Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
@@ -623,6 +651,7 @@ namespace TaskExecutionSystem.BLL.Services
                     .Include(t => t.Subject)
                     .Include(t => t.Type)
                     .Include(t => t.File)
+                    .Include(t => t.Teacher)
                     .FirstOrDefaultAsync(t => t.Id == id);
 
                 if (entity == null)
@@ -655,6 +684,12 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
                 return detail;
             }
+        }
+
+        // TODO [!]
+        public Task<OperationDetailDTO> UpdateTaskAsync(int id)
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -704,6 +739,8 @@ namespace TaskExecutionSystem.BLL.Services
             var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
             return userNameClaim.Value;
         }
+
+        
     }
 }
 

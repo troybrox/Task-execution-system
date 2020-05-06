@@ -4,12 +4,10 @@ using System.Text;
 
 namespace TaskExecutionSystem.BLL.DTO.Task
 {
-    public class SolutionCreateModel
+    public class SolutionCreateModelDTO
     {
         public string ContentText { get; set; }
 
         public int TaskId { get; set; }
-
-        public int StudentId { get; set; }
     }
 }
