@@ -23,6 +23,7 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO<TaskAddingFiltersModelDTO>> GetAddingTaskFiltersAsync();
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters);
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
+        public Task<OperationDetailDTO> UpdateTaskAsync(int id);
 
         // данные для [главная]
         public Task<OperationDetailDTO<List<SubjectDTO>>> GetMainDataAsync();

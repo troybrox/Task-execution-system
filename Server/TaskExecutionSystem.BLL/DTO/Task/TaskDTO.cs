@@ -44,6 +44,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
         {
             var dto = new TaskDTO
             {
+                Id = entity.Id,
                 Name = entity.Name,
                 Type = entity.Type.Name,
                 Subject = entity.Subject.Name,

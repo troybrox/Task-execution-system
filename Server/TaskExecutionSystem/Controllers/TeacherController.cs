@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Extensions.Primitives;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -103,7 +104,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        [HttpPost("task")]
+        [HttpPost("tasks")]
         public async Task<IActionResult> GetFilteredTasksAsync([FromBody]FilterDTO[] filters)
         {
             var res = await _teacherService.GetTasksFromDBAsync(filters);
@@ -125,17 +126,17 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        [HttpPost("task/add")]
-        public async Task<IActionResult> AddTaskAsync([FromBody]TaskFileModelDTO dto)
+        [HttpPost("_task/add")]
+        public async Task<IActionResult> AddTaskAsync_([FromBody]TaskFileModelDTO dto = null)
         {
             var detail = new OperationDetailDTO();
             var res = await _teacherService.CreateNewTaskAsync(dto.Task);
             if (res.Succeeded)
             {
-                if(dto.File != null)
+                try
                 {
-                    var file = dto.File;
-                    if (file.Length > 0)
+                    var file = Request.Form.Files[0];
+                    if(file != null)
                     {
                         var fileName = file.FileName;
                         using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\TaskFiles\\" + fileName))
@@ -156,13 +157,84 @@ namespace TaskExecutionSystem.Controllers
                             return Ok(detail);
                         }
                     }
+                    else
+                    {
+                        return Ok(res);
+                    }
+                    
+                }
+                catch (Exception e)
+                {
+                    detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
+                    return Ok(detail);
+                }
+            }
+
+            else
+            {
+                return Ok(res);
+            }
+        }
+
+
+        [HttpPost("task/add")]
+        public async Task<IActionResult> AddTaskAsync([FromBody]TaskCreateModelDTO task = null)
+        {
+            //var allForms = Request.Form.Keys;
+            //var task = allForms.First();
+            var res = await _teacherService.CreateNewTaskAsync(task);
+            return Ok(res);
+        }
+
+        [HttpPost("task/add/file")]
+        public async Task<IActionResult> AddFile()
+        {
+            var detail = new OperationDetailDTO();
+            //
+            var allForms = Request.Form;
+            StringValues taskIdString;
+            var taskIdRes = allForms.TryGetValue(allForms.Keys.First(), out taskIdString);
+            var strId = taskIdString.ToString();
+            //var id = Convert.ToInt32(taskIdString.ToString());
+            var id = Convert.ToInt32(strId);
+            var file = Request.Form.Files[0];
+            if (file != null)
+            {
+                var fileName = file.FileName;
+                using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
+                {
+                    file.CopyTo(fileStream);
+                }
+                var fileRes = await _taskService.AddFileToTaskAsync(id, file.FileName);
+
+                if (!fileRes.Succeeded)
+                {
+                    detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
+                    detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
+                    return Ok(detail);
                 }
                 else
                 {
-                    return Ok(res);
+                    detail.Succeeded = true;
+                    return Ok(detail);
                 }
             }
-            return Ok(res);
+            else
+            {
+                detail.ErrorMessages.Add("Файл равен null");
+                return Ok(detail);
+            }
+
+            //try
+            //{
+
+
+            //}
+            //catch (Exception e)
+            //{
+            //    detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
+            //    return Ok(detail);
+            //}
         }
 
 
