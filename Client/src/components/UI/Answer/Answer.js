@@ -15,6 +15,9 @@ class Answer extends React.Component {
                     <p>
                         {this.props.data.contentText}
                     </p>
+                    <p>
+                        <a href={this.props.data.fileURI}>Скачать файл</a>
+                    </p>
                 </div>
             </div>
         )

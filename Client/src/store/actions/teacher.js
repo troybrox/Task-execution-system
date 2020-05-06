@@ -357,6 +357,16 @@ export function changeChecked(groupIndex, studentIndex, val) {
     }
 }
 
+
+const data = {
+    succeded: true,
+    errorMessages: [],
+    data: {
+        id: 2
+    }
+}
+
+
 export function onSendCreate(task) {
     console.log(task)
     return async dispatch => {
@@ -369,7 +379,7 @@ export function onSendCreate(task) {
                 try {
                     const url2 = 'api/teacher/task/add/file'
                     const file = new FormData()
-                    file.append('taskId', data.data.id)
+                    file.append('taskId', data.data)
                     file.append('file', task.file)
                     const response2 = await axios.post(url2, file)
                     const data2 = response2.data
