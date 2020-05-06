@@ -86,10 +86,10 @@ class Main extends React.Component {
         )
     }
 
-    renderTasks = tasks => {
+    renderTasks = (tasks, studentId) => {
         return tasks.map((item, index) => {
             let src = 'images/times-solid.svg'
-            if (item.end) src = 'images/check-square-regular.svg'
+            if (item.solutions.includes(studentId)) src = 'images/check-square-regular.svg'
             return (
                 <div key={index} className='tasks'>
                     <Link 
@@ -99,8 +99,8 @@ class Main extends React.Component {
                         {item.name}
                     </Link>
                     <span className='time'>
-                        <span>Открыта {item.begin}</span><br />
-                        {item.end ? <span>Закрыта {item.end}</span> : null}
+                        <span>Открыта {item.beginDate}</span><br />
+                        {item.end ? <span>Закрыта {item.finishDate}</span> : null}
                     </span>
                     <img src={src} alt='' />
                 </div>
@@ -134,9 +134,9 @@ class Main extends React.Component {
                             onClick={() => this.props.choiceStudentHandler(indexSubject, indexGroup, index)}
                         >
                             <img src='images/card.svg' alt='' />
-                            <p>{item.name}</p>
+                            <p>{item.name} {item.surname}</p>
                         </div>
-                        {item.open ? this.renderTasks(item.tasks) : null}
+                        {item.open ? this.renderTasks(item.tasks, item.id) : null}
                     </Auxiliary>
                 )
             })
