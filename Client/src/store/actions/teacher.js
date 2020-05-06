@@ -369,7 +369,7 @@ export function onSendCreate(task) {
                 try {
                     const url2 = 'api/teacher/task/add/file'
                     const file = new FormData()
-                    file.append('taskId', data.id)
+                    file.append('taskId', data.data.id)
                     file.append('file', task.file)
                     const response2 = await axios.post(url2, file)
                     const data2 = response2.data
