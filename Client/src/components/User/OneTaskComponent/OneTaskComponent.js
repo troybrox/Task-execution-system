@@ -424,7 +424,7 @@ class OneTaskComponent extends React.Component {
             this.state.beginDate !== null &&
             this.state.finishDate !== null      
             ) {
-                const task = {}
+                // const task = {}
                 createTask.task.subjectId = +this.state.subjectId 
                 createTask.task.typeId = +this.state.typeId 
                 createTask.task.groupId = +this.state.groupId
