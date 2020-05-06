@@ -99,8 +99,8 @@ class Main extends React.Component {
                         {item.name}
                     </Link>
                     <span className='time'>
-                        <span>Открыта {item.beginDate.slice(0, 11)} {item.beginDate.slice(12, 17)}</span><br />
-                        {item.end ? <span>Закрыта {item.finishDate.slice(0, 11)} {item.finishDate.slice(12, 17)}</span> : null}
+                        <span>Открыта {item.beginDate.split('T').join(' ')}</span><br />
+                        {item.end ? <span>Закрыта {item.finishDate.split('T').join(' ')}</span> : null}
                     </span>
                     <img src={src} alt='' />
                 </div>

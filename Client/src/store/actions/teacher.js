@@ -362,11 +362,31 @@ export function onSendCreate(task) {
     return async dispatch => {
         try {
             const url = 'api/teacher/task/add'
-            const response = await axios.post(url, task)
+            const response = await axios.post(url, task.task)
             const data = response.data
 
             if (data.succeeded) {
-                dispatch(successCreate(+data.id))
+                try {
+                    const url = 'api/teacher/task/add/file'
+                    const file = new FormData()
+                    file.append(taskId, +data.id)
+                    file.append(file, task.file)
+                    const response2 = await axios.post(url, file)
+                    const data2 = response2.data
+
+                    if (data2.succeeded) {
+                        dispatch(successCreate(+data.id))
+                    } else {
+                        const err = [...data2.errorMessages]
+                        err.unshift('Сообщение с сервера.')
+                        dispatch(errorWindow(true, err))
+                    }
+
+                } catch (error) {
+                    const err = ['Ошибка подключения']
+                    err.push(error.message)
+                    dispatch(errorWindow(true, err))
+                }
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

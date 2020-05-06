@@ -70,10 +70,8 @@ class OneTaskComponent extends React.Component {
     }
 
     onLoadFile = event => {
-        const files = new FormData()
-        files.append('file', event.target.files[0])
         this.setState({
-            files
+            files: event.target.files[0]
         })
     }
 
