@@ -83,7 +83,7 @@ class TasksComponent extends React.Component {
     }
 
     renderListTeacher() {
-        const list = this.props.subjecs === undefined ? 
+        const list = this.props.subjects === undefined ? 
             <p className='empty_field'>
                 <Link to='/create_task'>Создайте задачу</Link>,
                 чтобы видеть предметы и группы по созданным задачам
@@ -164,23 +164,23 @@ class TasksComponent extends React.Component {
         )
     }
 
-    renderLabs() {
+    renderTasks() {
         const subject = this.state.title.split(' ')
-        if (this.props.labs !== undefined)
-            return this.props.labs.map((item, index) => {
+        if (this.props.tasks !== undefined)
+            return this.props.tasks.map((item, index) => {
                 return (
                         <Link
                             to={`/tasks/${index}`}
                             key={index}
-                            className='each_labs' 
+                            className='each_tasks' 
                         >
-                            <div className='labs_left'>
+                            <div className='tasks_left'>
                                 <span className='subject_for_lab'>{subject[0]}</span>
                                 <span>{item.type} {item.name}</span><br />
                                 <span className='small_text'>Открыта {item.dateOpen} назад</span>
                             </div>
                             { localStorage.getItem('role') === 'teacher' ?
-                                <div className='labs_right'>
+                                <div className='tasks_right'>
                                     <img src='images/comment-regular.svg' alt='' />
                                     <span>{item.countAnswers}</span>
                                 </div> :
@@ -238,7 +238,7 @@ class TasksComponent extends React.Component {
     
     render() {
         const main = (
-            <div className='labs_group'>               
+            <div className='tasks_group'>               
                 <div className='search'>
                     <input 
                         type='search' 
@@ -277,7 +277,7 @@ class TasksComponent extends React.Component {
                     }
                 </div>
             
-                {this.renderLabs()}
+                {this.renderTasks()}
             </div>
         )
 

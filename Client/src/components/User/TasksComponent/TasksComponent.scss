@@ -1,4 +1,4 @@
-.labs_group {
+.tasks_group {
     width: 100%;
     overflow-y: auto;
 
@@ -47,7 +47,7 @@
         }
     }
 
-    .each_labs {
+    .each_tasks {
         display: flex;
         border-bottom: 1px dashed grey;
         margin: 0 20px;
@@ -56,7 +56,7 @@
         color: #000;
         min-width: 510px;
 
-        .labs_left {
+        .tasks_left {
             margin-top: 20px;
 
             .subject_for_lab {
@@ -68,7 +68,7 @@
             }
         }
 
-        .labs_right {
+        .tasks_right {
             display: flex;
             margin: auto 0 auto 40%;
 

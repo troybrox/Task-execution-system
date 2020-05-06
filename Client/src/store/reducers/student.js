@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_TASK_ADDITION } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [
@@ -29,7 +29,7 @@ const initialState = {
             {id: 2, name: 'Домашняя работа'},
         ],
     },
-    labs: [
+    tasks: [
         {type: 'Лабораторная работа', name: '№1', dateOpen: '2 дня'},
         {type: 'Лабораторная работа', name: '№2', dateOpen: '1 месяц'},
         {type: 'Лабораторная работа', name: '№3', dateOpen: '3 дня'},
@@ -101,9 +101,9 @@ export default function studentReducer(state = initialState, action) {
             return {
                 ...state, taskData: action.taskData
             }
-        case SUCCESS_LABS:
+        case SUCCESS_TASKS:
             return {
-                ...state, labs: action.labs
+                ...state, tasks: action.tasks
             }
         case SUCCESS_TASK_ADDITION:
             return {

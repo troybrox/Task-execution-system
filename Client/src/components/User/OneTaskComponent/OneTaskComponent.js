@@ -407,7 +407,10 @@ class OneTaskComponent extends React.Component {
 
     renderButtonCreate() {
         const cls = []
-        const createTask = new FormData()
+        // const createTask = new FormData()
+        const createTask = {
+            task: {}
+        }
         if (
             this.state.subjectId !== null && 
             this.state.typeId !== null && 
@@ -418,18 +421,19 @@ class OneTaskComponent extends React.Component {
             this.state.beginDate !== null &&
             this.state.finishDate !== null      
             ) {
-                const task = {}
-                task.subjectId = +this.state.subjectId 
-                task.typeId = +this.state.typeId 
-                task.groupId = +this.state.groupId
-                task.name = this.state.titleInput 
-                task.contentText = this.state.descriptionInput
-                task.studentIds = this.state.studentIds
-                task.beginDate = this.state.beginDate
-                task.finishDate = this.state.finishDate
+                // const task = {}
+                createTask.task.subjectId = +this.state.subjectId 
+                createTask.task.typeId = +this.state.typeId 
+                createTask.task.groupId = +this.state.groupId
+                createTask.task.name = this.state.titleInput 
+                createTask.task.contentText = this.state.descriptionInput
+                createTask.task.studentIds = this.state.studentIds
+                createTask.task.beginDate = this.state.beginDate
+                createTask.task.finishDate = this.state.finishDate
 
-                createTask.append('task', task)
-                createTask.append('file', this.state.files)
+                // createTask.append('task', task)
+                // createTask.append('file', this.state.files)
+                createTask.file = this.state.files
                 cls.push('blue_big')
         } else 
             cls.push('disactive_big')
@@ -565,9 +569,9 @@ class OneTaskComponent extends React.Component {
     renderHeader() {
         return (
             <div
-                className='each_labs' 
+                className='each_tasks' 
             >
-                <div className='labs_left'>
+                <div className='tasks_left'>
                     <span className='subject_for_lab'>{this.props.taskAdditionData.subject}</span>
                     <span>{this.props.taskAdditionData.type} {this.props.taskAdditionData.name}</span>
                     <p className='small_text'>

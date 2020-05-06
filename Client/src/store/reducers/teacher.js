@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [
@@ -20,7 +20,7 @@ const initialState = {
         //             students: [
         //                 {
         //                     name: 'Студент 1', 
-        //                     labs: [
+        //                     tasks: [
         //                         {id: 1, name: 'Лабораторная работа №1', begin: '10.10.2020', end: '10.11.2020'},
         //                         {id: 2, name: 'Лабораторная работа №2', begin: '18.10.2020', end: ''}
         //                     ],
@@ -28,7 +28,7 @@ const initialState = {
         //                 },
         //                 {
         //                     name: 'Студент 2', 
-        //                     labs: [
+        //                     tasks: [
         //                         {id: 3, name: 'Лабораторная работа №1', begin: '10.10.2020', end: ''},
         //                         {id: 4, name: 'Лабораторная работа №2', begin: '18.10.2020', end: '10.11.2020'}
         //                     ],
@@ -42,7 +42,7 @@ const initialState = {
         //             students: [
         //                 {
         //                     name: 'Студент 3', 
-        //                     labs: [
+        //                     tasks: [
         //                         {id: 5, name: 'Лабораторная работа №1', begin: '10.10.2020', end: ''},
         //                         {id: 6, name: 'Лабораторная работа №2', begin: '18.10.2020', end: ''}
         //                     ],
@@ -50,7 +50,7 @@ const initialState = {
         //                 },
         //                 {
         //                     name: 'Студент 4', 
-        //                     labs: [
+        //                     tasks: [
         //                         {id: 7, name: 'Лабораторная работа №1', begin: '10.10.2020', end: '10.11.2020'},
         //                         {id: 8, name: 'Лабораторная работа №2', begin: '18.10.2020', end: '10.11.2020'}
         //                     ],
@@ -98,7 +98,7 @@ const initialState = {
             // {id: 2, name: 'Домашняя работа'},
         ],
     },
-    labs: [
+    tasks: [
         // {type: 'Лабораторная работа', name: '№1',  countAnswers: 3, dateOpen: '2 дня'},
         // {type: 'Лабораторная работа', name: '№2',  countAnswers: 2, dateOpen: '1 месяц'},
         // {type: 'Лабораторная работа', name: '№3',  countAnswers: 10, dateOpen: '3 дня'},
@@ -229,9 +229,9 @@ export default function teacherReducer(state = initialState, action) {
             return {
                 ...state, taskData: action.taskData, successId: null
             }
-        case SUCCESS_LABS:
+        case SUCCESS_TASKS:
             return {
-                ...state, labs: action.labs
+                ...state, tasks: action.tasks
             }
         case SUCCESS_CREATE_DATA:
             return {

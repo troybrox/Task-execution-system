@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_LABS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -260,7 +260,7 @@ export function fetchListTasks(filters) {
             const data = response.data
 
             if (data.succeeded) {
-                const labs = []
+                const tasks = []
                 if (data.data.length !== 0) {
                     data.data.forEach(el => {
                         const object = {type: el.type, name: el.name, dateOpen: el.beginDate}
@@ -271,11 +271,11 @@ export function fetchListTasks(filters) {
                         })
                         object.countAnswers = countAnswers
     
-                        labs.push(object)
+                        tasks.push(object)
                     })
                 }
 
-                dispatch(successLabs(labs))
+                dispatch(successTasks(tasks))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
@@ -423,10 +423,10 @@ export function successTask(taskData) {
     }
 }
 
-export function successLabs(labs) {
+export function successTasks(tasks) {
     return {
-        type: SUCCESS_LABS,
-        labs
+        type: SUCCESS_TASKS,
+        tasks
     }
 }
 

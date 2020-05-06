@@ -13,7 +13,7 @@ class Tasks extends React.Component {
             <TasksComponent 
                 subjects={this.props.taskData.subjects}
                 types={this.props.taskData.types}
-                labs={this.props.labs}
+                tasks={this.props.tasks}
                 choiceSubjectTask={this.props.choiceSubjectTask}
                 choiceGroupTask={this.props.choiceGroupTask}
                 fetchListTasks={this.props.fetchListTasks}
@@ -25,7 +25,7 @@ class Tasks extends React.Component {
 function mapStateToProps(state) {
     return {
         taskData: state.teacher.taskData,
-        labs: state.teacher.labs
+        tasks: state.teacher.tasks
     }
 }
 

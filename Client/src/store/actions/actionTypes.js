@@ -21,6 +21,6 @@ export const SUCCESS_CREATE = 'SUCCESS_CREATE'
 // Универсально
 export const SUCCESS_PROFILE = 'SUCCESS_PROFILE'
 export const SUCCESS_TASK = 'SUCCESS_TASK'
-export const SUCCESS_LABS = 'SUCCESS_LABS'
+export const SUCCESS_TASKS = 'SUCCESS_TASKS'
 export const ERROR_WINDOW = 'ERROR_WINDOW'
 export const LOADING_START = 'LOADING_START'

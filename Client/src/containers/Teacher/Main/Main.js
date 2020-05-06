@@ -86,12 +86,12 @@ class Main extends React.Component {
         )
     }
 
-    renderLabs = labs => {
-        return labs.map((item, index) => {
+    renderTasks = tasks => {
+        return tasks.map((item, index) => {
             let src = 'images/times-solid.svg'
             if (item.end) src = 'images/check-square-regular.svg'
             return (
-                <div key={index} className='labs'>
+                <div key={index} className='tasks'>
                     <Link 
                         className='title'
                         to={`tasks/${item.id}`}
@@ -136,7 +136,7 @@ class Main extends React.Component {
                             <img src='images/card.svg' alt='' />
                             <p>{item.name}</p>
                         </div>
-                        {item.open ? this.renderLabs(item.labs) : null}
+                        {item.open ? this.renderTasks(item.tasks) : null}
                     </Auxiliary>
                 )
             })

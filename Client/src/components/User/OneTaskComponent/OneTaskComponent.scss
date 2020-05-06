@@ -20,14 +20,14 @@
 }
 
 .header_task {
-    .each_labs {
+    .each_tasks {
         display: flex;
         align-items: flex-end;
         border-bottom: 2px solid grey;
         padding: 0 20px;
         min-width: 510px;
     
-        .labs_left {
+        .tasks_left {
             margin-top: 40px;
     
             .subject_for_lab {
