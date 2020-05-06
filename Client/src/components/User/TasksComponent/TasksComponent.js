@@ -83,7 +83,7 @@ class TasksComponent extends React.Component {
     }
 
     renderListTeacher() {
-        const list = this.props.subjects === undefined ? 
+        const list = this.props.subjects.length === 0 ? 
             <p className='empty_field'>
                 <Link to='/create_task'>Создайте задачу</Link>,
                 чтобы видеть предметы и группы по созданным задачам

@@ -70,8 +70,10 @@ class OneTaskComponent extends React.Component {
     }
 
     onLoadFile = event => {
+        const files = new FormData()
+        files.append(event.target.files[0])
         this.setState({
-            files: event.target.files[0]
+            files
         })
     }
 
@@ -407,10 +409,11 @@ class OneTaskComponent extends React.Component {
 
     renderButtonCreate() {
         const cls = []
-        const createTask = new FormData()
-        // const createTask = {
-        //     task: {}
-        // }
+        // const createTask = new FormData()
+        const createTask = {
+            task: {}
+        }
+
         if (
             this.state.subjectId !== null && 
             this.state.typeId !== null && 
@@ -422,18 +425,17 @@ class OneTaskComponent extends React.Component {
             this.state.finishDate !== null      
             ) {
                 const task = {}
-                task.subjectId = +this.state.subjectId 
-                task.typeId = +this.state.typeId 
-                task.groupId = +this.state.groupId
-                task.name = this.state.titleInput 
-                task.contentText = this.state.descriptionInput
-                task.studentIds = this.state.studentIds
-                task.beginDate = this.state.beginDate
-                task.finishDate = this.state.finishDate
+                createTask.task.subjectId = +this.state.subjectId 
+                createTask.task.typeId = +this.state.typeId 
+                createTask.task.groupId = +this.state.groupId
+                createTask.task.name = this.state.titleInput 
+                createTask.task.contentText = this.state.descriptionInput
+                createTask.task.studentIds = this.state.studentIds
+                createTask.task.beginDate = this.state.beginDate
+                createTask.task.finishDate = this.state.finishDate
 
-                createTask.append('task', task)
-                createTask.append('file', this.state.files)
-                // createTask.file = this.state.files
+                // createTask.append('task', task)
+                createTask.file = this.state.files
                 cls.push('blue_big')
         } else 
             cls.push('disactive_big')

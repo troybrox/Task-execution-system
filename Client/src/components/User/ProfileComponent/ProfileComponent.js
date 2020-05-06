@@ -9,9 +9,9 @@ import Button from '../../UI/Button/Button'
 class ProfileComponent extends React.Component {
     state = {
         dataPassword: [
-            {value: '', label: 'Старый пароль', type: 'password', serverName: 'OldPassword', valid: true},
-            {value: '', label: 'Новый пароль', type: 'password', serverName: 'NewPassword', valid: true},
-            {value: '', label: 'Подтвердите новый пароль', type: 'password', serverName: 'RepeatPassword', valid: true},
+            {value: '', label: 'Старый пароль', type: 'password', serverName: 'currentPassword', valid: true},
+            {value: '', label: 'Новый пароль', type: 'password', serverName: 'newPassword', valid: true},
+            {value: '', label: 'Подтвердите новый пароль', type: 'password', serverName: 'repeatPassword', valid: true},
         ],
         flagPassword: false,
         flagInfo: false
@@ -146,8 +146,8 @@ class ProfileComponent extends React.Component {
         let newPassNum, repeatPassNum
 
         dataPassword.forEach((el, number) => {
-            if (el.serverName === 'NewPassword') newPassNum = number
-            if (el.serverName === 'RepeatPassword') {
+            if (el.serverName === 'newPassword: ') newPassNum = number
+            if (el.serverName === 'repeatPassword') {
                 repeatPassNum = number
                 return
             }
