@@ -258,7 +258,7 @@ class OneTaskComponent extends React.Component {
                 <input 
                     type='datetime-local'
                     min={(new Date()).toJSON().substr(0, 16)}
-                    // max={this.state.finishDate}
+                    max={this.state.finishDate}
                     required
                     className='date_input_create' 
                     onChange={(event) => this.changeDate(event, 'begin')}
@@ -407,7 +407,6 @@ class OneTaskComponent extends React.Component {
 
     renderButtonCreate() {
         const cls = []
-        // const createTask = new FormData()
         const createTask = {
             task: {}
         }
@@ -422,7 +421,6 @@ class OneTaskComponent extends React.Component {
             this.state.beginDate !== null &&
             this.state.finishDate !== null      
             ) {
-                // const task = {}
                 createTask.task.subjectId = +this.state.subjectId 
                 createTask.task.typeId = +this.state.typeId 
                 createTask.task.groupId = +this.state.groupId
@@ -432,7 +430,6 @@ class OneTaskComponent extends React.Component {
                 createTask.task.beginDate = this.state.beginDate
                 createTask.task.finishDate = this.state.finishDate
 
-                // createTask.append('task', task)
                 createTask.file = this.state.files
                 cls.push('blue_big')
         } else 
