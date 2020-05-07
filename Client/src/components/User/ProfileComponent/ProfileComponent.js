@@ -4,6 +4,7 @@ import Frame from '../../../hoc/Frame/Frame'
 import Label from '../../UI/Label/Label'
 import Input from '../../UI/Input/Input'
 import Button from '../../UI/Button/Button'
+import Loader from '../../UI/Loader/Loader'
 
 // Компонент отображения профиля для препода и студента
 class ProfileComponent extends React.Component {
@@ -176,9 +177,9 @@ class ProfileComponent extends React.Component {
                     </div>
                     <div className='info_side'>
                         <h3>Общая информация</h3>
-                            {this.renderInfo()}
+                            {this.props.loading ? <Loader /> : this.renderInfo()}
                         <h3>Контактная информация</h3>
-                            {this.renderContact()}
+                            {this.props.loading ? <Loader /> : this.renderContact()}
                         <div className='buttons_profile'>
                             <Button
                                 typeButton={this.state.flagInfo ? 'blue' : 'disactive'}

@@ -2,6 +2,7 @@ import React from 'react'
 import './Main.scss'
 import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
+import Loader from '../../../components/UI/Loader/Loader'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import { fetchMain } from '../../../store/actions/teacher'
@@ -82,7 +83,7 @@ class Main extends React.Component {
             })
 
         return (
-            <ul className='big_list'>{list}</ul>
+            <ul className='big_list'>{this.props.loading ? <Loader /> : list}</ul>
         )
     }
 
@@ -122,9 +123,8 @@ class Main extends React.Component {
         else 
             return null
             
-
-        if ('students' in group)
-            return group.students.map((item, index) => {
+        const students = 'students' in group ? 
+            group.students.map((item, index) => {
                 const cls = ['each_student']
                 if (item.open) cls.push('active_student')
                 return (
@@ -134,15 +134,16 @@ class Main extends React.Component {
                             onClick={() => this.props.choiceStudentHandler(indexSubject, indexGroup, index)}
                         >
                             <img src='images/card.svg' alt='' />
-                            <p>{item.name} {item.surname}</p>
+                            <p>{item.name} {item.surname} <span>({item.tasks.length})</span></p>
                         </div>
                         {item.open ? this.renderTasks(item.tasks, item.id) : null}
                     </Auxiliary>
                 )
-            })
-        else 
-            return null
-            
+            }) : null
+
+            return (
+                this.props.loading ? <Loader /> : students
+            )
     }
 
     async componentDidMount() {
@@ -189,7 +190,8 @@ class Main extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        mainData: state.teacher.mainData
+        mainData: state.teacher.mainData,
+        loading: state.teacher.loading
     }
 }
 

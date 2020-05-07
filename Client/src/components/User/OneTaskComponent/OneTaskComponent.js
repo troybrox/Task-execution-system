@@ -284,11 +284,11 @@ class OneTaskComponent extends React.Component {
                     
                     <p className='date_p_create'>
                         Дата начала:
-                        <span>{this.props.taskAdditionData.beginDate}</span>
+                        <span>{this.props.taskAdditionData.beginDate.split('T').join(' ')}</span>
                     </p>
                     <p className='date_p_create'>
                         Дата сдачи:
-                        <span>{this.props.taskAdditionData.finishDate}</span>
+                        <span>{this.props.taskAdditionData.finishDate.split('T').join(' ')}</span>
                     </p>
                     <p className='date_p_create'>
                         Осталось: <span className='time_bar'>{this.props.taskAdditionData.timeBar} дней</span>
@@ -470,7 +470,7 @@ class OneTaskComponent extends React.Component {
         const students = this.props.taskAdditionData.students.map((item) => {
             return (
                 <li key={item.id}>
-                    {item.surname} {item.name} {' '} был назначен недели назад
+                    Добавлен {item.surname} {item.name}
                 </li>
             )
         })

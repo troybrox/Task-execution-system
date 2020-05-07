@@ -3,6 +3,7 @@ import './TasksComponent.scss'
 import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 import Button from '../../UI/Button/Button'
+import Loader from '../../UI/Loader/Loader'
 import { Link } from 'react-router-dom'
 import Select from '../../UI/Select/Select'
 
@@ -15,17 +16,19 @@ class TasksComponent extends React.Component {
         search: ''
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         let activeSubjectIndex = null
         let activeGroupIndex = null
         let title = ''
         let filters
 
+        await this.props.fetchTaskFilters()  
+
         if (this.props.subjects.length !== 0) {
-            activeSubjectIndex = this.props.subjects[0].id
+            activeSubjectIndex = 0
             if (localStorage.getItem('role') === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
-                    activeGroupIndex = this.props.subjects[0].groups[0].id
+                    activeGroupIndex = 0
                     title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
                     filters = [
                         {name: 'subjectId', value: String(this.props.subjects[activeSubjectIndex].id)},
@@ -75,11 +78,14 @@ class TasksComponent extends React.Component {
     }
 
     renderList() {
-        if (localStorage.getItem('role') === 'teacher') {
-            return this.renderListTeacher()
-        } else {
-            return this.renderListStudent()
-        }
+        if (this.props.loading) 
+            return <Loader />
+        else 
+            if (localStorage.getItem('role') === 'teacher') {
+                return this.renderListTeacher()
+            } else {
+                return this.renderListStudent()
+            }
     }
 
     renderListTeacher() {
@@ -165,24 +171,26 @@ class TasksComponent extends React.Component {
     }
 
     renderTasks() {
+        if (this.props.loading) 
+            return <Loader />
         const subject = this.state.title.split(' ')
         if (this.props.tasks !== undefined)
-            return this.props.tasks.map((item, index) => {
+            return this.props.tasks.map((item) => {
                 return (
                         <Link
-                            to={`/tasks/${index}`}
-                            key={index}
+                            to={`/tasks/${item.id}`}
+                            key={item.id}
                             className='each_tasks' 
                         >
                             <div className='tasks_left'>
                                 <span className='subject_for_lab'>{subject[0]}</span>
                                 <span>{item.type} {item.name}</span><br />
-                                <span className='small_text'>Открыта {item.dateOpen} назад</span>
+                                <span className='small_text'>Открыта {item.dateOpen.split('T').join(' ')}</span>
                             </div>
                             { localStorage.getItem('role') === 'teacher' ?
                                 <div className='tasks_right'>
-                                    <img src='images/comment-regular.svg' alt='' />
-                                    <span>{item.countAnswers}</span>
+                                    <img src='images/check-circle-solid.svg' alt='' />
+                                    <span>{item.countAnswers}/{item.countStudents}</span>
                                 </div> :
                                 null
                             }

@@ -12,6 +12,7 @@ class ProfileTeacher extends React.Component {
         return (
             <ProfileComponent
                 fields={this.props.profileData}
+                loading={this.props.loading}
                 onChangeProfile={this.props.onChangeProfile}
                 updateData={this.props.updateData}
                 updateProfile={this.props.updateProfile}
@@ -22,7 +23,8 @@ class ProfileTeacher extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        profileData: state.teacher.profileData
+        profileData: state.teacher.profileData,
+        loading: state.teacher.loading
     }
 }
 

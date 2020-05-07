@@ -1,8 +1,9 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'api/teacher/profile'
             const response = await axios.get(url)
@@ -53,6 +54,7 @@ export function onChangeProfile(value, index) {
     }
 }
 
+// Тут сделать после изменения пароля - выход
 export function updateData(data, path) {
     return async dispatch => {
         try {
@@ -89,6 +91,7 @@ export function updateProfile() {
 
 export function fetchMain() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'api/teacher/main'
             const response = await axios.get(url)
@@ -104,7 +107,7 @@ export function fetchMain() {
                             item.open = false
                         if ('groups' in item)
                             item.groups.forEach((element, index)=>{
-                                if (index === 0) element.open = true
+                                if (index === 0 && num === 0) element.open = true
                                 else element.open = false
                                 if ('students' in element)
                                     element.students.forEach((el)=>{
@@ -166,6 +169,7 @@ export function choiceStudentHandler(indexSubject, indexGroup, indexStudent) {
 
 export function fetchTaskFilters() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'api/teacher/task/filters'
             const response = await axios.get(url)
@@ -191,7 +195,7 @@ export function fetchTaskFilters() {
                                     open: false
                                 }
 
-                                if (index === 0)
+                                if (index === 0 && num === 0)
                                     group.open = true
                             
                                 object.groups.push(group)
@@ -263,13 +267,11 @@ export function fetchListTasks(filters) {
                 const tasks = []
                 if (data.data.length !== 0) {
                     data.data.forEach(el => {
-                        const object = {type: el.type, name: el.name, dateOpen: el.beginDate}
-                        let countAnswers = 0
-                        el.students.forEach(element => {
-                            if (element.solution !== null)
-                                countAnswers++
-                        })
-                        object.countAnswers = countAnswers
+                        const object = {id: el.id, type: el.type, name: el.name, dateOpen: el.beginDate}
+                    
+                        console.log(el.students)
+                        object.countAnswers = el.solutionsCount 
+                        object.countStudents = el.studentsCount
     
                         tasks.push(object)
                     })
@@ -291,6 +293,7 @@ export function fetchListTasks(filters) {
 
 export function fetchTaskById(id) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = `api/teacher/task/${id}`
             const response = await axios.get(url)
@@ -357,16 +360,6 @@ export function changeChecked(groupIndex, studentIndex, val) {
     }
 }
 
-
-const data = {
-    succeded: true,
-    errorMessages: [],
-    data: {
-        id: 2
-    }
-}
-
-
 export function onSendCreate(task) {
     console.log(task)
     return async dispatch => {
@@ -376,27 +369,28 @@ export function onSendCreate(task) {
             const data = response.data
 
             if (data.succeeded) {
-                try {
-                    const url2 = 'api/teacher/task/add/file'
-                    const file = new FormData()
-                    file.append('taskId', data.data)
-                    file.append('file', task.file)
-                    const response2 = await axios.post(url2, file)
-                    const data2 = response2.data
+                if (task.file !== {})
+                    try {
+                        const url2 = 'api/teacher/task/add/file'
+                        const file = new FormData()
+                        file.append('taskId', data.data)
+                        file.append('file', task.file)
+                        const response2 = await axios.post(url2, file)
+                        const data2 = response2.data
 
-                    if (data2.succeeded) {
-                        dispatch(successCreate(+data.id))
-                    } else {
-                        const err = [...data2.errorMessages]
-                        err.unshift('Сообщение с сервера.')
+                        if (data2.succeeded) {
+                            dispatch(successCreate(+data.data))
+                        } else {
+                            const err = [...data2.errorMessages]
+                            err.unshift('Сообщение с сервера.')
+                            dispatch(errorWindow(true, err))
+                        }
+
+                    } catch (error) {
+                        const err = ['Ошибка подключения']
+                        err.push(error.message)
                         dispatch(errorWindow(true, err))
                     }
-
-                } catch (error) {
-                    const err = ['Ошибка подключения']
-                    err.push(error.message)
-                    dispatch(errorWindow(true, err))
-                }
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
@@ -431,6 +425,12 @@ export function onCloseTask(id) {
     }
 }
 // export function fetchRepository() {}
+
+export function loadingStart() {
+    return {
+        type: LOADING_START
+    }
+}
 
 export function successProfile(profileData) {
     return {

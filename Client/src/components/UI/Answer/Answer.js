@@ -10,14 +10,18 @@ class Answer extends React.Component {
                 <div className='text_block'>
                     <h4>
                         {this.props.data.student.surname} {this.props.data.student.name}
-                        {' '} написал {this.props.data.creationDate}    
+                        {' '} написал {this.props.data.creationDate.split('T').join(' ')}    
                     </h4>
                     <p>
                         {this.props.data.contentText}
                     </p>
-                    <p>
-                        <a href={this.props.data.fileURI}>Скачать файл</a>
-                    </p>
+                    { 
+                        this.props.data.fileURI !== null ?
+                            <p>
+                                <a href={this.props.data.fileURI}>Скачать файл</a>
+                            </p> : 
+                            null
+                    }
                 </div>
             </div>
         )
