@@ -77,7 +77,7 @@ namespace TaskExecutionSystem.Controllers
         [HttpGet("task/{id}")]
         public async Task<IActionResult> GetTasksByIDAsync(int id)
         {
-            var res = await _teacherService.GetTaskByIDAsync(id);
+            var res = await _studentService.GetTaskByIDAsync(id);
             return Ok(res);
         }
     }
