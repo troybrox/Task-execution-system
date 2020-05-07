@@ -18,8 +18,8 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO dto); // модель в параметре ?? без данных для user 
 
         // данные для [задачи]
-        public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters);
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetTaskFiltersAsync();
+        public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters = null);
+        public Task<OperationDetailDTO<TaskFiltersModelDTO>> GetTaskFiltersAsync();
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
 
         // данные для [репозиторий]

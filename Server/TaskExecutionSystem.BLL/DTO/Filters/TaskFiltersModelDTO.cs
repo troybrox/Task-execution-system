@@ -6,7 +6,7 @@ using TaskExecutionSystem.BLL.DTO.Task;
 
 namespace TaskExecutionSystem.BLL.DTO.Filters
 {
-    public class TaskAddingFiltersModelDTO
+    public class TaskFiltersModelDTO
     {
         public List<SubjectDTO> Subjects { get; set; }
 
@@ -15,20 +15,27 @@ namespace TaskExecutionSystem.BLL.DTO.Filters
         public List<GroupDTO> Groups { get; set; }
 
 
-        public TaskAddingFiltersModelDTO()
+        public TaskFiltersModelDTO()
         {
             Subjects = new List<SubjectDTO>();
             Types = new List<TypeOfTaskDTO>();
             Groups = new List<GroupDTO>();
         }
 
-        public TaskAddingFiltersModelDTO(List<SubjectDTO> subjects, 
+        public TaskFiltersModelDTO(List<SubjectDTO> subjects, 
             List<TypeOfTaskDTO> types,
             List<GroupDTO> groups)
         {
             Subjects = subjects;
             Types = types;
             Groups = groups;
+        }
+
+        public TaskFiltersModelDTO(List<SubjectDTO> subjects,
+            List<TypeOfTaskDTO> types)
+        {
+            Subjects = subjects;
+            Types = types;
         }
     }
 }
