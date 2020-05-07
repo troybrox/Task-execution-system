@@ -42,11 +42,6 @@ namespace TaskExecutionSystem.Controllers
     [ApiController]
     public class TeacherController : ControllerBase
     {
-        public class FileModel
-        {
-            public IFormFile uploadedFile { get; set; }
-        }
-
         private readonly ITaskService _taskService;
         private readonly ITeacherService _teacherService;
         public static IWebHostEnvironment _environment;

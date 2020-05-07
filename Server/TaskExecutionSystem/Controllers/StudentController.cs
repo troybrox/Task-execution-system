@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Task;
@@ -31,16 +32,21 @@ namespace TaskExecutionSystem.Controllers
         // api/student/profile/updatepassword
 
         // api/student/task/filters
-        // api/student/task
+        // api/student/tasks
         // api/student/solution/add 
         // api/student/solution/update [TODO] 
         // api/student/task/{id}
 
         private readonly IStudentService _studentService;
+        private readonly ITaskService _taskService;
+        public static IWebHostEnvironment _environment;
 
-        public StudentController(IStudentService studentService)
+        public StudentController(IStudentService studentService, ITaskService taskService,
+            IWebHostEnvironment environment)
         {
             _studentService = studentService;
+            _environment = environment;
+            _taskService = taskService;
         }
 
         // todo: update Password
@@ -79,6 +85,62 @@ namespace TaskExecutionSystem.Controllers
         {
             var res = await _studentService.GetTaskByIDAsync(id);
             return Ok(res);
+        }
+
+
+        [HttpPost("solution/add")]
+        public async Task<IActionResult> GetFilteredTasksAsync([FromBody]SolutionCreateModelDTO dto)
+        {
+            var res = await _studentService.CreateSolutionAsync(dto);
+            return Ok(res);
+        }
+
+        [HttpPost("solution/add/file")]
+        public async Task<IActionResult> AddFile()
+        {
+            var detail = new OperationDetailDTO();
+            try
+            {
+                var allForms = Request.Form;
+
+                StringValues solutionIdString;
+                var solIdRes = allForms.TryGetValue(allForms.Keys.First(), out solutionIdString);
+                var strId = solutionIdString.ToString();
+                var id = Convert.ToInt32(strId);
+
+                var file = Request.Form.Files[0];
+                if (file != null)
+                {
+                    var fileName = file.FileName;
+                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\" + fileName))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    var fileRes = await _taskService.AddFileToSolutionAsync(id, file.FileName);
+
+                    if (!fileRes.Succeeded)
+                    {
+                        detail.ErrorMessages.Add("Не удалось загрузить файл к решению задачи.");
+                        detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
+                        return Ok(detail);
+                    }
+                    else
+                    {
+                        detail.Succeeded = true;
+                        return Ok(detail);
+                    }
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Файл равен null");
+                    return Ok(detail);
+                }
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
+                return Ok(detail);
+            }
         }
     }
 }

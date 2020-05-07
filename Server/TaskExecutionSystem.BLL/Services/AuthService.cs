@@ -13,17 +13,23 @@ using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.DAL.Entities;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using TaskExecutionSystem.DAL.Entities.Registration;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
+using System.Security.Claims;
 
 namespace TaskExecutionSystem.BLL.Services
 {
     public class AuthService : IAccountService
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly DataContext _context;
 
-        public AuthService(UserManager<User> userManager, SignInManager<User> signInManager, DataContext context)
+        public AuthService(IHttpContextAccessor httpContextAccessor, UserManager<User> userManager,
+            SignInManager<User> signInManager, DataContext context)
         {
+            _httpContextAccessor = httpContextAccessor;
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
@@ -311,6 +317,16 @@ namespace TaskExecutionSystem.BLL.Services
                 errors.Add(_serverErrorMessage + e.Message);
                 return new OperationDetailDTO { Succeeded = false, ErrorMessages = errors };
             }
+        }
+
+        public async Task<OperationDetailDTO> UpdatePasswordAsync(PasswordUpdateDTO dto)
+        {
+            var detail = new OperationDetailDTO();
+
+            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            var user = await _userManager.FindByIdAsync(userNameClaim.Value);
+
+            return detail;
         }
 
         // ---

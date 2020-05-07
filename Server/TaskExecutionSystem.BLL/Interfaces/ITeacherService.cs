@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Studies;
+using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.DAL.Entities.Identity;
 
@@ -16,6 +17,7 @@ namespace TaskExecutionSystem.BLL.Interfaces
         // [профиль]
         public Task<OperationDetailDTO<TeacherDTO>> GetProfileDataAsync();
         public Task<OperationDetailDTO> UpdateProfileDataAsync(TeacherDTO dto); // модель в параметре ?? без данных для user 
+        
 
         // данные для [задачи]
         public Task<OperationDetailDTO<string>> CreateNewTaskAsync(TaskCreateModelDTO dto);

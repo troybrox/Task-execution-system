@@ -11,10 +11,11 @@ namespace TaskExecutionSystem.BLL.Interfaces
 {
     public interface ITaskService
     {
-        public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
-
         public Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string fileName);
-        public Task<OperationDetailDTO> UpdateTaskAsync();
+
+        public Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string fileName);
+
+        public void GetCurrentTimePercentage(ref TaskDTO dto);
 
     }
 }

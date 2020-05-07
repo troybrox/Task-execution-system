@@ -13,6 +13,7 @@ namespace TaskExecutionSystem.DAL.Entities.Repository
 
         public string ContentText { get; set; }
 
+
         public RepoFile File { get; set; }
 
         public List<Theme> Themes { get; set; } 

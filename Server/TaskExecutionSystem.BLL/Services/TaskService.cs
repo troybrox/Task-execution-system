@@ -28,6 +28,90 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
+        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string fileName)
+        {
+            var detail = new OperationDetailDTO();
+            try
+            {
+                var task = await _context.TaskModels.FindAsync(taskID);
+                if (task != null)
+                {
+                    var newFile = new TaskFile
+                    {
+                        TaskModel = task,
+                        FileName = fileName,
+                        Path = TaskFilePath + fileName,
+                        FileURI = TaskFileURI + fileName,
+                    };
+                    await _context.TaskFiles.AddAsync(newFile);
+                    await _context.SaveChangesAsync();
+                    detail.Succeeded = true;
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Ошибка при добавлении файла: задание не найдено.");
+                }
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add("Ошибка при добавлении файла к заданию. " + e.Message);
+                return detail;
+            }
+        }
+
+        public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string fileName)
+        {
+            var detail = new OperationDetailDTO();
+            try
+            {
+                var solution = await _context.Solutions.FindAsync(solutionID);
+
+                if (solution != null)
+                {
+                    var newFile = new SolutionFile
+                    {
+                        Solution = solution,
+                        FileName = fileName,
+                        Path = SolutionFilePath + fileName,
+                        FileURI = SolutionFileURI + fileName,
+                    };
+
+                    await _context.SolutionFiles.AddAsync(newFile);
+                    await _context.SaveChangesAsync();
+                    detail.Succeeded = true;
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Ошибка при добавлении файла: решениие задачи не найдено.");
+                }
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add("Ошибка при добавлении файла к решению задачи. " + e.Message);
+                return detail;
+            }
+        }
+
+        public void GetCurrentTimePercentage(ref TaskDTO dto)
+        {
+            int timeProgressPercentage = 100;
+
+            var totalInterval = dto.FinishDate - dto.BeginDate;
+            var pastInterval = DateTime.Now - dto.BeginDate;
+
+            if (totalInterval.TotalMinutes > 0)
+            {
+                if(pastInterval.TotalMinutes > 0)
+                {
+                    timeProgressPercentage = (int)(pastInterval.TotalMinutes / totalInterval.Minutes);
+                }
+            }
+
+            dto.TimeBar = timeProgressPercentage;
+        }
+
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
         {
             throw new NotImplementedException();
@@ -57,43 +141,6 @@ namespace TaskExecutionSystem.BLL.Services
             return detail;
         }
 
-        
-       
-
-        // foreign key ??
-        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string fileName)
-        {
-            var detail = new OperationDetailDTO();
-            try
-            {
-                var task = await _context.TaskModels.FindAsync(taskID);
-                if (task != null)
-                {
-                    var newFile = new TaskFile
-                    {
-                        //TaskItemId = taskID,
-                        TaskModel = task,
-                        FileName = fileName,
-                        Path = TaskFilePath + fileName,
-                        FileURI = TaskFileURI + fileName,
-                    };
-                    await _context.TaskFiles.AddAsync(newFile);
-                    await _context.SaveChangesAsync();
-                    detail.Succeeded = true;
-                }
-                else
-                {
-                    detail.ErrorMessages.Add("Ошибка при добавлении файла: задание не найдено.");
-                }
-                return detail;
-            }
-            catch (Exception e)
-            {
-                detail.ErrorMessages.Add("Ошибка при добавлении файла к заданию. " + e.Message);
-                return detail;
-            }
-        }
-
         private async Task AddStudentsToTaskAsync(int taskID, int[] studentIDs)
         {
             var task = await _context.TaskModels.FindAsync(taskID);
@@ -116,5 +163,7 @@ namespace TaskExecutionSystem.BLL.Services
         {
             throw new NotImplementedException();
         }
+
+        
     }
 }

@@ -30,13 +30,15 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
+        private readonly ITaskService _taskService;
 
         public StudentService(DataContext context, IHttpContextAccessor httpContextAccessor,
-            UserManager<User> userManager)
+            UserManager<User> userManager, ITaskService taskService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            _taskService = taskService;
         }
 
         public async Task<OperationDetailDTO<StudentDTO>> GetProfileDataAsync()
@@ -263,7 +265,7 @@ namespace TaskExecutionSystem.BLL.Services
                 {
                     resultTaskDTO.Solutions.Add(resSolutionDTO);
                 }
-
+                _taskService.GetCurrentTimePercentage(ref resultTaskDTO);
                 detail.Data = resultTaskDTO;
                 detail.Succeeded = true;
                 return detail;
@@ -281,6 +283,54 @@ namespace TaskExecutionSystem.BLL.Services
             string stringID = userNameClaim.Value;
             var user = await _userManager.FindByIdAsync(stringID);
             return user;
+        }
+
+        // TODO: try - catch
+        public async Task<OperationDetailDTO> CreateSolutionAsync(SolutionCreateModelDTO dto)
+        {
+            var detail = new OperationDetailDTO();
+
+            var currentUserEntity = await GetUserFromClaimsAsync();
+
+            var studentEntity = await _context.Students
+                .Include(s => s.User)
+                .Where(s => s.UserId == currentUserEntity.Id)
+                .FirstOrDefaultAsync();
+
+            if(dto != null)
+            {
+                var taskEntity = await _context.TaskModels.FindAsync(dto.TaskId);
+
+                if (taskEntity == null)
+                {
+                    detail.ErrorMessages.Add("Задача не найдена.");
+                    return detail;
+                }
+
+                Solution solutionEntity = new Solution
+                {
+                    ContentText = dto.ContentText,
+                    Student = studentEntity,
+                    TaskModel = taskEntity,
+                    CreationDate = DateTime.Now
+                };
+                if (solutionEntity.CreationDate > taskEntity.FinishDate)
+                {
+                    solutionEntity.InTime = false;
+                }
+
+                await _context.Solutions.AddAsync(solutionEntity);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+
+            else
+            {
+                detail.ErrorMessages.Add("Параметр модели создаваемого решения был равен NULL.");
+                return detail;
+            }
         }
     }
 }
