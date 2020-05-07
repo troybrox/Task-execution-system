@@ -48,10 +48,6 @@ namespace TaskExecutionSystem.BLL.Services
             {
                 var currentUserEntity = await GetUserFromClaimsAsync();
 
-                //var teacherUser = await _context.Users
-                //    .Where(u => u.Id == currentUserEntity.Id)
-                //    .FirstOrDefaultAsync();
-
                 var teacherEntity = await _context.Teachers
                     .Include(t => t.User)
                     .Include(t => t.Department)
@@ -135,9 +131,9 @@ namespace TaskExecutionSystem.BLL.Services
         // - только тот факультет, на котором препод
         // получение списков-фильтров для создания задачи
         // форируются списки существующих предметов, типов, групп для отправки на клиент
-        public async Task<OperationDetailDTO<TaskAddingFiltersModelDTO>> GetAddingTaskFiltersAsync()
+        public async Task<OperationDetailDTO<TaskFiltersModelDTO>> GetAddingTaskFiltersAsync()
         {
-            var detail = new OperationDetailDTO<TaskAddingFiltersModelDTO>();
+            var detail = new OperationDetailDTO<TaskFiltersModelDTO>();
 
             try
             {
@@ -180,7 +176,7 @@ namespace TaskExecutionSystem.BLL.Services
                 {
                     groupList.Add(GroupDTO.Map(g));
                 }
-                detail.Data = new TaskAddingFiltersModelDTO
+                detail.Data = new TaskFiltersModelDTO
                 {
                     Subjects = subjectList,
                     Groups = groupList,
@@ -360,12 +356,13 @@ namespace TaskExecutionSystem.BLL.Services
 
         // todo: TYPE LIST [!]
         // получение дерева объектов для фильтрации заданий
-        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetTaskFiltersAsync()
+        public async Task<OperationDetailDTO<TaskFiltersModelDTO>> GetTaskFiltersAsync()
         {
-            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+            var detail = new OperationDetailDTO<TaskFiltersModelDTO>();
             try
             {
                 var resSubjectDTOList = new List<SubjectDTO>();
+                var resTypeDTOList = new List<TypeOfTaskDTO>();
 
                 var currentUserEntity = await GetUserFromClaimsAsync();
 
@@ -387,36 +384,48 @@ namespace TaskExecutionSystem.BLL.Services
                                      .Include(t => t.Teacher)
                                      .Include(t => t.Group)
                                      .Include(t => t.Subject)
+                                     .Include(t => t.Type)
                                      .Where(t => t.TeacherId == teacherEntity.Id)
                                                              select t;
 
-                var currentGroupEntityList = new List<Group>();
-
                 foreach (var task in teacherTaskQueryList)
                 {
-                    currentGroupEntityList.Add(task.Group);
                     var groupDTO = GroupDTO.Map(task.Group);
                     var subjectDTO = new SubjectDTO();
+                    var typeDTO = new TypeOfTaskDTO();
+
                     if ((subjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
                     {
                         // куда добавляется группа
-                        if (!subjectDTO.Groups.Contains(groupDTO)) // добавить проверку по id
+                        if (subjectDTO.Groups.FirstOrDefault(g => g.Id == groupDTO.Id) != null) // добавить проверку по id
+                        { }
+                        else
                         {
                             subjectDTO.Groups.Add(groupDTO);
                         }
                     }
                     else
                     {
-                        var newSubjectDTO = SubjectDTO.Map(task.Subject);
-                        newSubjectDTO.Groups.Add(groupDTO);
-                        resSubjectDTOList.Add(newSubjectDTO);
-                        //if (resSubjectDTOList.Find((s => s.Id == newSubjectDTO.Id)) == null)
-                        //{
-                        //    resSubjectDTOList.Add(newSubjectDTO);
-                        //}
+                        subjectDTO = SubjectDTO.Map(task.Subject);
+                        subjectDTO.Groups.Add(groupDTO);
+                        resSubjectDTOList.Add(subjectDTO);
+                    }
+
+                    if ((typeDTO = resTypeDTOList.FirstOrDefault(t => t.Id == task.TypeId)) != null)
+                    { }
+                    else
+                    {
+                        typeDTO = TypeOfTaskDTO.Map(task.Type);
+                        resTypeDTOList.Add(typeDTO);
                     }
                 }
-                detail.Data = resSubjectDTOList;
+
+                detail.Data = new TaskFiltersModelDTO
+                {
+                    Subjects = resSubjectDTOList,
+                    Types = resTypeDTOList
+                };
+
                 detail.Succeeded = true;
                 return detail;
             }

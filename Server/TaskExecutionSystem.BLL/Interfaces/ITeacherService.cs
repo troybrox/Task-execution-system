@@ -19,8 +19,8 @@ namespace TaskExecutionSystem.BLL.Interfaces
 
         // данные для [задачи]
         public Task<OperationDetailDTO<string>> CreateNewTaskAsync(TaskCreateModelDTO dto);
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetTaskFiltersAsync();
-        public Task<OperationDetailDTO<TaskAddingFiltersModelDTO>> GetAddingTaskFiltersAsync();
+        public Task<OperationDetailDTO<TaskFiltersModelDTO>> GetTaskFiltersAsync();
+        public Task<OperationDetailDTO<TaskFiltersModelDTO>> GetAddingTaskFiltersAsync();
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters);
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
         public Task<OperationDetailDTO> UpdateTaskAsync(TaskDTO dto);

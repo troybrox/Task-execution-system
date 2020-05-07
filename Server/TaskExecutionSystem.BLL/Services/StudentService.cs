@@ -39,32 +39,241 @@ namespace TaskExecutionSystem.BLL.Services
             _userManager = userManager;
         }
 
-        public Task<OperationDetailDTO<StudentDTO>> GetProfileDataAsync()
+        public async Task<OperationDetailDTO<StudentDTO>> GetProfileDataAsync()
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<StudentDTO>();
+            try
+            {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var studentEntity = await _context.Students
+                    .Include(s => s.User)
+                    .Include(s => s.Group)
+                    .ThenInclude(g => g.Faculty)
+                    .Where(s => s.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                var dto = StudentDTO.Map(studentEntity);
+
+                detail.Succeeded = true;
+                detail.Data = dto;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.Succeeded = false;
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
+        // TODO [!]
         public Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO dto)
         {
             throw new NotImplementedException();
         }
 
 
-        public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
+        public async Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters = null)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<List<TaskDTO>>();
+            var resultList = new List<TaskDTO>();
+
+            try
+            {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var studentEntity = await _context.Students
+                    .Include(s => s.User)
+                    .Where(s => s.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+
+               var tasks = from t in _context.TaskModels
+                                     .Include(t => t.Teacher)
+                                     .Include(t => t.Subject)
+                                     .Include(t => t.Type)
+                                     .Where(t => (t.TaskStudentItems.FirstOrDefault(x => x.StudentId == studentEntity.Id) != null))
+                                                             select t;
+
+                tasks.OrderBy(t => t.BeginDate);
+
+                if (filters != null)
+                {
+                    foreach (var filter in filters)
+                    {
+                        switch (filter.Name)
+                        {
+                            case "subjectId":
+                                {
+                                    var value = Convert.ToInt32(filter.Value);
+                                    if (value > 0)
+                                    {
+                                        tasks = tasks.Where(t => t.SubjectId == value);
+                                    }
+                                    break;
+                                }
+
+                            case "typeId":
+                                {
+                                    var value = Convert.ToInt32(filter.Value);
+                                    if (value > 0)
+                                    {
+                                        tasks = tasks.Where(t => t.TypeId == value);
+                                    }
+                                    break;
+                                }
+
+                            case "searchString":
+                                {
+                                    var value = filter.Value;
+                                    if (!String.IsNullOrEmpty(value))
+                                    {
+                                        tasks = tasks.Where(t => t.Name.ToUpper().Contains(value)
+                                        || t.ContentText.ToUpper().Contains(value));
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                }
+
+                foreach (var entity in tasks)
+                {
+                    var taskDTO = TaskDTO.Map(entity);
+                    resultList.Add(taskDTO);
+                }
+
+                detail.Succeeded = true;
+                detail.Data = resultList;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.Succeeded = false;
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetTaskFiltersAsync()
+        public async Task<OperationDetailDTO<TaskFiltersModelDTO>> GetTaskFiltersAsync()
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<TaskFiltersModelDTO>();
+            try
+            {
+                var resSubjectDTOList = new List<SubjectDTO>();
+                var resTypeDTOList = new List<TypeOfTaskDTO>();
+
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var studentEntity = await _context.Students
+                    .Include(s => s.User)
+                    .Include(s => s.Group)
+                    .ThenInclude(g => g.Faculty)
+                    .Include(s => s.TaskStudentItems)
+                    .Where(s => s.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                IQueryable<Subject> subjects = from s in _context.Subjects select s;
+
+                IQueryable<TypeOfTask> types = from t in _context.TaskTypes select t;
+
+                // получить все задания студента
+                IQueryable<TaskModel> tasks = from t in _context.TaskModels
+                                     .Include(t => t.Teacher)
+                                     .Include(t => t.Group)
+                                     .Include(t => t.Subject)
+                                     .Include(t => t.Type)
+                                     .Where(t => (t.TaskStudentItems.FirstOrDefault(x => x.StudentId == studentEntity.Id) != null))
+                                                             select t;
+
+                foreach (var task in tasks)
+                {
+                    var subjectDTO = new SubjectDTO();
+                    var typeDTO = new TypeOfTaskDTO();
+
+                    if ((subjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
+                    { }
+                    else
+                    {
+                        subjectDTO = SubjectDTO.Map(task.Subject);
+                        resSubjectDTOList.Add(subjectDTO);
+                    }
+
+                    if((typeDTO = resTypeDTOList.FirstOrDefault(t => t.Id == task.TypeId)) != null) 
+                    { }
+                    else
+                    {
+                        typeDTO = TypeOfTaskDTO.Map(task.Type);
+                        resTypeDTOList.Add(typeDTO);
+                    }
+                }
+
+                detail.Data = new TaskFiltersModelDTO
+                {
+                    Subjects = resSubjectDTOList,
+                    Types = resTypeDTOList
+                };
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
-        public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
+        public async Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
         {
-            throw new NotImplementedException();
-        }
+            var detail = new OperationDetailDTO<TaskDTO>();
+            var resultTaskDTO = new TaskDTO();
+            var resSolutionDTO = new SolutionDTO();
+            var resStudentDTOList = new List<StudentDTO>();
 
+            try
+            {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var studentEntity = await _context.Students
+                    .Include(s => s.User)
+                    .Include(s => s.Solutions)
+                    .Where(s => s.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                var taskEntity = await _context.TaskModels
+                    .Include(t => t.Solutions)
+                    .Include(t => t.Subject)
+                    .Include(t => t.Type)
+                    .Include(t => t.File)
+                    .Include(t => t.Teacher)
+                    .FirstOrDefaultAsync(t => t.Id == id);
+
+                var solutionEntity = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
+
+                if (taskEntity == null)
+                {
+                    detail.ErrorMessages.Add("Задача не найдена.");
+                    return detail;
+                }
+
+                resultTaskDTO = TaskDTO.Map(taskEntity);
+                if(resSolutionDTO != null)
+                {
+                    resultTaskDTO.Solutions.Add(resSolutionDTO);
+                }
+
+                detail.Data = resultTaskDTO;
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+        }
 
         private async Task<User> GetUserFromClaimsAsync()
         {

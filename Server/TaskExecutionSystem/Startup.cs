@@ -62,6 +62,7 @@ namespace TaskExecutionSystem
                 .AddTransient<IAdminService, AdminService>()
                 .AddTransient<ITaskService, TaskService>()
                 .AddTransient<ITeacherService, TeacherService>()
+                .AddTransient<IStudentService, StudentService>()
                 .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 

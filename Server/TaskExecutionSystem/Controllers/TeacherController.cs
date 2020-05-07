@@ -92,7 +92,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        [HttpPost("tasks")]
+        [HttpPost("task")]
         public async Task<IActionResult> GetFilteredTasksAsync([FromBody]FilterDTO[] filters)
         {
             var res = await _teacherService.GetTasksFromDBAsync(filters);
