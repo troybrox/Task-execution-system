@@ -22,6 +22,9 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO<TaskFiltersModelDTO>> GetTaskFiltersAsync();
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
 
+        // решение
+        public Task<OperationDetailDTO> CreateSolutionAsync(SolutionCreateModelDTO dto);
+
         // данные для [репозиторий]
         // get Repo subjects
     }

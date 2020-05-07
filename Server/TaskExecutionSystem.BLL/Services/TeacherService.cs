@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TaskExecutionSystem.BLL.DTO;
+using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Studies;
 using TaskExecutionSystem.BLL.DTO.Task;
@@ -31,13 +32,15 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
+        private readonly ITaskService _taskService;
 
-       public TeacherService(DataContext context, IHttpContextAccessor httpContextAccessor, 
-            UserManager<User> userManager)
+        public TeacherService(DataContext context, IHttpContextAccessor httpContextAccessor, 
+            UserManager<User> userManager, ITaskService taskService)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
+            _taskService = taskService;
         }
 
         // получение данных профиля преподавателя
@@ -96,14 +99,16 @@ namespace TaskExecutionSystem.BLL.Services
                     return detail;
                 }
 
-                if(await _userManager.Users.Where(u => u.UserName == newTeacherDTO.UserName).Where(u => u.Id != teacherUser.Id).FirstAsync() != null)
+                if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
+                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
+                    || await _userManager.FindByNameAsync(newTeacherDTO.UserName) != null)
                 {
                     detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
                     return detail;
                 }
 
-                if(teacherUser != null)
+                if (teacherUser != null)
                 {
                     teacherUser.Email = newTeacherDTO.Email;
                     teacherUser.UserName = newTeacherDTO.UserName;
@@ -115,10 +120,11 @@ namespace TaskExecutionSystem.BLL.Services
 
                         _context.Teachers.Update(teacherEntity);
                         await _context.SaveChangesAsync();
-
-                        detail.Succeeded = true;
                     }
+
+                    detail.Succeeded = true;
                 }
+
                 return detail;
             }
             catch (Exception e)
@@ -231,7 +237,7 @@ namespace TaskExecutionSystem.BLL.Services
                 }
                 else
                 {
-                    detail.ErrorMessages.Add("Параметр модели создаваемой задачи был равен NULL");
+                    detail.ErrorMessages.Add("Параметр модели создаваемой задачи был равен NULL.");
                     return detail;
                 }
 
@@ -354,7 +360,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // todo: TYPE LIST [!]
+        // done: TYPE LIST [!]
         // получение дерева объектов для фильтрации заданий
         public async Task<OperationDetailDTO<TaskFiltersModelDTO>> GetTaskFiltersAsync()
         {
@@ -537,7 +543,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // TODO: progressBar count
+        // done: progressBar count
         public async Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
@@ -573,6 +579,7 @@ namespace TaskExecutionSystem.BLL.Services
                 }
 
                 resultTaskDTO = TaskDTO.Map(entity);
+                _taskService.GetCurrentTimePercentage(ref resultTaskDTO);
                 resultTaskDTO.Solutions = resSolutionDTOList;
                 resultTaskDTO.Students = resStudentDTOList;
 
@@ -587,32 +594,41 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+
         // TODO [!]
         public Task<OperationDetailDTO> UpdateTaskAsync(TaskDTO dto)
         {
             throw new NotImplementedException();
         }
 
+        // TODO [!]
         public Task<OperationDetailDTO> CloseTaskAsync(int id)
         {
             throw new NotImplementedException();
         }
 
 
+        // TODO [!]
         public Task<OperationDetailDTO> CreateNewRepositoryAsync()
         {
             throw new NotImplementedException();
         }
 
+        // TODO [!]
         public Task<OperationDetailDTO> CreateNewThemeAsync()
         {
             throw new NotImplementedException();
         }
 
+        // TODO [!]
         public Task<OperationDetailDTO> CreateNewParagraphAsync()
         {
             throw new NotImplementedException();
         }
+
+        // TODO: update Repo, theme, paragraph [!]
+        // TODO: File updating, File Adding ?? [!]
+
 
         // todo: exceptions; return errors [!]
         // получение пользователя, сделавшего текущий запрос

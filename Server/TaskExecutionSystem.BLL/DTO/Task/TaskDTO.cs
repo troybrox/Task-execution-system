@@ -29,6 +29,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
         public string Group { get; set; }
 
         public int SolutionsCount { get; set; }
+        public int StudentsCount { get; set; }
 
         public List<StudentDTO> Students { get; set; }
         public List<SolutionDTO> Solutions { get; set; }
@@ -81,6 +82,16 @@ namespace TaskExecutionSystem.BLL.DTO.Task
             if (entity.Group != null)
             {
                 dto.Group = entity.Group.NumberName;
+            }
+
+            if (entity.TaskStudentItems != null)
+            {
+                dto.StudentsCount = entity.TaskStudentItems.Count;
+            }
+
+            if (entity.Solutions != null)
+            {
+                dto.SolutionsCount = entity.Solutions.Count;
             }
 
             return dto;
