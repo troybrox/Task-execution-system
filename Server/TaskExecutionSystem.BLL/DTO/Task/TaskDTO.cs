@@ -46,9 +46,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                Type = entity.Type.Name,
-                Subject = entity.Subject.Name,
-
+                
                 ContentText = entity.ContentText,
                 IsOpen = entity.IsOpen,
 
@@ -56,20 +54,35 @@ namespace TaskExecutionSystem.BLL.DTO.Task
                 FinishDate = entity.FinishDate,
                 UpdateDate = entity.UpdateDate,
             };
-            if(entity.File != null)
+
+            if(entity.Type != null)
+            {
+                dto.Type = entity?.Type.Name;
+            }
+
+            if (entity.Subject != null)
+            {
+                dto.Subject = entity?.Subject.Name;
+
+            }
+
+            if (entity.File != null)
             {
                 dto.FileURI = entity.File.FileURI;
             }
+
             if(entity.Teacher != null)
             {
                 dto.TeacherName = entity.Teacher.Name;
                 dto.TeacherSurname = entity.Teacher.Surname;
                 dto.TeacherPatronymic = entity.Teacher.Patronymic;
             }
+
             if (entity.Group != null)
             {
                 dto.Group = entity.Group.NumberName;
             }
+
             return dto;
         }
 
