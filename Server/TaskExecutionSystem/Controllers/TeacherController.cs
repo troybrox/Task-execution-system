@@ -19,7 +19,7 @@ using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
 
 namespace TaskExecutionSystem.Controllers
 {
-    // todo: скинуть Олегу объекты
+    // TODO: Repository - create, get, update, delete
 
     // api/teacher/profile
     // api/teacher/profile/update [POST]
@@ -32,7 +32,8 @@ namespace TaskExecutionSystem.Controllers
     // api/teacher/task/filters [список предметов - у каждого группы; список типов заданий]
     // api/teacher/task     [POST]  (filters)
     // api/teacher/task/{id}
-    // api/teacher/task/{id}/close
+    // api/teacher/task/close [POST (int id)]
+    // api/teacher/task/update [POST (TaskDTO dto)] 
 
 
     // контроллер, предоставляющий эндпоинты для рабаты пользователя с ролью преподавателя 
@@ -49,28 +50,19 @@ namespace TaskExecutionSystem.Controllers
         private readonly ITaskService _taskService;
         private readonly ITeacherService _teacherService;
         public static IWebHostEnvironment _environment;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly UserManager<User> _userManager;
-       // private HttpContext _httpContext;
 
         public TeacherController(ITaskService taskService, IWebHostEnvironment environment, 
-            ITeacherService teacherService, IHttpContextAccessor httpContextAccessor,
-            UserManager<User> userManager)
+            ITeacherService teacherService)
         {
             _taskService = taskService;
             _environment = environment;
             _teacherService = teacherService;
-            _httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
-            //_httpContext = context;
         }
 
 
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfileDataAsync()
         {
-            //var testUser = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-
             var res = await _teacherService.GetProfileDataAsync();
             return Ok(res);
         }
@@ -88,10 +80,6 @@ namespace TaskExecutionSystem.Controllers
         [HttpGet("main")]
         public async Task<IActionResult> GetMainPageDataAsync()
         {
-            //var test = this.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-            //string user = test?.Value;
-            //var x = this.HttpContext.User;
-            //var user = await _teacherService.GetUserFromClaimsAsync(x);
             var res = await _teacherService.GetMainDataAsync();
             return Ok(res);
         }
@@ -113,7 +101,7 @@ namespace TaskExecutionSystem.Controllers
 
 
         [HttpGet("task/{id}")]
-        public async Task<IActionResult> GetasksByIDAsync(int id)
+        public async Task<IActionResult> GetTasksByIDAsync(int id)
         {
             var res = await _teacherService.GetTaskByIDAsync(id);
             return Ok(res);
@@ -180,9 +168,21 @@ namespace TaskExecutionSystem.Controllers
         [HttpPost("task/add")]
         public async Task<IActionResult> AddTaskAsync([FromBody]TaskCreateModelDTO task = null)
         {
-            //var allForms = Request.Form.Keys;
-            //var task = allForms.First();
             var res = await _teacherService.CreateNewTaskAsync(task);
+            return Ok(res);
+        }
+
+        [HttpPost("task/update")]
+        public async Task<IActionResult> UpdateTaskAsync([FromBody]TaskDTO task = null)
+        {
+            var res = await _teacherService.UpdateTaskAsync(task);
+            return Ok(res);
+        }
+
+        [HttpPost("task/close")]
+        public async Task<IActionResult> CloseTaskAsync([FromBody]int id)
+        {
+            var res = await _teacherService.CloseTaskAsync(id);
             return Ok(res);
         }
 
@@ -190,54 +190,50 @@ namespace TaskExecutionSystem.Controllers
         public async Task<IActionResult> AddFile()
         {
             var detail = new OperationDetailDTO();
-            //
-            var allForms = Request.Form;
-            StringValues taskIdString;
-            var taskIdRes = allForms.TryGetValue(allForms.Keys.First(), out taskIdString);
-            var strId = taskIdString.ToString();
-            //var id = Convert.ToInt32(taskIdString.ToString());
-            var id = Convert.ToInt32(strId);
-            var file = Request.Form.Files[0];
-            if (file != null)
+            try
             {
-                var fileName = file.FileName;
-                using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
+                var allForms = Request.Form;
+                StringValues taskIdString;
+                var taskIdRes = allForms.TryGetValue(allForms.Keys.First(), out taskIdString);
+                var strId = taskIdString.ToString();
+                var id = Convert.ToInt32(strId);
+                var file = Request.Form.Files[0];
+                if (file != null)
                 {
-                    file.CopyTo(fileStream);
-                }
-                var fileRes = await _taskService.AddFileToTaskAsync(id, file.FileName);
+                    var fileName = file.FileName;
+                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    var fileRes = await _taskService.AddFileToTaskAsync(id, file.FileName);
 
-                if (!fileRes.Succeeded)
-                {
-                    detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
-                    detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                    return Ok(detail);
+                    if (!fileRes.Succeeded)
+                    {
+                        detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
+                        detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
+                        return Ok(detail);
+                    }
+                    else
+                    {
+                        detail.Succeeded = true;
+                        return Ok(detail);
+                    }
                 }
                 else
                 {
-                    detail.Succeeded = true;
+                    detail.ErrorMessages.Add("Файл равен null");
                     return Ok(detail);
                 }
             }
-            else
+            catch (Exception e)
             {
-                detail.ErrorMessages.Add("Файл равен null");
+                detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
                 return Ok(detail);
             }
-
-            //try
-            //{
-
-
-            //}
-            //catch (Exception e)
-            //{
-            //    detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
-            //    return Ok(detail);
-            //}
         }
 
 
+        // test method
         [HttpPost("upload")]
         public async Task<IActionResult> Upload()
         {
@@ -248,7 +244,7 @@ namespace TaskExecutionSystem.Controllers
                 if(file.Length > 0)
                 {
                     var fileName = file.FileName;
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\TaskFiles\\" + fileName))
+                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
                     {
                         file.CopyTo(fileStream);
                     }
@@ -265,62 +261,5 @@ namespace TaskExecutionSystem.Controllers
                 return Ok("Ошибка на сервере при загрузке файлов: " + e.Message);
             }
         }
-
-        [HttpPost("add_task_file")]
-        public async Task<IActionResult> AddFileToTaskAsync(FileModel file)
-        {
-            try
-            {
-                string message = "";
-                if (file.uploadedFile.Length > 0)
-                {
-                    if (!Directory.Exists(_environment.WebRootPath + "\\TaskFiles\\"))
-                    {
-                        Directory.CreateDirectory(_environment.WebRootPath + "\\TaskFiles\\");
-                    }
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\TaskFiles\\" + file.uploadedFile.FileName))
-                    {
-                        file.uploadedFile.CopyTo(fileStream);
-                        fileStream.Flush();
-                        return Ok("Файл загружен " + file.uploadedFile.FileName);
-                    }
-                }
-                else
-                {
-                    message = "Параметр был null";
-                    return Ok(message);
-                }
-            }
-            catch (Exception e)
-            {
-                return Ok(e.Message);
-            }
-        }
     }
 }
-
-
-
-//var uploadedFile = file.uploadedFile;
-//try 
-//{
-//    string message = "";
-//    if (uploadedFile != null)
-//    {
-//        string path = "/TaskFiles/" + uploadedFile.FileName;
-//        using (var fileStream = new FileStream(_environment.WebRootPath + path, FileMode.Create))
-//        {
-//            await uploadedFile.CopyToAsync(fileStream);
-//        }
-//        message = "Файл загружен";
-//    }
-//    else
-//    {
-//        message = "Параметр был null";
-//    }
-//    return Ok(message);
-//}
-//catch(Exception e)
-//{
-//    return Ok(e.Message);
-//}
