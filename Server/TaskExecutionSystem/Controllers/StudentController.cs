@@ -20,9 +20,12 @@ using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
 
 namespace TaskExecutionSystem.Controllers
 {
+    [Authorize(StudentUserPolicy)]
     [Route("api/[controller]")]
     public class StudentController : ControllerBase
     {
+        // TODO: Repository - get
+
         // api/student/profile
         // api/student/profile/update [POST]
         // api/student/profile/updatepassword
@@ -30,6 +33,7 @@ namespace TaskExecutionSystem.Controllers
         // api/student/task/filters
         // api/student/task
         // api/student/solution/add 
+        // api/student/solution/update [TODO] 
         // api/student/task/{id}
 
         private readonly IStudentService _studentService;
@@ -39,24 +43,42 @@ namespace TaskExecutionSystem.Controllers
             _studentService = studentService;
         }
 
-        // GET: api/<controller>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        // todo: update Password
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfileDataAsync()
         {
-            return new string[] { "value1", "value2" };
+            var res = await _studentService.GetProfileDataAsync();
+            return Ok(res);
         }
 
-        // GET api/<controller>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpPost("profile/update")]
+        public async Task<IActionResult> UpdateProfileAsync([FromBody]StudentDTO dto)
         {
-            return "value";
+            var res = await _studentService.UpdateProfileDataAsync(dto);
+            return Ok(res);
         }
 
-        // POST api/<controller>
-        [HttpPost]
-        public void Post([FromBody]string value)
+
+        [HttpGet("task/filters")]
+        public async Task<IActionResult> GetTaskFiltersAsync()
         {
+            var res = await _studentService.GetTaskFiltersAsync();
+            return Ok(res);
+        }
+
+        [HttpPost("tasks")]
+        public async Task<IActionResult> GetFilteredTasksAsync([FromBody]FilterDTO[] filters)
+        {
+            var res = await _studentService.GetTasksFromDBAsync(filters);
+            return Ok(res);
+        }
+
+        [HttpGet("task/{id}")]
+        public async Task<IActionResult> GetTasksByIDAsync(int id)
+        {
+            var res = await _teacherService.GetTaskByIDAsync(id);
+            return Ok(res);
         }
     }
 }

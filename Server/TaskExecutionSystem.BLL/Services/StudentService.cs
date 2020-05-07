@@ -23,8 +23,22 @@ using TaskExecutionSystem.DAL.Entities.Relations;
 
 namespace TaskExecutionSystem.BLL.Services
 {
+    // TODO: Repository - create, get, update, delete
+
     public class StudentService : IStudentService
     {
+        private readonly DataContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<User> _userManager;
+
+        public StudentService(DataContext context, IHttpContextAccessor httpContextAccessor,
+            UserManager<User> userManager)
+        {
+            _context = context;
+            _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
+        }
+
         public Task<OperationDetailDTO<StudentDTO>> GetProfileDataAsync()
         {
             throw new NotImplementedException();
@@ -49,6 +63,15 @@ namespace TaskExecutionSystem.BLL.Services
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
         {
             throw new NotImplementedException();
+        }
+
+
+        private async Task<User> GetUserFromClaimsAsync()
+        {
+            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            string stringID = userNameClaim.Value;
+            var user = await _userManager.FindByIdAsync(stringID);
+            return user;
         }
     }
 }
