@@ -458,9 +458,10 @@ namespace TaskExecutionSystem.BLL.Services
 
                 var tasks = from t in _context.TaskModels
                             .Where(t => t.TeacherId == teacherEntity.Id)
-                            //.Include(t => t.Group)
-                            //.Include(t => t.Subject)
-                            //.Include(t => t.TaskStudentItems)
+                            .Include(t => t.Group)
+                            .Include(t => t.Subject)
+                            .Include(t => t.Type)
+                            .Include(t => t.TaskStudentItems)
                             .Include(t => t.Solutions)
                             select t;
 
@@ -523,6 +524,7 @@ namespace TaskExecutionSystem.BLL.Services
                     var taskDTO = TaskDTO.Map(entity);
                     resultList.Add(taskDTO);
                 }
+
                 detail.Succeeded = true;
                 detail.Data = resultList;
                 return detail;
