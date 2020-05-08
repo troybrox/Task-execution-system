@@ -1,0 +1,119 @@
+.value_subject {
+    height: 40px;
+    line-height: 40px;
+    width: 100%;
+    background: rgb(201, 201, 201);
+    border-top: 1px solid rgb(100, 100, 100);
+    border-bottom: 1px solid rgb(100, 100, 100);
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.main_subject {
+    display: flex;
+    height: calc(100vh - 83px);
+
+    .aside_subject {
+        border-right: 1px solid rgb(209, 209, 209);
+        overflow-y: auto;
+        width: max-content;
+        min-width: 250px;
+
+        .big_list {
+            list-style: none;
+
+            img {
+                width: 10px;
+                height: 10px;
+                margin-right: 10px;
+            }
+
+            .big_items {
+                padding: 5px 10px 5px 20px;
+                min-width: max-content;
+                cursor: pointer;
+            }
+
+            .active_big {
+                background: rgb(187, 187, 187);
+            }
+
+            .small_list {
+                list-style: none;
+                width: 100%;
+    
+                .small_items {
+                    padding: 5px 0 5px 40px;
+                    width: max-content;
+                    cursor: pointer;
+                    width: calc(100% - 40px);
+                }
+
+                .active_small {
+                    background: rgb(187, 187, 187);
+                }
+            }
+        }
+    }
+
+    .persons_group {
+        width: 100%;
+        overflow-y: auto;
+
+        .each_student {
+            display: flex;
+            width: max-content;
+            align-items: flex-end;
+            margin-top: 10px;
+            margin-left: 30px;
+            cursor: pointer;
+
+            img {
+                width: 40px;
+                border: 1px solid gray;
+            }
+
+            p {
+                margin: 0 0 5px 10px;
+
+                span {
+                    color: rgb(141, 141, 141);   
+                }
+            }
+
+            &:nth-child(1) {
+                margin-top: 30px;
+            }
+        }
+
+        .active_student {
+
+            p {
+                text-decoration: underline;
+            }
+        }
+
+        .tasks {
+            display: flex;
+            margin: 10px 0 20px 100px;
+            
+            .title {
+                color: rgb(41, 73, 255);
+                cursor: pointer;
+            }
+
+            .time {
+                color: rgb(141, 141, 141);
+                margin-left: 10px;
+                text-align: right;
+            }
+
+            img {
+                width: 20px;
+                height: 20px;
+                margin-left: 10px;
+            }
+        }
+    }
+}

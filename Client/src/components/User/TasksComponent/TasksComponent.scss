@@ -1,0 +1,93 @@
+.tasks_group {
+    width: 100%;
+    overflow-y: auto;
+
+    .search {
+        display: flex;
+        margin-top: 50px;
+
+        input {
+            margin: 0 20px;
+            padding: 0 10px;
+            width: 100%;
+            line-height: 30px;
+            height: 30px;
+            border-radius: 30px;
+            border: 2px solid rgb(143, 143, 143);
+
+            &:active, &:focus {
+                outline:none;
+            }
+        }
+
+        button {
+            margin-right: 60px;
+        }
+    }
+
+    .some_functions {
+        display: flex;
+        margin: 10px 20px;
+
+        .sort {
+            
+            select {
+                height: 30px;
+                width: 250px;
+            }
+        }
+
+        .new_task {
+            margin: auto 20px 0 auto;
+
+            button {
+                font-weight: bold;
+                font-size: 16px;
+            }
+        }
+    }
+
+    .each_tasks {
+        display: flex;
+        border-bottom: 1px dashed grey;
+        margin: 0 20px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #000;
+        min-width: 510px;
+
+        .tasks_left {
+            margin-top: 20px;
+
+            .subject_for_lab {
+                background: rgb(143, 210, 255);
+                border-radius: 30px;
+                border: 1px solid grey;
+                padding: 10px 5px;
+                margin-right: 10px;
+            }
+        }
+
+        .tasks_right {
+            display: flex;
+            margin: auto 0 auto 40%;
+
+            img {
+                width: 30px;
+                height: 30px;
+            }
+
+            span {
+                margin-left: 10px;
+                line-height: 30px;
+            }
+        }
+    }
+
+    .small_text {
+        display: block;
+        margin: 20px 0 10px 10px;
+        font-size: 12px;
+        color: gray;
+    }
+}

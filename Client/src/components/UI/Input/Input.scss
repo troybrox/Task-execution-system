@@ -1,0 +1,34 @@
+.input_fields {
+    width: 60%;
+    margin: 10px 0 0 10px;
+    line-height: 20px;
+    height: 20px;
+}
+
+.invalid {
+    border: 2px solid red;
+}
+
+.hide {
+    padding: 0 3px;
+    border: 2px solid white;
+    background: none;
+    border-radius: 5px;
+    width: 50%;
+    cursor: pointer;
+
+    &:active, &:focus {
+        border: 2px solid rgb(41, 73, 255);;
+        outline: none;
+        cursor: text;
+    }
+}
+
+.pen {
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    margin: 12px 0 0 10px;
+    width: 20px;
+    height: 20px;
+}

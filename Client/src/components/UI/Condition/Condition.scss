@@ -1,0 +1,44 @@
+.condition_window {
+    bottom: 10px;
+    left: 10px;
+    position: fixed;
+    text-align: center;
+    margin: auto;
+    min-width: 400px;
+    height: max-content;
+    display: block;
+    background: rgba(204, 204, 204, 0.623);
+    border: 1px solid grey;
+    border-radius: 5px;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    transition: 1s;
+    animation: hidden 3s 1;
+    animation-fill-mode: forwards;
+    animation-delay: 5s;
+
+    &:hover {
+        opacity: .2;
+    }
+
+    h2 {
+        padding: 10px;
+        color: rgb(0, 68, 145);
+    }
+
+    div {
+        padding: 10px;
+    }
+}
+
+@keyframes hidden{
+    100% {
+        opacity:0;
+    }
+}

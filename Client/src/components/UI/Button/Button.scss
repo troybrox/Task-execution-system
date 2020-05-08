@@ -1,0 +1,49 @@
+.button {
+    width: max-content;
+    border-radius: 5px;;
+    height: 30px;
+    line-height: 26px;
+    padding: 0 10px;
+    cursor: pointer;
+}
+
+.auth_button {
+	min-width: 100px;
+	background: rgb(0, 247, 255);
+	border: 1px solid rgb(0, 183, 255);
+	border-radius: 2px;
+	margin: 10px 0 0 10px;
+	font-size: 16px;
+    font-weight: bold;
+    padding: 0 20px 0 10px;
+}
+
+.active_blue_button {
+    border: 2px solid rgb(33, 115, 153);
+    background: rgb(81, 163, 201);
+}
+
+.big_button {
+    height: 40px;
+    line-height: 36px;
+    padding-right: 40px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.active_grey_button {
+    border: 2px solid grey;
+}
+
+.disactive_button {
+    cursor: not-allowed;
+    border: 2px solid rgb(143, 143, 143);
+    background: rgb(211, 211, 211);
+}
+
+.close_button {
+    border: 2px solid rgb(153, 105, 33);
+    background: white;
+    font-size: 17px;
+    font-weight: bold;
+}
