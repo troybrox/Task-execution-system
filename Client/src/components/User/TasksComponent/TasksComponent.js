@@ -78,7 +78,7 @@ class TasksComponent extends React.Component {
     }
 
     renderList() {
-        if (this.props.loading) 
+        if (this.props.loading && this.props.subjects.length === 0) 
             return <Loader />
         else 
             if (localStorage.getItem('role') === 'teacher') {
@@ -142,7 +142,7 @@ class TasksComponent extends React.Component {
     }
 
     renderListStudent() {
-        const list = this.props.subjects === undefined ?
+        const list = this.props.subjects.length === 0 ?
             <p className='empty_field'>
                 Здесь будет список предметов ваших задач, пока задач нет
             </p> :

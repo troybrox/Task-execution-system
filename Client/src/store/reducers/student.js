@@ -1,39 +1,12 @@
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START } from "../actions/actionTypes"
 
 const initialState = {
-    profileData: [
-		{ value: 'pasha_terminator', label: 'Имя пользователя', type: 'text', serverName: 'userName', valid: true },
-        { value: 'Александров', label: 'Фамилия', serverName: 'surname'},
-        { value: 'Павел', label: 'Имя', serverName: 'name'},
-        { value: 'Сидорович', label: 'Отчество', serverName: 'patronymic'},
-        { value: 'Топовая 😎', label: 'Группа', serverName: 'groupNumber'},
-		{ value: 'Кайфовый', label: 'Факультет', serverName: 'faculty'},
-        { value: 'aaa@aa.aa', label: 'Адрес эл. почты', type: 'email', serverName: 'email', valid: true }
-    ],
+    profileData: [],
     taskData: {
-        subjects: [
-            {
-                id: 1,
-                name: 'Моделирование сложных систем',
-                open: true
-            },
-            {
-                id: 2,
-                name: 'ЭВМ',
-                open: false
-            }
-        ],
-        types: [
-            {id: null, name: 'Все'},
-            {id: 1, name: 'Лабораторная работа'},
-            {id: 2, name: 'Домашняя работа'},
-        ],
+        subjects: [],
+        types: [],
     },
-    tasks: [
-        {type: 'Лабораторная работа', name: '№1', dateOpen: '2 дня'},
-        {type: 'Лабораторная работа', name: '№2', dateOpen: '1 месяц'},
-        {type: 'Лабораторная работа', name: '№3', dateOpen: '3 дня'},
-    ],
+    tasks: [],
     taskAdditionData: {
         teacherName: "Xxx",
         teacherSurname: "Xxx",
@@ -89,25 +62,30 @@ const initialState = {
 
     errorShow: false,
     errorMessage: [],
+    loading: false
 }
 
 export default function studentReducer(state = initialState, action) {
     switch (action.type) {
+        case LOADING_START:
+            return {
+                ...state, loading: true
+            }
         case SUCCESS_PROFILE:
             return {
-                ...state, profileData: action.profileData
+                ...state, profileData: action.profileData, loading: false
             }
         case SUCCESS_TASK:
             return {
-                ...state, taskData: action.taskData
+                ...state, taskData: action.taskData, loading: false
             }
         case SUCCESS_TASKS:
             return {
-                ...state, tasks: action.tasks
+                ...state, tasks: action.tasks, loading: false
             }
         case SUCCESS_TASK_ADDITION:
             return {
-                ...state, taskAdditionData: action.taskAdditionData
+                ...state, taskAdditionData: action.taskAdditionData, loading: false
             }
         case ERROR_WINDOW:
             return {

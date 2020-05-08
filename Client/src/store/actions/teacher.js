@@ -105,15 +105,19 @@ export function fetchMain() {
                             item.open = true
                         else 
                             item.open = false
-                        if ('groups' in item)
-                            item.groups.forEach((element, index)=>{
-                                if (index === 0 && num === 0) element.open = true
-                                else element.open = false
-                                if ('students' in element)
-                                    element.students.forEach((el)=>{
-                                        el.open = false
+
+                        item.groups.forEach((element, index)=>{
+                            if (index === 0 && num === 0) element.open = true
+                            else element.open = false
+                            
+                            element.students.forEach((el)=>{
+                                el.open = false
+                                if (el.tasks.length !== 0)
+                                    el.tasks.forEach((task) => {
+                                        task.beginDate = parseDate(new Date(task.beginDate))
                                     })
                             })
+                        })
                     })
 
                 dispatch(successMain(mainData))
@@ -258,6 +262,7 @@ export function choiceGroupTask(indexSubject, indexGroup) {
 
 export function fetchListTasks(filters) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'api/teacher/task'
             const response = await axios.post(url, filters)
@@ -267,7 +272,8 @@ export function fetchListTasks(filters) {
                 const tasks = []
                 if (data.data.length !== 0) {
                     data.data.forEach(el => {
-                        const object = {id: el.id, type: el.type, name: el.name, dateOpen: el.beginDate}
+                        const beginDate = new Date(el.beginDate) 
+                        const object = {id: el.id, type: el.type, name: el.name, dateOpen: parseDate(beginDate)}
                     
                         console.log(el.students)
                         object.countAnswers = el.solutionsCount 
@@ -291,6 +297,23 @@ export function fetchListTasks(filters) {
     }
 }
 
+function parseToString(num) {
+    if (num < 10) 
+        return ('0' + num)
+    else 
+        return num
+}
+
+function parseDate(date) {
+    const day = parseToString(date.getDate())
+    const month = parseToString(date.getMonth() + 1)
+    const year = parseToString(date.getFullYear())
+    const hours = parseToString(date.getHours())
+    const minutes = parseToString(date.getMinutes())
+
+    return (day + '.' + month + '.' + year + ' ' + hours + ':' + minutes)
+}
+
 export function fetchTaskById(id) {
     return async dispatch => {
         dispatch(loadingStart())
@@ -300,7 +323,13 @@ export function fetchTaskById(id) {
             const data = response.data
 
             if (data.succeeded) {
-                dispatch(successTaskAddition(data.data))
+                const taskAdditionData = data.data
+                const beginDate = new Date(data.data.beginDate)
+                const finishDate = new Date(data.data.finishDate)
+                taskAdditionData.beginDate = parseDate(beginDate) 
+                taskAdditionData.finishDate = parseDate(finishDate) 
+
+                dispatch(successTaskAddition(taskAdditionData))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
@@ -361,7 +390,6 @@ export function changeChecked(groupIndex, studentIndex, val) {
 }
 
 export function onSendCreate(task) {
-    console.log(task)
     return async dispatch => {
         try {
             const url = 'api/teacher/task/add'
@@ -369,7 +397,7 @@ export function onSendCreate(task) {
             const data = response.data
 
             if (data.succeeded) {
-                if (task.file !== {})
+                if (task.file !== null)
                     try {
                         const url2 = 'api/teacher/task/add/file'
                         const file = new FormData()
@@ -391,6 +419,8 @@ export function onSendCreate(task) {
                         err.push(error.message)
                         dispatch(errorWindow(true, err))
                     }
+                else 
+                    dispatch(successCreate(+data.data))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

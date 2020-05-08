@@ -1,8 +1,9 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'api/student/profile'
             const response = await axios.get(url)
@@ -88,6 +89,7 @@ export function updateProfile() {
 
 export function fetchTaskFilters() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'api/student/task/filters'
             const response = await axios.get(url)
@@ -188,6 +190,12 @@ export function fetchTaskById(id) {
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
+    }
+}
+
+export function loadingStart() {
+    return {
+        type: LOADING_START
     }
 }
 

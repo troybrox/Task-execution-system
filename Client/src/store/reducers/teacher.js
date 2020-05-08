@@ -102,7 +102,7 @@ export default function teacherReducer(state = initialState, action) {
             }
         case SUCCESS_TASKS:
             return {
-                ...state, tasks: action.tasks
+                ...state, tasks: action.tasks, loading: false
             }
         case SUCCESS_CREATE_DATA:
             return {

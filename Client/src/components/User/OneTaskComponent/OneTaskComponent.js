@@ -6,6 +6,7 @@ import Select from '../../UI/Select/Select'
 import Button from '../../UI/Button/Button'
 import { Link } from 'react-router-dom'
 import Answer from '../../UI/Answer/Answer'
+import Loader from '../../UI/Loader/Loader'
 
 // Компонент отображения отдельного окна задач(создание задачи и открытая задача) для препода и студента
 class OneTaskComponent extends React.Component {
@@ -227,7 +228,7 @@ class OneTaskComponent extends React.Component {
                 )
             })
 
-        return (
+        return ( this.props.loading ? <Loader /> :
             <Auxiliary>
                 <h4>Группа</h4>
                 <p className='group_create'>{this.props.taskAdditionData.group}</p>
@@ -277,21 +278,25 @@ class OneTaskComponent extends React.Component {
     }
 
     renderDateTask() {
-        return (
+        const timeBar = this.props.taskAdditionData.timeBar
+        return ( this.props.loading ? <Loader /> :
             <Auxiliary>
                 <h4>Срок выполнения</h4>
                 <div>
                     
                     <p className='date_p_create'>
                         Дата начала:
-                        <span>{this.props.taskAdditionData.beginDate.split('T').join(' ')}</span>
+                        <span>{this.props.taskAdditionData.beginDate}</span>
                     </p>
                     <p className='date_p_create'>
                         Дата сдачи:
-                        <span>{this.props.taskAdditionData.finishDate.split('T').join(' ')}</span>
+                        <span>{this.props.taskAdditionData.finishDate}</span>
                     </p>
                     <p className='date_p_create'>
-                        Осталось: <span className='time_bar'>{this.props.taskAdditionData.timeBar} дней</span>
+                        Осталось: 
+                        <span className='time_bar' style={{background: `linear-gradient(90deg, rgb(81, 163, 201) ${timeBar}%, white ${timeBar}%)`}}>
+                            {timeBar} %
+                        </span>
                     </p>
                     {localStorage.getItem('role') === 'teacher' ?
                         <Button 
@@ -451,6 +456,7 @@ class OneTaskComponent extends React.Component {
                     key={index}
                     source='user.svg'
                     data={item}
+                    role='student'
                 />
             )
         })
@@ -475,18 +481,21 @@ class OneTaskComponent extends React.Component {
             )
         })
 
-        return (
-            <div className='contain_task'>
-                <Answer
-                    source='user-tie-solid.svg' 
-                    data={teacherObject}
-                />
-                <ul>
-                    {students}
-                </ul>
-                {localStorage.getItem('role') === 'teacher' ? all : null}
-                {/* {this.renderAnswerField()} */}
-            </div>
+        return ( 
+            this.props.loading ? 
+                <Loader /> :
+                <div className='contain_task'>
+                    <Answer
+                        source='user-tie-solid.svg' 
+                        data={teacherObject}
+                        role='teacher'
+                    />
+                    <ul>
+                        {students}
+                    </ul>
+                    {localStorage.getItem('role') === 'teacher' ? all : null}
+                    {/* {this.renderAnswerField()} */}
+                </div>
         )
     }
 
@@ -568,26 +577,33 @@ class OneTaskComponent extends React.Component {
             <div
                 className='each_tasks' 
             >
-                <div className='tasks_left'>
-                    <span className='subject_for_lab'>{this.props.taskAdditionData.subject}</span>
-                    <span>{this.props.taskAdditionData.type} {this.props.taskAdditionData.name}</span>
-                    <p className='small_text'>
-                        Открыта {this.props.taskAdditionData.beginDate}
-                        <span className='small_text'>
-                            Кол-во ответов: 
-                            {this.props.taskAdditionData.students.length}
-                        </span>
-                    </p>
-                </div>
-                {localStorage.getItem('role') === 'teacher' ?
-                    <Button 
-                        typeButton='blue_big'
-                        value='Изменить'
-                    /> :
-                    null
+                { this.props.loading ? 
+                    <Loader /> : 
+                    <Auxiliary>
+                        <div className='tasks_left'>
+                            <span className='subject_for_lab'>{this.props.taskAdditionData.subject}</span>
+                            <span>{this.props.taskAdditionData.type} </span>
+                            <span>{this.props.taskAdditionData.name}</span>
+                            <p className='small_text'>
+                                Открыта {this.props.taskAdditionData.beginDate}
+                                <span className='small_text'>
+                                    Кол-во ответов:
+                                    {' ' + this.props.taskAdditionData.solutionsCount}
+                                </span>
+                            </p>
+                        </div>
+                
+                        {localStorage.getItem('role') === 'teacher' ?
+                            <Button 
+                                typeButton='blue_big'
+                                value='Изменить'
+                            /> :
+                            null
+                        }
+                    </Auxiliary>
                 }
             </div>
-    )
+        )
     }
 
     render() {
@@ -598,7 +614,7 @@ class OneTaskComponent extends React.Component {
                         className='back_task'
                         to='/tasks'
                     >
-                        Вернуться к списку задач
+                        Ко всем задачам
                     </Link>
                     { this.renderTitle() }
                 </div>
