@@ -138,9 +138,12 @@ export function choiceSubjectTask(indexSubject) {
                 el.open = false
         })
 
-        const filters = {
-            subjectId: String(indexSubject),
-        }
+        const filters = [
+            {
+                name: 'subjectId',
+                value: String(indexSubject)
+            }
+        ]        
 
         await dispatch(fetchListTasks(filters))
 
@@ -167,6 +170,7 @@ function parseDate(date) {
 
 export function fetchListTasks(filters) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = 'api/student/tasks'
             const response = await axios.post(url, filters)
@@ -194,13 +198,64 @@ export function fetchListTasks(filters) {
 
 export function fetchTaskById(id) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = `api/student/task/${id}`
             const response = await axios.get(url)
             const data = response.data
 
             if (data.succeeded) {
-                dispatch(successTaskAddition(data.data))
+                const taskAdditionData = data.data
+                const beginDate = new Date(data.data.beginDate)
+                const finishDate = new Date(data.data.finishDate)
+                taskAdditionData.beginDate = parseDate(beginDate) 
+                taskAdditionData.finishDate = parseDate(finishDate) 
+
+                dispatch(successTaskAddition(taskAdditionData))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function onSendSolution(createSolution, id) {
+    return async dispatch => {
+        try {
+            const url = 'api/student/solution/add'
+            const response = await axios.post(url, createSolution)
+            const data = response.data
+
+            if (data.succeeded) {
+                if (createSolution.file !== null)
+                    try {
+                        const url2 = 'api/teacher/solution/add/file'
+                        const file = new FormData()
+                        file.append('taskId', data.data)
+                        file.append('file', createSolution.file)
+                        const response2 = await axios.post(url2, file)
+                        const data2 = response2.data
+
+                        if (data2.succeeded) {
+                            dispatch(fetchTaskById(id))
+                        } else {
+                            const err = [...data2.errorMessages]
+                            err.unshift('Сообщение с сервера.')
+                            dispatch(errorWindow(true, err))
+                        }
+                    } catch (error) {
+                        const err = ['Ошибка подключения']
+                        err.push(error.message)
+                        dispatch(errorWindow(true, err))
+                    }
+                else 
+                    dispatch(fetchTaskById(id))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
