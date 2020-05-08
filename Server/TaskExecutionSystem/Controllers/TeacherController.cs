@@ -168,7 +168,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
         [HttpPost("task/update")]
-        public async Task<IActionResult> UpdateTaskAsync([FromBody]TaskDTO task = null)
+        public async Task<IActionResult> UpdateTaskAsync([FromBody]TaskCreateModelDTO task = null)
         {
             var res = await _teacherService.UpdateTaskAsync(task);
             return Ok(res);

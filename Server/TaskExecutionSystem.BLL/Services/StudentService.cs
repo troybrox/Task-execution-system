@@ -23,7 +23,7 @@ using TaskExecutionSystem.DAL.Entities.Relations;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    // TODO: Repository - create, get, update, delete
+    // TODO: Repository - get
 
     public class StudentService : IStudentService
     {
@@ -292,11 +292,13 @@ namespace TaskExecutionSystem.BLL.Services
                     .FirstOrDefaultAsync();
 
                 var taskEntity = await _context.TaskModels
+                    .Include(t => t.Group)
                     .Include(t => t.Solutions)
                     .Include(t => t.Subject)
                     .Include(t => t.Type)
                     .Include(t => t.File)
                     .Include(t => t.Teacher)
+                    .Include(t => t.TaskStudentItems)
                     .FirstOrDefaultAsync(t => t.Id == id);
 
                 var solutionEntity = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
@@ -324,18 +326,11 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        private async Task<User> GetUserFromClaimsAsync()
-        {
-            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
-            string stringID = userNameClaim.Value;
-            var user = await _userManager.FindByIdAsync(stringID);
-            return user;
-        }
-
+        // test
         // TODO: try - catch
-        public async Task<OperationDetailDTO> CreateSolutionAsync(SolutionCreateModelDTO dto)
+        public async Task<OperationDetailDTO<string>> CreateSolutionAsync(SolutionCreateModelDTO dto)
         {
-            var detail = new OperationDetailDTO();
+            var detail = new OperationDetailDTO<string>();
 
             var currentUserEntity = await GetUserFromClaimsAsync();
 
@@ -344,7 +339,7 @@ namespace TaskExecutionSystem.BLL.Services
                 .Where(s => s.UserId == currentUserEntity.Id)
                 .FirstOrDefaultAsync();
 
-            if(dto != null)
+            if (dto != null)
             {
                 var taskEntity = await _context.TaskModels.FindAsync(dto.TaskId);
 
@@ -361,6 +356,7 @@ namespace TaskExecutionSystem.BLL.Services
                     TaskModel = taskEntity,
                     CreationDate = DateTime.Now
                 };
+
                 if (solutionEntity.CreationDate > taskEntity.FinishDate)
                 {
                     solutionEntity.InTime = false;
@@ -369,7 +365,17 @@ namespace TaskExecutionSystem.BLL.Services
                 await _context.Solutions.AddAsync(solutionEntity);
                 await _context.SaveChangesAsync();
 
-                detail.Succeeded = true;
+                var createdSolution = await _context.Solutions.FirstOrDefaultAsync(t => t == solutionEntity);
+
+                if (createdSolution != null)
+                {
+                    detail.Succeeded = true;
+                    detail.Data = createdSolution.Id.ToString();
+                }
+                else
+                {
+                    detail.ErrorMessages.Add(_serverErrorMessage + "При создании решения задачи что-то пошло не так.");
+                }
                 return detail;
             }
 
@@ -378,6 +384,15 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add("Параметр модели создаваемого решения был равен NULL.");
                 return detail;
             }
+        }
+
+
+        private async Task<User> GetUserFromClaimsAsync()
+        {
+            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            string stringID = userNameClaim.Value;
+            var user = await _userManager.FindByIdAsync(stringID);
+            return user;
         }
     }
 }

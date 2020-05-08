@@ -72,6 +72,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // todo: userName - PK, добавить изменение для сввязанных сущностей - teacher
         // изменение данных профиля преподавателя
         public async Task<OperationDetailDTO> UpdateProfileDataAsync(TeacherDTO newTeacherDTO)
         {
@@ -99,9 +100,11 @@ namespace TaskExecutionSystem.BLL.Services
                     return detail;
                 }
 
+                User findSameUser;
+
                 if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
                     || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
-                    || await _userManager.FindByNameAsync(newTeacherDTO.UserName) != null)
+                    || ((findSameUser = await _userManager.FindByNameAsync(newTeacherDTO.UserName)) != null && findSameUser != teacherUser))
                 {
                     detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
@@ -112,12 +115,26 @@ namespace TaskExecutionSystem.BLL.Services
                 {
                     teacherUser.Email = newTeacherDTO.Email;
                     teacherUser.UserName = newTeacherDTO.UserName;
+                    teacherUser.Teacher = null;
+
+                    // delete dependent
+                    teacherEntity.User = null;
+                    _context.Teachers.Update(teacherEntity);
+                    await _context.SaveChangesAsync();
+
                     var userUpdateResult = await _userManager.UpdateAsync(teacherUser);
-                    
+
+                    // update dependent
+                    teacherEntity.User = teacherUser;
+                    _context.Teachers.Update(teacherEntity);
+                    await _context.SaveChangesAsync();
+
                     if (teacherEntity != null)
                     {
                         teacherEntity.Position = newTeacherDTO.Position;
-
+                        //
+                        teacherEntity.User = teacherUser;
+                        //
                         _context.Teachers.Update(teacherEntity);
                         await _context.SaveChangesAsync();
                     }
@@ -222,7 +239,6 @@ namespace TaskExecutionSystem.BLL.Services
                     await _context.SaveChangesAsync();
 
                     var createdTask = await _context.TaskModels.FirstOrDefaultAsync(t => t == newTask);
-                    //var taskDTO = TaskDTO.Map(createdTask);
 
                     if(createdTask != null)
                     {
@@ -249,7 +265,6 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // метод в стадии fixing [GROUPS error ---]
         // сразу формировать DTO
         public async Task<OperationDetailDTO<List<SubjectDTO>>> GetMainDataAsync()
         {
@@ -360,7 +375,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // done: TYPE LIST [!]
+        // done
         // получение дерева объектов для фильтрации заданий
         public async Task<OperationDetailDTO<TaskFiltersModelDTO>> GetTaskFiltersAsync()
         {
@@ -543,7 +558,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // done: progressBar count
+        // done
         public async Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
@@ -595,16 +610,68 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
-        // TODO [!]
-        public Task<OperationDetailDTO> UpdateTaskAsync(TaskDTO dto)
+        // done 
+        public async Task<OperationDetailDTO> UpdateTaskAsync(TaskCreateModelDTO dto)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<TaskDTO>();
+            try
+            {
+                var entity = await _context.TaskModels.FindAsync(dto.Id);
+
+                if (entity == null)
+                {
+                    detail.ErrorMessages.Add("Задача не найдена.");
+                    return detail;
+                }
+
+                entity.ContentText = dto.ContentText;
+                entity.BeginDate = dto.BeginDate;
+                entity.FinishDate = dto.FinishDate;
+                entity.Name = dto.Name;
+                entity.TypeId = dto.TypeId;
+                entity.UpdateDate = DateTime.Now;
+
+                _context.TaskModels.Update(entity);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
-        // TODO [!]
-        public Task<OperationDetailDTO> CloseTaskAsync(int id)
+        // done
+        public async Task<OperationDetailDTO> CloseTaskAsync(int id)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<TaskDTO>();
+            try
+            {
+                var entity = await _context.TaskModels.FindAsync(id); 
+
+                if (entity == null)
+                {
+                    detail.ErrorMessages.Add("Задача не найдена.");
+                    return detail;
+                }
+
+                entity.IsOpen = false;
+                entity.UpdateDate = DateTime.Now;
+
+                _context.TaskModels.Update(entity);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
 
