@@ -126,6 +126,16 @@ class OneTaskComponent extends React.Component {
         })
     }
 
+    sendSolution = () => {
+        const createSolution = {
+            task: {}
+        }
+        createSolution.task.contentText = this.state.descriptionInput
+        createSolution.task.taskId = this.props.idTask
+        createSolution.file = this.state.files
+        this.props.onSendSolution(createSolution, this.props.idTask)
+    }
+
     renderMemberCreate() {
         const groupId = this.state.groupId
         let groupIndex = 0
@@ -232,7 +242,7 @@ class OneTaskComponent extends React.Component {
             <Auxiliary>
                 <h4>Группа</h4>
                 <p className='group_create'>{this.props.taskAdditionData.group}</p>
-                <h4>Участники {users.length}</h4>
+                <h4>Участники {this.props.taskAdditionData.studentsCount}</h4>
                 <ul>
                     {users}
                 </ul>
@@ -293,7 +303,7 @@ class OneTaskComponent extends React.Component {
                         <span>{this.props.taskAdditionData.finishDate}</span>
                     </p>
                     <p className='date_p_create'>
-                        Осталось: 
+                        Осталось времени: 
                         <span className='time_bar' style={{background: `linear-gradient(90deg, rgb(81, 163, 201) ${timeBar}%, white ${timeBar}%)`}}>
                             {timeBar} %
                         </span>
@@ -494,7 +504,7 @@ class OneTaskComponent extends React.Component {
                         {students}
                     </ul>
                     {localStorage.getItem('role') === 'teacher' ? all : null}
-                    {localStorage.getItem('role') === 'student' ? this.renderAnswerField() : null}
+                    {localStorage.getItem('role') === 'student' && this.props.taskAdditionData.isOpen ? this.renderAnswerField() : null}
                 </div>
         )
     }
@@ -502,13 +512,16 @@ class OneTaskComponent extends React.Component {
     renderAnswerField() {
         const clsForFile = ['label_file']
         if (this.state.files !== null) clsForFile.push('ready_file')
+        let cls = 'blue_big'
+        if (this.state.descriptionInput.trim() === '')
+            cls = 'disactive_big'
 
         return (
             <div className='contain_create'>
                 <textarea
                     type='text' 
                     className='description_textarea text_block' 
-                    placeholder='Добавьте описание задачи...'
+                    placeholder='Добавьте описание решения...'
                     defaultValue={this.state.descriptionInput}
                     onChange={event => this.onChangeDescription(event)}
                 />
@@ -543,6 +556,14 @@ class OneTaskComponent extends React.Component {
                         </Auxiliary>
                     }
                 </label>
+                {localStorage.getItem('role') === 'student' ? 
+                    <Button 
+                        typeButton={cls}
+                        value='Отправить решение'
+                        onClickButton={this.sendSolution}
+                    /> : 
+                    null
+                }
             </div>
         )
     }
