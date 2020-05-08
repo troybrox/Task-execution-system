@@ -358,7 +358,7 @@ namespace TaskExecutionSystem.BLL.Services
                     CreationDate = DateTime.Now
                 };
 
-                if (solutionEntity.CreationDate > taskEntity.FinishDate)
+                if (taskEntity.FinishDate > solutionEntity.CreationDate)
                 {
                     solutionEntity.InTime = false;
                 }
