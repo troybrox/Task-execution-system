@@ -131,7 +131,7 @@ class OneTaskComponent extends React.Component {
             task: {}
         }
         createSolution.task.contentText = this.state.descriptionInput
-        createSolution.task.taskId = this.props.idTask
+        createSolution.task.taskId = +this.props.idTask
         createSolution.file = this.state.files
         this.props.onSendSolution(createSolution, this.props.idTask)
     }
