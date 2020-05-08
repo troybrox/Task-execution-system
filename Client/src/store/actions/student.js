@@ -229,7 +229,7 @@ export function onSendSolution(createSolution, id) {
     return async dispatch => {
         try {
             const url = 'api/student/solution/add'
-            const response = await axios.post(url, createSolution)
+            const response = await axios.post(url, createSolution.task)
             const data = response.data
 
             if (data.succeeded) {
