@@ -22,6 +22,7 @@ using TaskExecutionSystem.DAL.Entities.Studies;
 using TaskExecutionSystem.DAL.Entities.Task;
 using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Entities.Relations;
+using TaskExecutionSystem.BLL.DTO.Repository;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -728,6 +729,37 @@ namespace TaskExecutionSystem.BLL.Services
         {
             var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
             return userNameClaim.Value;
+        }
+
+
+        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoCreateSubjectFiltersAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateNewThemeAsync(ThemeCreateModelDTO dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }
