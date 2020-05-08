@@ -279,7 +279,6 @@ namespace TaskExecutionSystem.BLL.Services
             var detail = new OperationDetailDTO<TaskDTO>();
             var resultTaskDTO = new TaskDTO();
             var resSolutionDTO = new SolutionDTO();
-            var resStudentDTOList = new List<StudentDTO>();
 
             try
             {
@@ -310,7 +309,9 @@ namespace TaskExecutionSystem.BLL.Services
                 }
 
                 resultTaskDTO = TaskDTO.Map(taskEntity);
-                if(resSolutionDTO != null)
+                resSolutionDTO = SolutionDTO.Map(solutionEntity);
+
+                if (resSolutionDTO != null)
                 {
                     resultTaskDTO.Solutions.Add(resSolutionDTO);
                 }
