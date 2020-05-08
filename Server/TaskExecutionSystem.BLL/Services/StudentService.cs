@@ -70,9 +70,56 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         // TODO [!]
-        public Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO dto)
+        public async Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO dto)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<TeacherDTO>();
+            try
+            {
+                List<string> errorMessages = new List<string>();
+
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var studentUser = await _context.Users
+                    .Where(u => u.Id == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                var teacherEntity = await _context.Students
+                    .Include(t => t.User)
+                    .Where(t => t.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+
+                if (!UserValidator.Validate(dto, out errorMessages))
+                {
+                    detail.Succeeded = false;
+                    detail.ErrorMessages = errorMessages;
+                    return detail;
+                }
+
+                if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                    || await _userManager.FindByNameAsync(dto.UserName) != null)
+                {
+                    detail.Succeeded = false;
+                    detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
+                    return detail;
+                }
+
+                if (studentUser != null)
+                {
+                    studentUser.Email = dto.Email;
+                    studentUser.UserName = dto.UserName;
+                    var userUpdateResult = await _userManager.UpdateAsync(studentUser);
+                    detail.Succeeded = true;
+                }
+
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
 
