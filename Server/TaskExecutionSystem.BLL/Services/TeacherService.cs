@@ -569,6 +569,7 @@ namespace TaskExecutionSystem.BLL.Services
             try
             {
                 var entity = await _context.TaskModels
+                    .Include(t => t.Group)
                     .Include(t => t.TaskStudentItems)
                     .Include(t => t.Solutions)
                     .Include(t => t.Subject)

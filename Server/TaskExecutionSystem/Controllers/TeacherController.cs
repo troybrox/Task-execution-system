@@ -174,8 +174,8 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        [HttpPost("task/close")]
-        public async Task<IActionResult> CloseTaskAsync([FromBody]int id)
+        [HttpGet("task/{id}/close")]
+        public async Task<IActionResult> CloseTaskAsync(int id)
         {
             var res = await _teacherService.CloseTaskAsync(id);
             return Ok(res);

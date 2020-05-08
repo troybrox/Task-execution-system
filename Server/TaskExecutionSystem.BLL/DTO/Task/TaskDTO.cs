@@ -16,6 +16,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
         public string ContentText { get; set; }
         public bool IsOpen { get; set; }
         public string FileURI { get; set; }
+        public string FileName { get; set; }
         
         public string TeacherName { get; set; }
         public string TeacherSurname { get; set; }
@@ -30,6 +31,8 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 
         public int SolutionsCount { get; set; }
         public int StudentsCount { get; set; }
+
+        public SolutionDTO Solution { get; set; }
 
         public List<StudentDTO> Students { get; set; }
         public List<SolutionDTO> Solutions { get; set; }
@@ -64,12 +67,12 @@ namespace TaskExecutionSystem.BLL.DTO.Task
             if (entity.Subject != null)
             {
                 dto.Subject = entity?.Subject.Name;
-
             }
 
             if (entity.File != null)
             {
                 dto.FileURI = entity.File.FileURI;
+                dto.FileName = entity.File.FileName;
             }
 
             if(entity.Teacher != null)

@@ -18,6 +18,7 @@ namespace TaskExecutionSystem.BLL.DTO.Task
         public bool IsInTime { get; set; }
 
         public string FileURI { get; set; }
+        public string FileName { get; set; }
 
         public string StudentName { get; set; }
         public string StudentSurname { get; set; }
@@ -39,13 +40,14 @@ namespace TaskExecutionSystem.BLL.DTO.Task
             if(entity.Student != null)
             {
                 dto.StudentName = entity.Student.Name;
-                dto.StudentName = entity.Student.Surname;
-                dto.StudentName = entity.Student.Patronymic;
+                dto.StudentSurname = entity.Student.Surname;
+                dto.StudentPatronymic = entity.Student.Patronymic;
             }
 
             if (entity.File != null)
             {
                 dto.FileURI = entity.File.FileURI;
+                dto.FileName = entity.File.FileName;
             }
 
             return dto;

@@ -69,7 +69,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // TODO [!]
+        // fix
         public async Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO dto)
         {
             var detail = new OperationDetailDTO<TeacherDTO>();
@@ -279,6 +279,7 @@ namespace TaskExecutionSystem.BLL.Services
             var detail = new OperationDetailDTO<TaskDTO>();
             var resultTaskDTO = new TaskDTO();
             var resSolutionDTO = new SolutionDTO();
+            Solution solutionEntity;
 
             try
             {
@@ -300,8 +301,6 @@ namespace TaskExecutionSystem.BLL.Services
                     .Include(t => t.TaskStudentItems)
                     .FirstOrDefaultAsync(t => t.Id == id);
 
-                var solutionEntity = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
-
                 if (taskEntity == null)
                 {
                     detail.ErrorMessages.Add("Задача не найдена.");
@@ -309,13 +308,21 @@ namespace TaskExecutionSystem.BLL.Services
                 }
 
                 resultTaskDTO = TaskDTO.Map(taskEntity);
-                resSolutionDTO = SolutionDTO.Map(solutionEntity);
+                _taskService.GetCurrentTimePercentage(ref resultTaskDTO);
 
-                if (resSolutionDTO != null)
+                var studentSolutionForCurTask = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
+
+                if (studentSolutionForCurTask != null)
                 {
+                    solutionEntity = await _context.Solutions
+                    .Include(s => s.Student)
+                    .Where(s => s.Id == studentSolutionForCurTask.Id)
+                    .FirstOrDefaultAsync();
+                    resSolutionDTO = SolutionDTO.Map(solutionEntity);
+                    resultTaskDTO.Solution = resSolutionDTO;
                     resultTaskDTO.Solutions.Add(resSolutionDTO);
                 }
-                _taskService.GetCurrentTimePercentage(ref resultTaskDTO);
+
                 detail.Data = resultTaskDTO;
                 detail.Succeeded = true;
                 return detail;
@@ -327,62 +334,68 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // test
-        // TODO: try - catch
+
         public async Task<OperationDetailDTO<string>> CreateSolutionAsync(SolutionCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO<string>();
-
-            var currentUserEntity = await GetUserFromClaimsAsync();
-
-            var studentEntity = await _context.Students
-                .Include(s => s.User)
-                .Where(s => s.UserId == currentUserEntity.Id)
-                .FirstOrDefaultAsync();
-
-            if (dto != null)
+            try
             {
-                var taskEntity = await _context.TaskModels.FindAsync(dto.TaskId);
+                var currentUserEntity = await GetUserFromClaimsAsync();
 
-                if (taskEntity == null)
+                var studentEntity = await _context.Students
+                    .Include(s => s.User)
+                    .Where(s => s.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                if (dto != null)
                 {
-                    detail.ErrorMessages.Add("Задача не найдена.");
+                    var taskEntity = await _context.TaskModels.FindAsync(dto.TaskId);
+
+                    if (taskEntity == null)
+                    {
+                        detail.ErrorMessages.Add("Задача не найдена.");
+                        return detail;
+                    }
+
+                    Solution solutionEntity = new Solution
+                    {
+                        ContentText = dto.ContentText,
+                        Student = studentEntity,
+                        TaskModel = taskEntity,
+                        CreationDate = DateTime.Now
+                    };
+
+                    if (taskEntity.FinishDate > solutionEntity.CreationDate)
+                    {
+                        solutionEntity.InTime = false;
+                    }
+
+                    await _context.Solutions.AddAsync(solutionEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdSolution = await _context.Solutions.FirstOrDefaultAsync(t => t == solutionEntity);
+
+                    if (createdSolution != null)
+                    {
+                        detail.Succeeded = true;
+                        detail.Data = createdSolution.Id.ToString();
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add(_serverErrorMessage + "При создании решения задачи что-то пошло не так.");
+                    }
                     return detail;
                 }
 
-                Solution solutionEntity = new Solution
-                {
-                    ContentText = dto.ContentText,
-                    Student = studentEntity,
-                    TaskModel = taskEntity,
-                    CreationDate = DateTime.Now
-                };
-
-                if (taskEntity.FinishDate > solutionEntity.CreationDate)
-                {
-                    solutionEntity.InTime = false;
-                }
-
-                await _context.Solutions.AddAsync(solutionEntity);
-                await _context.SaveChangesAsync();
-
-                var createdSolution = await _context.Solutions.FirstOrDefaultAsync(t => t == solutionEntity);
-
-                if (createdSolution != null)
-                {
-                    detail.Succeeded = true;
-                    detail.Data = createdSolution.Id.ToString();
-                }
                 else
                 {
-                    detail.ErrorMessages.Add(_serverErrorMessage + "При создании решения задачи что-то пошло не так.");
+                    detail.ErrorMessages.Add("Параметр модели создаваемого решения был равен NULL.");
+                    return detail;
                 }
-                return detail;
             }
-
-            else
+            catch (Exception e)
             {
-                detail.ErrorMessages.Add("Параметр модели создаваемого решения был равен NULL.");
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
                 return detail;
             }
         }
