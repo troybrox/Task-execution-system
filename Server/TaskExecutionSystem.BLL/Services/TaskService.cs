@@ -105,7 +105,7 @@ namespace TaskExecutionSystem.BLL.Services
             {
                 if(pastInterval.TotalMinutes > 0)
                 {
-                    timeProgressPercentage = (int)(pastInterval.TotalMinutes / totalInterval.Minutes);
+                    timeProgressPercentage = (int)(Math.Abs((1 - (pastInterval.TotalMinutes / totalInterval.TotalMinutes)) * 100));
                 }
             }
 
