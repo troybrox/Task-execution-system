@@ -7,6 +7,7 @@ using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Studies;
 using TaskExecutionSystem.BLL.DTO.Auth;
+using TaskExecutionSystem.BLL.DTO.Repository;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.DAL.Entities.Identity;
 
@@ -25,16 +26,19 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO<TaskFiltersModelDTO>> GetAddingTaskFiltersAsync();
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters);
         public Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id);
-        public Task<OperationDetailDTO> UpdateTaskAsync(TaskDTO dto);
+        public Task<OperationDetailDTO> UpdateTaskAsync(TaskCreateModelDTO dto);
         public Task<OperationDetailDTO> CloseTaskAsync(int id);
 
         // данные для [главная]
         public Task<OperationDetailDTO<List<SubjectDTO>>> GetMainDataAsync();
 
         // данные для [репозитория]
-        public Task<OperationDetailDTO> CreateNewRepositoryAsync(); // param: RepoDTO
-        public Task<OperationDetailDTO> CreateNewThemeAsync();
-        public Task<OperationDetailDTO> CreateNewParagraphAsync();
+        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoCreateSubjectFiltersAsync();
+        public Task<OperationDetailDTO> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto); 
+        public Task<OperationDetailDTO> CreateNewThemeAsync(ThemeCreateModelDTO dto);
+        public Task<OperationDetailDTO> CreateNewParagraphAsync(ParagraphCreateModelDTO dto);
+        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters();
+        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync();
 
         public Task<User> GetUserFromClaimsAsync();
     }

@@ -34,6 +34,7 @@ namespace TaskExecutionSystem.Controllers
         // api/student/task/filters
         // api/student/tasks
         // api/student/solution/add 
+        // api/student/solution/add/file
         // api/student/solution/update [TODO] 
         // api/student/task/{id}
 
