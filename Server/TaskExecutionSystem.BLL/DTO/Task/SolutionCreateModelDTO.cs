@@ -10,16 +10,5 @@ namespace TaskExecutionSystem.BLL.DTO.Task
         public string ContentText { get; set; }
 
         public int TaskId { get; set; }
-
-
-        //public static Solution Map(SolutionCreateModelDTO dto)
-        //{
-        //    var solution = new Solution
-        //    {
-        //        ContentText = dto.ContentText,
-        //    };
-
-        //    return solution;
-        //}
     }
 }
