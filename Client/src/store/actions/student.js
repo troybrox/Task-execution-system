@@ -101,8 +101,12 @@ export function fetchTaskFilters() {
                     types: [{id: null, name: 'Все'}]
                 }
 
-                data.data.subjects.forEach((el) => {
-                    taskData.subjects.push({id: el.id, name: el.name})
+                data.data.subjects.forEach((el, num) => {
+                    const object = {id: el.id, name: el.name}
+                    if (num === 0)
+                        object.open = true
+                    else object.open = false
+                    taskData.subjects.push(object)
                 })
 
                 data.data.types.forEach(el => {
@@ -144,17 +148,34 @@ export function choiceSubjectTask(indexSubject) {
     }
 }
 
+function parseToString(num) {
+    if (num < 10) 
+        return ('0' + num)
+    else 
+        return num
+}
+
+function parseDate(date) {
+    const day = parseToString(date.getDate())
+    const month = parseToString(date.getMonth() + 1)
+    const year = parseToString(date.getFullYear())
+    const hours = parseToString(date.getHours())
+    const minutes = parseToString(date.getMinutes())
+
+    return (day + '.' + month + '.' + year + ' ' + hours + ':' + minutes)
+}
+
 export function fetchListTasks(filters) {
     return async dispatch => {
         try {
-            const url = 'api/student/task'
+            const url = 'api/student/tasks'
             const response = await axios.post(url, filters)
             const data = response.data
 
             if (data.succeeded) {
                 const tasks = []
                 data.data.forEach(el => {
-                    tasks.push({type: el.type, name: el.name, dateOpen: el.beginDate})
+                    tasks.push({id: el.id, type: el.type, name: el.name, dateOpen: parseDate(new Date(el.beginDate))})
                 })
 
                 dispatch(successTasks(tasks))

@@ -26,19 +26,19 @@ class TasksComponent extends React.Component {
 
         if (this.props.subjects.length !== 0) {
             activeSubjectIndex = 0
+            filters = [
+                {name: 'subjectId', value: String(this.props.subjects[activeSubjectIndex].id)},
+            ]
             if (localStorage.getItem('role') === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
                     activeGroupIndex = 0
                     title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
-                    filters = [
-                        {name: 'subjectId', value: String(this.props.subjects[activeSubjectIndex].id)},
-                        {name: 'groupId', value: String(this.props.subjects[activeSubjectIndex].groups[activeGroupIndex].id)}
-                    ]
-                    this.props.fetchListTasks(filters)
+                    filters.push({name: 'groupId', value: String(this.props.subjects[activeSubjectIndex].groups[activeGroupIndex].id)})
                 }
             } else {
                 title = this.props.subjects[0].name
             }
+            this.props.fetchListTasks(filters)
         }
 
         this.setState({
@@ -80,12 +80,11 @@ class TasksComponent extends React.Component {
     renderList() {
         if (this.props.loading && this.props.subjects.length === 0) 
             return <Loader />
-        else 
-            if (localStorage.getItem('role') === 'teacher') {
-                return this.renderListTeacher()
-            } else {
-                return this.renderListStudent()
-            }
+        if (localStorage.getItem('role') === 'teacher') {
+            return this.renderListTeacher()
+        } else {
+            return this.renderListStudent()
+        }
     }
 
     renderListTeacher() {
@@ -174,7 +173,7 @@ class TasksComponent extends React.Component {
         if (this.props.loading) 
             return <Loader />
         const subject = this.state.title.split(' ')
-        if (this.props.tasks !== undefined)
+        if (this.props.tasks.length !== 0)
             return this.props.tasks.map((item) => {
                 return (
                         <Link
@@ -185,7 +184,7 @@ class TasksComponent extends React.Component {
                             <div className='tasks_left'>
                                 <span className='subject_for_lab'>{subject[0]}</span>
                                 <span>{item.type} {item.name}</span><br />
-                                <span className='small_text'>Открыта {item.dateOpen.split('T').join(' ')}</span>
+                                <span className='small_text'>Открыта {item.dateOpen}</span>
                             </div>
                             { localStorage.getItem('role') === 'teacher' ?
                                 <div className='tasks_right'>

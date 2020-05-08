@@ -494,7 +494,7 @@ class OneTaskComponent extends React.Component {
                         {students}
                     </ul>
                     {localStorage.getItem('role') === 'teacher' ? all : null}
-                    {/* {this.renderAnswerField()} */}
+                    {localStorage.getItem('role') === 'student' ? this.renderAnswerField() : null}
                 </div>
         )
     }
