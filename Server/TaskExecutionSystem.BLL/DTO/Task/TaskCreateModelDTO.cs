@@ -38,17 +38,9 @@ namespace TaskExecutionSystem.BLL.DTO.Task
                 BeginDate = dto.BeginDate,
                 FinishDate = dto.FinishDate,
                 TypeId = dto.TypeId,
-                //TeacherId = dto.TeacherId,
                 SubjectId = dto.SubjectId,
                 GroupId = dto.GroupId
             };
-            //foreach(var studentId in dto.StudentIds)
-            //{
-            //    newTask.TaskStudentItems.Add(new TaskStudentItem
-            //    {
-            //        StudentId = studentId
-            //    });
-            //}
             return newTask;
         }
     }

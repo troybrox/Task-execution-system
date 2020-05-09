@@ -11,6 +11,8 @@ namespace TaskExecutionSystem.DAL.Entities.Repository
     {
         public int Id { get; set; }
 
+        public string Name { get; set; }
+
         public string ContentText { get; set; }
 
 

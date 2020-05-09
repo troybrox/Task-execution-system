@@ -12,6 +12,7 @@ using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Studies;
 using TaskExecutionSystem.BLL.DTO.Task;
+using static TaskExecutionSystem.BLL.Infrastructure.Contracts.DirectoryContract;
 using static TaskExecutionSystem.BLL.Infrastructure.Contracts.ErrorMessageContract;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Data;
@@ -23,6 +24,8 @@ using TaskExecutionSystem.DAL.Entities.Task;
 using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.BLL.DTO.Repository;
+using TaskExecutionSystem.DAL.Entities.Repository;
+using TaskExecutionSystem.DAL.Entities.File;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -243,8 +246,8 @@ namespace TaskExecutionSystem.BLL.Services
 
                     if(createdTask != null)
                     {
-                        detail.Succeeded = true;
                         detail.Data = createdTask.Id.ToString();
+                        detail.Succeeded = true;
                     }
                     else
                     {
@@ -292,6 +295,7 @@ namespace TaskExecutionSystem.BLL.Services
                                      .ThenInclude(g => g.Students) 
                                      .Include(t => t.Subject)
                                      .Include(t => t.Type)
+                                     .Include(t => t.Solutions)
                                      .Include(t => t.TaskStudentItems)
                                      .Where(t => t.TeacherId == currentTeacher.Id)
                                                              select t;
@@ -322,11 +326,32 @@ namespace TaskExecutionSystem.BLL.Services
                         {
                             foreach (var student in currentGroupDTO.Students)
                             {
+                                // get every student solution for current task
                                 var ts = new TaskStudentItem();
+                                var solution = new Solution();
                                 if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                                 {
-                                    student.Tasks.Add(TaskDTO.Map(task));
-                                    student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                                    var taskDTO = TaskDTO.Map(task);
+                                    var solEnt = await _context.Solutions
+                                        .Where(s => s.StudentId == student.Id)
+                                        .Where(s => s.TaskId == task.Id)
+                                        .FirstOrDefaultAsync();
+                                    //if((solution = task.Solutions.FirstOrDefault(s => s.StudentId == student.Id)) != null)
+                                    //{
+                                    //    taskDTO.Solution = SolutionDTO.Map(solution);
+                                    //}
+                                    if (solEnt != null)
+                                    {
+                                        taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                    }
+                                    student.Tasks.Add(taskDTO);
+                                    //if(solution != null)
+                                    //{
+                                        //student.Tasks.
+                                        //student.Solution = SolutionDTO.Map(solution);
+                                        //student.Solutions.Add(SolutionDTO.Map(solution));
+                                        //student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                                    //}
                                 }
                             }
                         }
@@ -336,10 +361,24 @@ namespace TaskExecutionSystem.BLL.Services
                             foreach (var student in currentGroupDTO.Students)
                             {
                                 var ts = new TaskStudentItem();
+                                var solution = new Solution();
                                 if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                                 {
-                                    student.Tasks.Add(TaskDTO.Map(task));
-                                    student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                                    var taskDTO = TaskDTO.Map(task);
+                                    var solEnt = await _context.Solutions
+                                        .Where(s => s.StudentId == student.Id)
+                                        .Where(s => s.TaskId == task.Id)
+                                        .FirstOrDefaultAsync();
+                                    //if((solution = task.Solutions.FirstOrDefault(s => s.StudentId == student.Id)) != null)
+                                    //{
+                                    //    taskDTO.Solution = SolutionDTO.Map(solution);
+                                    //}
+                                    if (solEnt != null)
+                                    {
+                                        taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                    }
+                                    student.Tasks.Add(taskDTO);
+                                    //student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
                                 }
                             }
                         }
@@ -678,28 +717,15 @@ namespace TaskExecutionSystem.BLL.Services
 
 
         // TODO [!]
-        public Task<OperationDetailDTO> CreateNewRepositoryAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        // TODO [!]
-        public Task<OperationDetailDTO> CreateNewThemeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        // TODO [!]
         public Task<OperationDetailDTO> CreateNewParagraphAsync()
         {
             throw new NotImplementedException();
         }
 
-        // TODO: update Repo, theme, paragraph [!]
-        // TODO: File updating, File Adding ?? [!]
+        // TODO: update Repo
 
 
-        // todo: exceptions; return errors [!]
+        // todo: exceptions; return errors 
         // получение пользователя, сделавшего текущий запрос
         private async Task AddStudentsToTaskAsync(TaskModel task, int[] studentIDs)
         {
@@ -733,28 +759,207 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoCreateSubjectFiltersAsync()
+        // Test
+        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoCreateSubjectFiltersAsync()
         {
+            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+
+            var resultSubjectDTOList = new List<SubjectDTO>();
+
+            var subjects = await _context.Subjects.ToListAsync();
+
+            foreach(var sub in subjects)
+            {
+                resultSubjectDTOList.Add(SubjectDTO.Map(sub));
+            }
+             
+            detail.Data = resultSubjectDTOList;
+            detail.Succeeded = true;
+
             throw new NotImplementedException();
         }
 
-        public Task<OperationDetailDTO> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto)
+        // test
+        // add try - catch
+        public async Task<OperationDetailDTO<string>> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto = null)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<string>();
+
+            if(dto != null)
+            {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var teacherEntity = await _context.Teachers
+                    .Where(t => t.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                var subject = await _context.Subjects.FindAsync(dto.SubjectId);
+
+                if(subject != null)
+                {
+                    var repositoryEntity = RepositoryCreateModelDTO.Map(dto);
+                    repositoryEntity.Teacher = teacherEntity;
+                    repositoryEntity.Subject = subject;
+                    await _context.RepositoryModels.AddAsync(repositoryEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdRepo = await _context.RepositoryModels.FindAsync(repositoryEntity); // by id ?
+                    if(createdRepo != null)
+                    {
+                        detail.Data = createdRepo.Id.ToString();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Не удалось получить созданный репозиторий");
+                    }
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Параметр учебного предмета создаваемого репозитория был равен NULL");
+                }
+
+                return detail;
+            }
+
+            else
+            {
+                detail.ErrorMessages.Add("Входные данные создаваемого репозитория равны NULL");
+                return detail;
+            }
         }
 
-        public Task<OperationDetailDTO> CreateNewThemeAsync(ThemeCreateModelDTO dto)
+        // test
+        // add try - catch
+        public async Task<OperationDetailDTO<string>> CreateNewThemeAsync(ThemeCreateModelDTO dto)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<string>();
+
+            if(dto != null)
+            {
+                var repositoryEntity = await _context.RepositoryModels.FindAsync(dto.RepositoryId);
+
+                if(repositoryEntity != null)
+                {
+                    var themeEntity = ThemeCreateModelDTO.Map(dto);
+                    themeEntity.Repository = repositoryEntity;
+                    await _context.Themes.AddAsync(themeEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdTheme = await _context.Themes.FindAsync(themeEntity);  // by id ?
+                    if(createdTheme != null)
+                    {
+                        detail.Data = createdTheme.Id.ToString();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Не удалось получить созданную тему");
+                    }
+                }
+
+                else
+                {
+                    detail.ErrorMessages.Add("Параметр репозитория создаваемой темы был равен NULL");
+                }
+
+                return detail;
+            }
+
+            else
+            {
+                detail.ErrorMessages.Add("Входные данные создаваемой темы равны NULL");
+                return detail;
+            }
         }
 
-        public Task<OperationDetailDTO> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
+        // test
+        // add try - catch
+        public async Task<OperationDetailDTO<string>> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<string>();
+
+            if (dto != null)
+            {
+                var themeEntity = await _context.Themes.FindAsync(dto.ThemeId);
+
+                if (themeEntity != null)
+                {
+                    var paragraphEntity = ParagraphCreateModelDTO.Map(dto);
+                    await _context.Paragraphs.AddAsync(paragraphEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdParagraph = await _context.Paragraphs.FindAsync(paragraphEntity);  // by id ?
+                    if (createdParagraph != null)
+                    {
+                        detail.Data = createdParagraph.Id.ToString();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Не удалось получить созданный параграф");
+                    }
+                }
+
+                else
+                {
+                    detail.ErrorMessages.Add("Параметр темы создаваемого параграфа был равен NULL");
+                }
+
+                return detail;
+            }
+
+            else
+            {
+                detail.ErrorMessages.Add("Входные данные создаваемого параграфа равны NULL");
+                return detail;
+            }
         }
 
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters()
+        // TODO:
+        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters()
         {
+            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+
+            var resultSubjectDTOList = new List<SubjectDTO>();
+
+            var currentUserEntity = await GetUserFromClaimsAsync();
+
+            var teacherEntity = await _context.Teachers
+                .Where(t => t.UserId == currentUserEntity.Id)
+                .FirstOrDefaultAsync();
+
+
+            IQueryable<RepositoryModel> repositories = from r in _context.RepositoryModels
+                                      .Include(r => r.Teacher)
+                                      .Include(r => r.Subject)
+                                      .Include(r => r.Themes)
+                                      .Include(r => r.File)
+                                      .Where(r => r.TeacherId == teacherEntity.Id)
+                                      select r;
+
+            foreach(var repo in repositories)
+            {
+                SubjectDTO subjectDTO;
+                if((subjectDTO = resultSubjectDTOList.FirstOrDefault(s => s.Id == repo.SubjectId)) != null)
+                { }
+                else
+                {
+                    subjectDTO = SubjectDTO.Map(repo.Subject);
+                    resultSubjectDTOList.Add(subjectDTO);
+                }
+            }
+
+            detail.Data = resultSubjectDTOList;
+            detail.Succeeded = true;
+            return detail;
+        }
+
+        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters)
+        {
+
+
+
             throw new NotImplementedException();
         }
 
