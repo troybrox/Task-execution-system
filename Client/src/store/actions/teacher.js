@@ -115,6 +115,8 @@ export function fetchMain() {
                                 if (el.tasks.length !== 0)
                                     el.tasks.forEach((task) => {
                                         task.beginDate = parseDate(new Date(task.beginDate))
+                                        if (task.finishDate !== null)
+                                            task.finishDate = parseDate(new Date(task.finishDate))
                                     })
                             })
                         })
@@ -275,7 +277,6 @@ export function fetchListTasks(filters) {
                         const beginDate = new Date(el.beginDate) 
                         const object = {id: el.id, type: el.type, name: el.name, dateOpen: parseDate(beginDate)}
                     
-                        console.log(el.students)
                         object.countAnswers = el.solutionsCount 
                         object.countStudents = el.studentsCount
     
@@ -328,6 +329,17 @@ export function fetchTaskById(id) {
                 const finishDate = new Date(data.data.finishDate)
                 taskAdditionData.beginDate = parseDate(beginDate) 
                 taskAdditionData.finishDate = parseDate(finishDate) 
+                if (taskAdditionData.solutions.length !== 0) {
+                    taskAdditionData.solutions.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                }
+
+                if (taskAdditionData.solution !== null) {
+                    taskAdditionData.solution.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                }
+
+                if (taskAdditionData.updateDate !== null) {
+                    taskAdditionData.updateDate = parseDate(new Date(data.data.updateDate))
+                }
 
                 dispatch(successTaskAddition(taskAdditionData))
             } else {

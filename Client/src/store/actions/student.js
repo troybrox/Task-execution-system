@@ -206,10 +206,19 @@ export function fetchTaskById(id) {
 
             if (data.succeeded) {
                 const taskAdditionData = data.data
-                const beginDate = new Date(data.data.beginDate)
-                const finishDate = new Date(data.data.finishDate)
-                taskAdditionData.beginDate = parseDate(beginDate) 
-                taskAdditionData.finishDate = parseDate(finishDate) 
+                taskAdditionData.beginDate = parseDate(new Date(data.data.beginDate)) 
+                taskAdditionData.finishDate = parseDate(new Date(data.data.finishDate)) 
+                if (taskAdditionData.solutions.length !== 0) {
+                    taskAdditionData.solutions.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                }
+
+                if (taskAdditionData.solution !== null) {
+                    taskAdditionData.solution.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                }
+
+                if (taskAdditionData.updateDate !== null) {
+                    taskAdditionData.updateDate = parseDate(new Date(data.data.updateDate))
+                }
 
                 dispatch(successTaskAddition(taskAdditionData))
             } else {
@@ -235,7 +244,7 @@ export function onSendSolution(createSolution, id) {
             if (data.succeeded) {
                 if (createSolution.file !== null)
                     try {
-                        const url2 = 'api/teacher/solution/add/file'
+                        const url2 = 'api/student/solution/add/file'
                         const file = new FormData()
                         file.append('taskId', data.data)
                         file.append('file', createSolution.file)
@@ -245,11 +254,13 @@ export function onSendSolution(createSolution, id) {
                         if (data2.succeeded) {
                             dispatch(fetchTaskById(id))
                         } else {
+                            dispatch(fetchTaskById(id))
                             const err = [...data2.errorMessages]
                             err.unshift('Сообщение с сервера.')
                             dispatch(errorWindow(true, err))
                         }
                     } catch (error) {
+                        dispatch(fetchTaskById(id))
                         const err = ['Ошибка подключения']
                         err.push(error.message)
                         dispatch(errorWindow(true, err))

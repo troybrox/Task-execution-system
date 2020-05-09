@@ -47,3 +47,16 @@
     font-size: 17px;
     font-weight: bold;
 }
+
+.download {
+    background: rgb(43, 204, 78);
+    border: 2px solid rgb(94, 190, 94);
+    color: white;
+    display: flex;
+
+    img {
+        margin-left: 10px;
+        width: 20px;
+        height: 20px;
+    }
+}

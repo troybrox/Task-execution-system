@@ -30,6 +30,9 @@ const Button = props => {
         case 'close':
             cls.push('close_button')
             break;
+        case 'download':
+            cls.push('download')
+            break;
         default:
             break;
     }
@@ -41,6 +44,7 @@ const Button = props => {
             onClick={props.onClickButton}
         >
             {props.value}
+            {props.typeButton === 'download' ? <img src='/images/download-solid.svg' alt='' /> : null}
         </button>
     )
 }

@@ -1,5 +1,4 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 import './Auth.scss'
 import Layout from '../../hoc/Layout/Layout'
 import { connect } from 'react-redux'
@@ -87,18 +86,14 @@ class Auth extends React.Component {
                 
                 {this.props.loading ? <Loader />: null}
 
-                <input type='checkbox' id='checkbox' />
-                <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br />
+                {/* <input type='checkbox' id='checkbox' />
+                <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br /> */}
                 
                 <Button 
                     typeButton='auth'
                     onClickButton={event => this.onSubmitHandler(event)}
                     value='Вход'
                 />
-
-                <NavLink to='/forget' className='forgot_pass'>
-                    <span>Забыли пароль?</span>
-                </NavLink>
 			</Layout>
         )
     }

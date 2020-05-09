@@ -195,7 +195,7 @@ class OneTaskComponent extends React.Component {
                             htmlFor={`student_${item.id}`}
                             onClick={() => this.changeCheckedHandler(groupIndex, '', index, item.id)}
                         >
-                            <img src='/images/card.svg' alt='' />
+                            <img src='/images/card.svg' className='card_img' alt='' />
                             <span>{item.surname} {item.name}</span>
                         </label>
                     </li>
@@ -226,17 +226,19 @@ class OneTaskComponent extends React.Component {
     }
 
     renderMemberTask() {
-        const users = this.props.taskAdditionData.students.map((item, index)=>{
+        const users = 'students' in this.props.taskAdditionData ?
+            this.props.taskAdditionData.students.map((item, index)=>{
                 return (
                     <li
                         key={index}
                         className='student_li'
                     >
-                        <img src='/images/card.svg' alt='' />
+                        <img src='/images/card.svg' className='card_img' alt='' />
                         <span>{item.surname} {item.name}</span>
                     </li>
                 )
-            })
+            }) : 
+            null
 
         return ( this.props.loading ? <Loader /> :
             <Auxiliary>
@@ -300,21 +302,31 @@ class OneTaskComponent extends React.Component {
                     </p>
                     <p className='date_p_create'>
                         Дата сдачи:
-                        <span>{this.props.taskAdditionData.finishDate}</span>
-                    </p>
-                    <p className='date_p_create'>
-                        Осталось времени: 
-                        <span className='time_bar' style={{background: `linear-gradient(90deg, rgb(81, 163, 201) ${timeBar}%, white ${timeBar}%)`}}>
-                            {timeBar} %
+                        <span>
+                            {this.props.taskAdditionData.updateDate !== null ? 
+                                this.props.taskAdditionData.updateDate : 
+                                this.props.taskAdditionData.finishDate
+                            }
                         </span>
                     </p>
-                    {localStorage.getItem('role') === 'teacher' ?
-                        <Button 
-                            typeButton='close'
-                            onClickButton={this.props.onCloseTask}
-                            value='Закрыть задачу'
-                        /> :
-                        null
+                    {this.props.taskAdditionData.isOpen ?
+                        <p className='date_p_create'>
+                            Осталось времени: 
+                            <span className='time_bar' style={{background: `linear-gradient(90deg, rgb(81, 163, 201) ${timeBar}%, white ${timeBar}%)`}}>
+                                {timeBar} %
+                            </span>
+                        </p> : 
+                    null}
+
+                    {this.props.taskAdditionData.isOpen ?
+                        localStorage.getItem('role') === 'teacher' ?
+                            <Button 
+                                typeButton='close'
+                                onClickButton={this.props.onCloseTask}
+                                value='Закрыть задачу'
+                            /> :
+                            null :
+                        <p className='close_task'>Задача закрыта</p>       
                     }
                 </div>
             </Auxiliary>
@@ -460,36 +472,44 @@ class OneTaskComponent extends React.Component {
     }
 
     renderContainTask() {
-        const all = this.props.taskAdditionData.solutions.map((item, index) => {
-            return (
+        console.log(this.props.taskAdditionData)
+        const all = localStorage.getItem('role') === 'student' ? 
+            'solution' in this.props.taskAdditionData && this.props.taskAdditionData.solution !== null ?
                 <Answer 
-                    key={index}
                     source='user.svg'
-                    data={item}
+                    data={this.props.taskAdditionData.solution}
                     role='student'
-                />
-            )
-        })
+                /> : 
+                null :
+            this.props.taskAdditionData.solutions.map((item, index) => {
+                return (
+                    <Answer 
+                        key={index}
+                        source='user.svg'
+                        data={item}
+                        role='student'
+                    />
+                )
+            })
 
         const teacherObject = {
             contentText: this.props.taskAdditionData.contentText,
             creationDate: this.props.taskAdditionData.beginDate,
             fileURI: this.props.taskAdditionData.fileURI,
-            // isExpired: false,
-            student: {
-                id: 1,
-                name: this.props.taskAdditionData.teacherName,
-                surname: this.props.taskAdditionData.teacherSurname
-            }    
+            fileName: this.props.taskAdditionData.fileName,
+            studentName: this.props.taskAdditionData.teacherName,
+            studentSurname: this.props.taskAdditionData.teacherSurname  
         }                
         
-        const students = this.props.taskAdditionData.students.map((item) => {
-            return (
-                <li key={item.id}>
-                    Добавлен {item.surname} {item.name}
-                </li>
-            )
-        })
+        const students = 'students' in this.props.taskAdditionData ? 
+            this.props.taskAdditionData.students.map((item) => {
+                return (
+                    <li key={item.id}>
+                        Добавлен {item.surname} {item.name}
+                    </li>
+                )
+            }) : 
+            null
 
         return ( 
             this.props.loading ? 
@@ -503,8 +523,8 @@ class OneTaskComponent extends React.Component {
                     <ul>
                         {students}
                     </ul>
-                    {localStorage.getItem('role') === 'teacher' ? all : null}
-                    {localStorage.getItem('role') === 'student' && this.props.taskAdditionData.isOpen ? this.renderAnswerField() : null}
+                    {all}
+                    {localStorage.getItem('role') === 'student' && this.props.taskAdditionData.isOpen ? this.props.taskAdditionData.solution === null ? this.renderAnswerField() : <Button typeButton='blue' value='Изменить' /> : null}
                 </div>
         )
     }
@@ -614,7 +634,7 @@ class OneTaskComponent extends React.Component {
                             </p>
                         </div>
                 
-                        {localStorage.getItem('role') === 'teacher' ?
+                        {localStorage.getItem('role') === 'teacher' && this.props.taskAdditionData.isOpen ?
                             <Button 
                                 typeButton='blue_big'
                                 value='Изменить'

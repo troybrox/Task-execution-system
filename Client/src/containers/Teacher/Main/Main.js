@@ -87,10 +87,13 @@ class Main extends React.Component {
         )
     }
 
-    renderTasks = (tasks, studentId) => {
+    renderTasks = (tasks, solution) => {
         return tasks.map((item, index) => {
             let src = 'images/times-solid.svg'
-            if (item.solutions.includes(studentId)) src = 'images/check-square-regular.svg'
+            
+            if (solution !== null) 
+                src = 'images/check-square-regular.svg'
+        
             return (
                 <div key={index} className='tasks'>
                     <Link 
@@ -101,7 +104,7 @@ class Main extends React.Component {
                     </Link>
                     <span className='time'>
                         <span>Открыта {item.beginDate}</span><br />
-                        {!item.isOpen ? <span>Закрыта {item.finishDate.split('T').join(' ')}</span> : null}
+                        {!item.isOpen ? <span>Закрыта {item.finishDate}</span> : null}
                     </span>
                     <img src={src} alt='' />
                 </div>
@@ -136,7 +139,7 @@ class Main extends React.Component {
                             <img src='images/card.svg' alt='' />
                             <p>{item.name} {item.surname} <span>({item.tasks.length})</span></p>
                         </div>
-                        {item.open ? this.renderTasks(item.tasks, item.id) : null}
+                        {item.open ? this.renderTasks(item.tasks, item.solution) : null}
                     </Auxiliary>
                 )
             }) : null

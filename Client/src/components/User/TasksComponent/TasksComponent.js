@@ -25,15 +25,15 @@ class TasksComponent extends React.Component {
         await this.props.fetchTaskFilters()  
 
         if (this.props.subjects.length !== 0) {
-            activeSubjectIndex = 0
+            activeSubjectIndex = this.props.subjects[0].id
             filters = [
-                {name: 'subjectId', value: String(this.props.subjects[activeSubjectIndex].id)},
+                {name: 'subjectId', value: String(activeSubjectIndex)},
             ]
             if (localStorage.getItem('role') === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
-                    activeGroupIndex = 0
+                    activeGroupIndex = this.props.subjects[0].groups[0].id
                     title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
-                    filters.push({name: 'groupId', value: String(this.props.subjects[activeSubjectIndex].groups[activeGroupIndex].id)})
+                    filters.push({name: 'groupId', value: String(this.props.subjects[0].groups[0].id)})
                 }
             } else {
                 title = this.props.subjects[0].name
@@ -205,6 +205,7 @@ class TasksComponent extends React.Component {
             return (
                 <option
                     key={item.id}
+                    index={item.id}
                 >
                     {item.name}
                 </option>
@@ -215,6 +216,8 @@ class TasksComponent extends React.Component {
     onChangeSelect = event => {
         const index = event.target.options.selectedIndex
         const typeId = event.target.options[index].getAttribute('index')
+        console.log(index)
+        console.log(typeId)
         const filters = [
             {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
             {name: 'groupId', value: String(this.state.activeGroupIndex)},
