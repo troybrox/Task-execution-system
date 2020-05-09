@@ -94,6 +94,11 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 
             if (entity.Solutions != null)
             {
+                foreach(var sol in entity.Solutions)
+                {
+                    dto.Solutions.Add(SolutionDTO.Map(sol));
+                }
+                
                 dto.SolutionsCount = entity.Solutions.Count;
             }
 

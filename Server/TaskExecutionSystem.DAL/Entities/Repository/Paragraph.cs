@@ -9,9 +9,11 @@ namespace TaskExecutionSystem.DAL.Entities.Repository
     {
         public int Id { get; set; }
 
+        public string Name { get; set; }
+
         public string ContentText { get; set; }
 
-        public RepoFile FileItem { get; set; }
+        public RepoFile File { get; set; }
 
 
         public int ThemeId { get; set; }

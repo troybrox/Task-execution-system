@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
+using TaskExecutionSystem.BLL.DTO.Repository;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Entities.Identity;
@@ -182,7 +183,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
         [HttpPost("task/add/file")]
-        public async Task<IActionResult> AddFile()
+        public async Task<IActionResult> AddFileForTaskAsync()
         {
             var detail = new OperationDetailDTO();
             try
@@ -226,6 +227,70 @@ namespace TaskExecutionSystem.Controllers
                 return Ok(detail);
             }
         }
+
+
+        [HttpGet("repo/add/filters")]
+        public async Task<IActionResult> GetRepoAddingFilters()
+        {
+            var res = await _teacherService.GetRepoCreateSubjectFiltersAsync();
+            return Ok(res);
+        }
+
+        [HttpPost("repo/add")]
+        public async Task<IActionResult> AddRepoAsync([FromBody]RepositoryCreateModelDTO dto = null)
+        {
+            var res = await _teacherService.CreateNewRepositoryAsync(dto);
+            return Ok(res);
+        }
+
+
+
+        // edit for repo
+        [HttpPost("repo/add/file")]
+        public async Task<IActionResult> AddFileForRepositoryaAsync()
+        {
+            var detail = new OperationDetailDTO();
+            try
+            {
+                var allForms = Request.Form;
+                StringValues repoIdString;
+                var strId = repoIdString.ToString();
+                var id = Convert.ToInt32(strId);
+                var file = Request.Form.Files[0];
+                if (file != null)
+                {
+                    var fileName = file.FileName;
+                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\RepoFiles\\" + fileName))
+                    {
+                        file.CopyTo(fileStream);
+                    }
+                    var fileRes = await _taskService.AddFileToTaskAsync(id, file.FileName);
+
+                    if (!fileRes.Succeeded)
+                    {
+                        detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
+                        detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
+                        return Ok(detail);
+                    }
+                    else
+                    {
+                        detail.Succeeded = true;
+                        return Ok(detail);
+                    }
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Файл равен null");
+                    return Ok(detail);
+                }
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
+                return Ok(detail);
+            }
+        }
+
 
 
         // test method
