@@ -722,6 +722,7 @@ namespace TaskExecutionSystem.BLL.Services
             throw new NotImplementedException();
         }
 
+
         // TODO: update Repo
 
 
@@ -775,8 +776,7 @@ namespace TaskExecutionSystem.BLL.Services
              
             detail.Data = resultSubjectDTOList;
             detail.Succeeded = true;
-
-            throw new NotImplementedException();
+            return detail;
         }
 
         // test
@@ -916,7 +916,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // TODO:
+        // test
         public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters()
         {
             var detail = new OperationDetailDTO<List<SubjectDTO>>();
@@ -929,12 +929,9 @@ namespace TaskExecutionSystem.BLL.Services
                 .Where(t => t.UserId == currentUserEntity.Id)
                 .FirstOrDefaultAsync();
 
-
             IQueryable<RepositoryModel> repositories = from r in _context.RepositoryModels
                                       .Include(r => r.Teacher)
                                       .Include(r => r.Subject)
-                                      .Include(r => r.Themes)
-                                      .Include(r => r.File)
                                       .Where(r => r.TeacherId == teacherEntity.Id)
                                       select r;
 
@@ -954,18 +951,83 @@ namespace TaskExecutionSystem.BLL.Services
             detail.Succeeded = true;
             return detail;
         }
-
-        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters)
+        // test
+        public async Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters = null)
         {
+            var detail = new OperationDetailDTO<List<RepositoryDTO>>();
+
+            var resultList = new List<RepositoryDTO>();
+
+            var currentUserEntity = await GetUserFromClaimsAsync();
+
+            var teacherEntity = await _context.Teachers
+                .Include(t => t.User)
+                .Where(t => t.UserId == currentUserEntity.Id)
+                .FirstOrDefaultAsync();
 
 
+            var repos = from r in _context.RepositoryModels
+                        .Where(r => r.TeacherId == teacherEntity.Id)
+                        .Include(r => r.Subject)
+                        select r;
 
-            throw new NotImplementedException();
+            repos.OrderBy(r => r.Name);
+
+            if (filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    switch (filter.Name)
+                    {
+                        case "subjectId":
+                            {
+                                var value = Convert.ToInt32(filter.Value);
+                                if (value > 0)
+                                {
+                                    repos = repos.Where(r => r.SubjectId == value);
+                                }
+                                break;
+                            }
+                    }
+                }
+            }
+
+            foreach (var entity in repos)
+            {
+                var repoDTO = RepositoryDTO.Map(entity);
+                resultList.Add(repoDTO);
+            }
+
+            detail.Data = resultList;
+            detail.Succeeded = true;
+            return detail;
         }
-
-        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync()
+        // test
+        public async Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<RepositoryDTO>();
+            try
+            {
+                var repoEntity = await _context.RepositoryModels.FindAsync(id);
+                if (repoEntity != null)
+                {
+                    var dto = RepositoryDTO.Map(repoEntity);
+                    detail.Data = dto;
+                    detail.Succeeded = true;
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Репозиторий не найден");
+                }
+                return detail;
+            }
+
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+            
         }
     }
 }

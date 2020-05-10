@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TaskExecutionSystem.DAL.Entities.Relations;
+using TaskExecutionSystem.DAL.Entities.Repository;
 using TaskExecutionSystem.DAL.Entities.Task;
 
 namespace TaskExecutionSystem.DAL.Entities.Studies
@@ -16,6 +17,8 @@ namespace TaskExecutionSystem.DAL.Entities.Studies
         public List<GroupTeacherSubjectItem> GroupTeacherSubjectItems { get; set; }
 
         public List<TaskModel> Tasks { get; set; }
+
+        public List<RepositoryModel> Repositories { get; set; }
 
         //public List<Solution> Solutions { get; set; } // [?]
 
