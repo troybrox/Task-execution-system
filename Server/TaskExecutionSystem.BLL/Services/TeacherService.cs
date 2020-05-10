@@ -659,13 +659,18 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-
         // done 
         public async Task<OperationDetailDTO> UpdateTaskAsync(TaskCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
             try
             {
+                if(dto == null)
+                {
+                    detail.ErrorMessages.Add("Объект входного параметра был равен NULL.");
+                    return detail;
+                }
+
                 var entity = await _context.TaskModels.FindAsync(dto.Id);
 
                 if (entity == null)
@@ -674,17 +679,24 @@ namespace TaskExecutionSystem.BLL.Services
                     return detail;
                 }
 
-                entity.ContentText = dto.ContentText;
-                entity.BeginDate = dto.BeginDate;
-                entity.FinishDate = dto.FinishDate;
-                entity.Name = dto.Name;
-                entity.TypeId = dto.TypeId;
-                entity.UpdateDate = DateTime.Now;
+                if(dto.BeginDate < dto.FinishDate)
+                {
+                    entity.ContentText = dto.ContentText;
+                    entity.BeginDate = dto.BeginDate;
+                    entity.FinishDate = dto.FinishDate;
+                    entity.Name = dto.Name;
+                    entity.TypeId = dto.TypeId;
+                    entity.UpdateDate = DateTime.Now;
+                    _context.TaskModels.Update(entity);
+                    await _context.SaveChangesAsync();
+                    detail.Succeeded = true;
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Дата крайнего срока сдачи должна быть позднее даты начала.");
+                }
 
-                _context.TaskModels.Update(entity);
-                await _context.SaveChangesAsync();
-
-                detail.Succeeded = true;
+                
                 return detail;
             }
             catch (Exception e)
@@ -724,16 +736,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-
-        // TODO [!]
-        public Task<OperationDetailDTO> CreateNewParagraphAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-
         // TODO: update Repo
-
 
         // todo: exceptions; return errors 
         // получение пользователя, сделавшего текущий запрос
@@ -812,7 +815,7 @@ namespace TaskExecutionSystem.BLL.Services
                     await _context.RepositoryModels.AddAsync(repositoryEntity);
                     await _context.SaveChangesAsync();
 
-                    var createdRepo = await _context.RepositoryModels.FindAsync(repositoryEntity); // by id ?
+                    var createdRepo = await _context.RepositoryModels.FirstOrDefaultAsync(r => r == repositoryEntity); // by id ?
                     if(createdRepo != null)
                     {
                         detail.Data = createdRepo.Id.ToString();
@@ -838,91 +841,13 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // test
-        // add try - catch
-        public async Task<OperationDetailDTO<string>> CreateNewThemeAsync(ThemeCreateModelDTO dto)
+        public async Task<OperationDetailDTO> UpdateRepositoryAsync(RepositoryCreateModelDTO dto)
         {
-            var detail = new OperationDetailDTO<string>();
+            var detail = new OperationDetailDTO();
 
-            if(dto != null)
-            {
-                var repositoryEntity = await _context.RepositoryModels.FindAsync(dto.RepositoryId);
+            var repoEntity = await _context.RepositoryModels.FindAsync(dto.Id);
 
-                if(repositoryEntity != null)
-                {
-                    var themeEntity = ThemeCreateModelDTO.Map(dto);
-                    themeEntity.Repository = repositoryEntity;
-                    await _context.Themes.AddAsync(themeEntity);
-                    await _context.SaveChangesAsync();
-
-                    var createdTheme = await _context.Themes.FindAsync(themeEntity);  // by id ?
-                    if(createdTheme != null)
-                    {
-                        detail.Data = createdTheme.Id.ToString();
-                        detail.Succeeded = true;
-                    }
-                    else
-                    {
-                        detail.ErrorMessages.Add("Не удалось получить созданную тему");
-                    }
-                }
-
-                else
-                {
-                    detail.ErrorMessages.Add("Параметр репозитория создаваемой темы был равен NULL");
-                }
-
-                return detail;
-            }
-
-            else
-            {
-                detail.ErrorMessages.Add("Входные данные создаваемой темы равны NULL");
-                return detail;
-            }
-        }
-
-        // test
-        // add try - catch
-        public async Task<OperationDetailDTO<string>> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
-        {
-            var detail = new OperationDetailDTO<string>();
-
-            if (dto != null)
-            {
-                var themeEntity = await _context.Themes.FindAsync(dto.ThemeId);
-
-                if (themeEntity != null)
-                {
-                    var paragraphEntity = ParagraphCreateModelDTO.Map(dto);
-                    await _context.Paragraphs.AddAsync(paragraphEntity);
-                    await _context.SaveChangesAsync();
-
-                    var createdParagraph = await _context.Paragraphs.FindAsync(paragraphEntity);  // by id ?
-                    if (createdParagraph != null)
-                    {
-                        detail.Data = createdParagraph.Id.ToString();
-                        detail.Succeeded = true;
-                    }
-                    else
-                    {
-                        detail.ErrorMessages.Add("Не удалось получить созданный параграф");
-                    }
-                }
-
-                else
-                {
-                    detail.ErrorMessages.Add("Параметр темы создаваемого параграфа был равен NULL");
-                }
-
-                return detail;
-            }
-
-            else
-            {
-                detail.ErrorMessages.Add("Входные данные создаваемого параграфа равны NULL");
-                return detail;
-            }
+            return detail;
         }
 
         // test
@@ -1017,7 +942,10 @@ namespace TaskExecutionSystem.BLL.Services
             var detail = new OperationDetailDTO<RepositoryDTO>();
             try
             {
-                var repoEntity = await _context.RepositoryModels.FindAsync(id);
+                var repoEntity = await _context.RepositoryModels
+                    .Include(r => r.Files)
+                    .FirstOrDefaultAsync(r => r.Id == id);
+
                 if (repoEntity != null)
                 {
                     var dto = RepositoryDTO.Map(repoEntity);
@@ -1037,6 +965,95 @@ namespace TaskExecutionSystem.BLL.Services
                 return detail;
             }
             
+        }
+
+
+
+        // test
+        // add try - catch
+        public async Task<OperationDetailDTO<string>> CreateNewThemeAsync(ThemeCreateModelDTO dto)
+        {
+            var detail = new OperationDetailDTO<string>();
+
+            if (dto != null)
+            {
+                var repositoryEntity = await _context.RepositoryModels.FindAsync(dto.RepositoryId);
+
+                if (repositoryEntity != null)
+                {
+                    var themeEntity = ThemeCreateModelDTO.Map(dto);
+                    themeEntity.Repository = repositoryEntity;
+                    await _context.Themes.AddAsync(themeEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdTheme = await _context.Themes.FindAsync(themeEntity);  // by id ?
+                    if (createdTheme != null)
+                    {
+                        detail.Data = createdTheme.Id.ToString();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Не удалось получить созданную тему");
+                    }
+                }
+
+                else
+                {
+                    detail.ErrorMessages.Add("Параметр репозитория создаваемой темы был равен NULL");
+                }
+
+                return detail;
+            }
+
+            else
+            {
+                detail.ErrorMessages.Add("Входные данные создаваемой темы равны NULL");
+                return detail;
+            }
+        }
+
+        // test
+        // add try - catch
+        public async Task<OperationDetailDTO<string>> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
+        {
+            var detail = new OperationDetailDTO<string>();
+
+            if (dto != null)
+            {
+                var themeEntity = await _context.Themes.FindAsync(dto.ThemeId);
+
+                if (themeEntity != null)
+                {
+                    var paragraphEntity = ParagraphCreateModelDTO.Map(dto);
+                    await _context.Paragraphs.AddAsync(paragraphEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdParagraph = await _context.Paragraphs.FindAsync(paragraphEntity);  // by id ?
+                    if (createdParagraph != null)
+                    {
+                        detail.Data = createdParagraph.Id.ToString();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Не удалось получить созданный параграф");
+                    }
+                }
+
+                else
+                {
+                    detail.ErrorMessages.Add("Параметр темы создаваемого параграфа был равен NULL");
+                }
+
+                return detail;
+            }
+
+            else
+            {
+                detail.ErrorMessages.Add("Входные данные создаваемого параграфа равны NULL");
+                return detail;
+            }
         }
     }
 }
