@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TaskExecutionSystem.BLL.DTO.File;
 using TaskExecutionSystem.DAL.Entities.Repository;
 
 namespace TaskExecutionSystem.BLL.DTO.Repository
@@ -12,21 +13,19 @@ namespace TaskExecutionSystem.BLL.DTO.Repository
         public string Subject { get; set; }
         public int SubjectId { get; set; }
 
+        public string Name { get; set; }
         public string ContentText { get; set; }
-
-        public string FileURI { get; set; }
-        public string FileName { get; set; }
 
         public string TeacherName { get; set; }
         public string TeacherSurname { get; set; }
         public string TeacherPatronymic { get; set; }
 
-        public List<ThemeDTO> Themes { get; set; }
+        public List<FileDTO> Files { get; set; }
 
 
         public RepositoryDTO()
         {
-            Themes = new List<ThemeDTO>();
+            Files = new List<FileDTO>();
         }
 
         public static RepositoryDTO Map(RepositoryModel entity)
@@ -34,6 +33,7 @@ namespace TaskExecutionSystem.BLL.DTO.Repository
             var dto = new RepositoryDTO
             {
                 Id = entity.Id,
+                Name = entity.Name,
                 ContentText = entity.ContentText
             };
 
@@ -50,10 +50,14 @@ namespace TaskExecutionSystem.BLL.DTO.Repository
                 dto.TeacherPatronymic = entity.Teacher.Patronymic;
             }
 
-            if (entity.File != null)
+            if (entity.Files.Count > 0)
             {
-                dto.FileURI = entity.File.FileURI;
-                dto.FileName = entity.File.FileName;
+                foreach(var file in entity.Files)
+                {
+                    dto.Files.Add(FileDTO.Map(file));
+                }
+                //dto.FileURI = entity.File.FileURI;
+                //dto.FileName = entity.File.FileName;
             }
 
             return dto;

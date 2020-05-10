@@ -7,6 +7,8 @@ namespace TaskExecutionSystem.BLL.DTO.Repository
 {
     public class RepositoryCreateModelDTO
     {
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public string ContentText { get; set; }
