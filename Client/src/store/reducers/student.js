@@ -43,7 +43,7 @@ export default function studentReducer(state = initialState, action) {
             }
         case SUCCESS_REPOSITORY:
             return {
-                ...state, repositoryData: action.repositoryData
+                ...state, repositoryData: action.repositoryData, loading: false
             }
         case ERROR_WINDOW:
             return {

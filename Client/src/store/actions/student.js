@@ -282,6 +282,7 @@ export function onSendSolution(createSolution, id) {
 
 export function fetchRepository() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const response = await axios.get('/student/repo/subjects')
             const data = response.data
@@ -314,7 +315,7 @@ export function fetchRepository() {
 export function choiceSubjectHandler(index) {
     return (dispatch, getState) => {
         const state = getState().student
-        const repositoryData = state.repositoryData
+        const repositoryData = [...state.repositoryData]
         repositoryData.forEach((el, num) => {
             if (num === index) el.open = true
             else el.open = false

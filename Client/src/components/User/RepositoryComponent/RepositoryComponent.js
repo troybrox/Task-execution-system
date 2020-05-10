@@ -4,6 +4,7 @@ import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
 import { Link } from 'react-router-dom'
 import Button from '../../UI/Button/Button'
+import Loader from '../../UI/Loader/Loader'
 
 // Компонент отображения репозиториев для препода и студента
 class RepositoryComponent extends React.Component {
@@ -172,7 +173,7 @@ class RepositoryComponent extends React.Component {
                             </div> : 
                             null    
                         }
-                        {this.renderList()}
+                        {this.props.loading ? <Loader /> : this.renderList()}
                     </aside>
                     { this.state.active ? main : null}
 

@@ -469,6 +469,7 @@ export function onCloseTask(id) {
 
 export function fetchRepository() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const response = await axios.get('/teacher/repo/subjects')
             const data = response.data
@@ -501,7 +502,7 @@ export function fetchRepository() {
 export function choiceSubjectHandler(index) {
     return (dispatch, getState) => {
         const state = getState().teacher
-        const repositoryData = state.repositoryData
+        const repositoryData = [...state.repositoryData]
         repositoryData.forEach((el, num) => {
             if (num === index) el.open = true
             else el.open = false
@@ -513,6 +514,7 @@ export function choiceSubjectHandler(index) {
 
 export function fetchCreateRepository() {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const response = await axios.get('/teacher/repo/add/filters')
             const data = response.data

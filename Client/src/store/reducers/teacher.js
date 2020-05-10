@@ -81,7 +81,7 @@ export default function teacherReducer(state = initialState, action) {
             }
         case SUCCESS_CREATE_REPOSITORY:
             return {
-                ...state, createRepository: action.createRepository
+                ...state, createRepository: action.createRepository, loading: false
             }
         case SUCCESS_REPOSITORY:
             return {

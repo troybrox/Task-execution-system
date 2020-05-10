@@ -30,6 +30,7 @@ class Repository extends React.Component {
             <RepositoryComponent 
                 // topicText={this.state.topicText}
                 repositoryData={this.props.repositoryData}
+                loading={this.props.loading}
                 choiceSubject={this.props.choiceSubjectHandler}
                 // changeRepositoryHandler={this.changeRepositoryHanlder}
             />
@@ -39,7 +40,8 @@ class Repository extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        repositoryData: state.teacher.repositoryData
+        repositoryData: state.teacher.repositoryData,
+        loading: state.teacher.loading
     }
 }
 
