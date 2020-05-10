@@ -143,5 +143,28 @@ namespace TaskExecutionSystem.Controllers
                 return Ok(detail);
             }
         }
+
+
+        [HttpGet("repo/subjects")]
+        public async Task<IActionResult> GetRepoFiltersAsync()
+        {
+            var res = await _studentService.GetRepoFiltersAsync();
+            return Ok(res);
+        }
+
+        [HttpPost("repo")]
+        public async Task<IActionResult> GetReposAsync([FromBody]FilterDTO[] filters)
+        {
+            var res = await _studentService.GetRepositoriesFromDBAsync(filters);
+            return Ok(res);
+        }
+
+
+        [HttpGet("repo/{id}")]
+        public async Task<IActionResult> GetRepoByIdAsync(int id)
+        {
+            var res = await _studentService.GetRepositoryByID(id);
+            return Ok(res);
+        }
     }
 }

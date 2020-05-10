@@ -412,7 +412,6 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
-        // TODO: 
         public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoFiltersAsync()
         {
             var detail = new OperationDetailDTO<List<SubjectDTO>>();
@@ -479,7 +478,7 @@ namespace TaskExecutionSystem.BLL.Services
             return detail;
         }
 
-        public Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id)
+        public async Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id)
         {
             var detail = new OperationDetailDTO<RepositoryDTO>();
             try
@@ -506,124 +505,6 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
                 return detail;
             }
-        }
-
-
-        // test
-        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters()
-        {
-            var detail = new OperationDetailDTO<List<SubjectDTO>>();
-
-            var resultSubjectDTOList = new List<SubjectDTO>();
-
-            var currentUserEntity = await GetUserFromClaimsAsync();
-
-            var teacherEntity = await _context.Teachers
-                .Where(t => t.UserId == currentUserEntity.Id)
-                .FirstOrDefaultAsync();
-
-            IQueryable<RepositoryModel> repositories = from r in _context.RepositoryModels
-                                      .Include(r => r.Teacher)
-                                      .Include(r => r.Subject)
-                                      .Where(r => r.TeacherId == teacherEntity.Id)
-                                                       select r;
-
-            foreach (var repo in repositories)
-            {
-                SubjectDTO subjectDTO;
-                if ((subjectDTO = resultSubjectDTOList.FirstOrDefault(s => s.Id == repo.SubjectId)) != null)
-                { }
-                else
-                {
-                    subjectDTO = SubjectDTO.Map(repo.Subject);
-                    resultSubjectDTOList.Add(subjectDTO);
-                }
-            }
-
-            detail.Data = resultSubjectDTOList;
-            detail.Succeeded = true;
-            return detail;
-        }
-        // test
-        public async Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync_(FilterDTO[] filters = null)
-        {
-            var detail = new OperationDetailDTO<List<RepositoryDTO>>();
-
-            var resultList = new List<RepositoryDTO>();
-
-            var currentUserEntity = await GetUserFromClaimsAsync();
-
-            var teacherEntity = await _context.Teachers
-                .Include(t => t.User)
-                .Where(t => t.UserId == currentUserEntity.Id)
-                .FirstOrDefaultAsync();
-
-
-            var repos = from r in _context.RepositoryModels
-                        .Where(r => r.TeacherId == teacherEntity.Id)
-                        .Include(r => r.Subject)
-                        select r;
-
-            repos.OrderBy(r => r.Name);
-
-            if (filters != null)
-            {
-                foreach (var filter in filters)
-                {
-                    switch (filter.Name)
-                    {
-                        case "subjectId":
-                            {
-                                var value = Convert.ToInt32(filter.Value);
-                                if (value > 0)
-                                {
-                                    repos = repos.Where(r => r.SubjectId == value);
-                                }
-                                break;
-                            }
-                    }
-                }
-            }
-
-            foreach (var entity in repos)
-            {
-                var repoDTO = RepositoryDTO.Map(entity);
-                resultList.Add(repoDTO);
-            }
-
-            detail.Data = resultList;
-            detail.Succeeded = true;
-            return detail;
-        }
-        // test
-        public async Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID_(int id)
-        {
-            var detail = new OperationDetailDTO<RepositoryDTO>();
-            try
-            {
-                var repoEntity = await _context.RepositoryModels
-                     .Include(r => r.Files)
-                     .FirstOrDefaultAsync(r => r.Id == id);
-
-                if (repoEntity != null)
-                {
-                    var dto = RepositoryDTO.Map(repoEntity);
-                    detail.Data = dto;
-                    detail.Succeeded = true;
-                }
-                else
-                {
-                    detail.ErrorMessages.Add("Репозиторий не найден");
-                }
-                return detail;
-            }
-
-            catch (Exception e)
-            {
-                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
-                return detail;
-            }
-
         }
 
     }
