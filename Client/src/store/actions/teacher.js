@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END, SUCCESS_SUBJECT_FULL } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -509,6 +509,35 @@ export function choiceSubjectHandler(index) {
         })
 
         dispatch(successRepository(repositoryData))
+
+        const filters = [
+            {name: 'subjectId', value: repositoryData[index].id}
+        ]
+        dispatch(fetchSubjectFull(filters))
+    }
+}
+
+export function fetchSubjectFull(filters) {
+    return async dispatch => {
+        try {
+            const url = '/api/teacher/repo'
+            const response = await axios.post(url, filters)
+            const data = response.data
+            if (data.succeeded) {
+                const subjectFullData = []
+                data.data.forEach(el => {
+                    
+                })
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
     }
 }
 
@@ -542,8 +571,7 @@ export function sendCreateRepository(filters) {
             const response = await axios.post('/api/teacher/repo/add', filters.repo)
             const data = response.data
             if (data.succeeded) {
-
-                if (data.file !== null)
+                if (filters.file !== null)
                     try {
                         const filters2 = {
                             repoId: data.data,
@@ -640,6 +668,13 @@ export function successRepository(repositoryData) {
     return {
         type: SUCCESS_REPOSITORY,
         repositoryData
+    }
+}
+
+export function successSubjectFull(subjectFullData) {
+    return {
+        type: SUCCESS_SUBJECT_FULL,
+        subjectFullData
     }
 }
 

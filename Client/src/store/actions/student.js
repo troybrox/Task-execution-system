@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY, SUCCESS_SUBJECT_FULL } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -323,36 +323,36 @@ export function choiceSubjectHandler(index) {
 
         dispatch(successRepository(repositoryData))
 
-        // const filters = [
-        //     {name: 'subjectId', value: repositoryData[index].id}
-        // ]
-        // dispatch(fetchSubjectFull(filters))
+        const filters = [
+            {name: 'subjectId', value: repositoryData[index].id}
+        ]
+        dispatch(fetchSubjectFull(filters))
     }
 }
 
-// fetchSubjectFull = filters => {
-//     return async dispatch => {
-//         try {
-//             const url = '/api/teacher/repo'
-//             const response = await axios.post(url, filters)
-//             const data = response.data
-//             if (data.succeeded) {
-//                 const subjectFullData = []
-//                 data.data.forEach(el => {
+export function fetchSubjectFull(filters) {
+    return async dispatch => {
+        try {
+            const url = '/api/student/repo'
+            const response = await axios.post(url, filters)
+            const data = response.data
+            if (data.succeeded) {
+                // const subjectFullData = []
+                // data.data.forEach(el => {
                     
-//                 })
-//             } else {
-//                 const err = [...data.errorMessages]
-//                 err.unshift('Сообщение с сервера.')
-//                 dispatch(errorWindow(true, err))
-//             }
-//         } catch (e) {
-//             const err = ['Ошибка подключения']
-//             err.push(e.message)
-//             dispatch(errorWindow(true, err))
-//         }
-//     }
-// }
+                // })
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
 
 export function loadingStart() {
     return {
@@ -392,6 +392,13 @@ export function successRepository(repositoryData) {
     return {
         type: SUCCESS_REPOSITORY,
         repositoryData
+    }
+}
+
+export function successSubjectFull(subjectFullData) {
+    return {
+        type: SUCCESS_SUBJECT_FULL,
+        subjectFullData
     }
 }
 
