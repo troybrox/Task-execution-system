@@ -20,6 +20,7 @@ using TaskExecutionSystem.DAL.Entities.Studies;
 using TaskExecutionSystem.DAL.Entities.Task;
 using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Entities.Relations;
+using TaskExecutionSystem.BLL.DTO.Repository;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -407,6 +408,23 @@ namespace TaskExecutionSystem.BLL.Services
             string stringID = userNameClaim.Value;
             var user = await _userManager.FindByIdAsync(stringID);
             return user;
+        }
+
+
+        // TODO: 
+        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoFiltersAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
