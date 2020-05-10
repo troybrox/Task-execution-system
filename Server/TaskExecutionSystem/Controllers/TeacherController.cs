@@ -243,7 +243,19 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        [HttpGet("repo/subjects")]
+        public async Task<IActionResult> GetRepoFiltersAsync()
+        {
+            var res = await _teacherService.GetRepositoryListFilters();
+            return Ok(res);
+        }
 
+        [HttpPost("repo")]
+        public async Task<IActionResult> GetReposAsync([FromBody]FilterDTO[] filters)
+        {
+            var res = await _teacherService.GetRepositoriesFromDBAsync(filters);
+            return Ok(res);
+        }
 
         // edit for repo
         [HttpPost("repo/add/file")]
@@ -292,6 +304,12 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        [HttpGet("repo/{id}")]
+        public async Task<IActionResult> GetRepoByIdAsync(int id)
+        {
+            var res = await _teacherService.GetRepositoryByID(id);
+            return Ok(res);
+        }
 
         // test method
         [HttpPost("upload")]

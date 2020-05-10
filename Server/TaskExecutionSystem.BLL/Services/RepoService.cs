@@ -47,7 +47,7 @@ namespace TaskExecutionSystem.BLL.Services
                 {
                     var newFile = new RepoFile
                     {
-                        RepositoryItem = repo,
+                        RepositoryModel = repo,
                         FileName = fileName,
                         Path = RepoFilePath + fileName,
                         FileURI = RepoFileURI + fileName
