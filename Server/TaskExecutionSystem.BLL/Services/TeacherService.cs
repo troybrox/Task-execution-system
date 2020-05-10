@@ -269,6 +269,8 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+                
+        // test
         // сразу формировать DTO
         public async Task<OperationDetailDTO<List<SubjectDTO>>> GetMainDataAsync()
         {
@@ -312,7 +314,6 @@ namespace TaskExecutionSystem.BLL.Services
 
                 var resGroupEntityList = new List<Group>();
 
-
                 // из всех задач препода получить список предметов по которым у препода есть задачи
                 foreach (var task in teacherTaskQueryList)
                 {
@@ -332,10 +333,11 @@ namespace TaskExecutionSystem.BLL.Services
                                 if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                                 {
                                     var taskDTO = TaskDTO.Map(task);
-                                    var solEnt = await _context.Solutions
-                                        .Where(s => s.StudentId == student.Id)
-                                        .Where(s => s.TaskId == task.Id)
-                                        .FirstOrDefaultAsync();
+                                    var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                    //var solEnt = await _context.Solutions
+                                    //    .Where(s => s.StudentId == student.Id)
+                                    //    .Where(s => s.TaskId == task.Id)
+                                    //    .FirstOrDefaultAsync();
                                     //if((solution = task.Solutions.FirstOrDefault(s => s.StudentId == student.Id)) != null)
                                     //{
                                     //    taskDTO.Solution = SolutionDTO.Map(solution);
@@ -365,10 +367,11 @@ namespace TaskExecutionSystem.BLL.Services
                                 if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                                 {
                                     var taskDTO = TaskDTO.Map(task);
-                                    var solEnt = await _context.Solutions
-                                        .Where(s => s.StudentId == student.Id)
-                                        .Where(s => s.TaskId == task.Id)
-                                        .FirstOrDefaultAsync();
+                                    var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                    //var solEnt = await _context.Solutions
+                                    //    .Where(s => s.StudentId == student.Id)
+                                    //    .Where(s => s.TaskId == task.Id)
+                                    //    .FirstOrDefaultAsync();
                                     //if((solution = task.Solutions.FirstOrDefault(s => s.StudentId == student.Id)) != null)
                                     //{
                                     //    taskDTO.Solution = SolutionDTO.Map(solution);
@@ -393,8 +396,14 @@ namespace TaskExecutionSystem.BLL.Services
                             var ts = new TaskStudentItem();
                             if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                             {
-                                student.Tasks.Add(TaskDTO.Map(task));
-                                student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                                var taskDTO = TaskDTO.Map(task);
+                                var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                if (solEnt != null)
+                                {
+                                    taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                }
+                                student.Tasks.Add(taskDTO);
+                                //student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
                             }
                         }
                         currentSubjectDTO.Groups.Add(currentGroupDTO);

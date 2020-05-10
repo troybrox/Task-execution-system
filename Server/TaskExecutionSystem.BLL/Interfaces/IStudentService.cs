@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
+using TaskExecutionSystem.BLL.DTO.Repository;
 using TaskExecutionSystem.BLL.DTO.Studies;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.DAL.Entities.Identity;
@@ -24,6 +25,10 @@ namespace TaskExecutionSystem.BLL.Interfaces
 
         // решение
         public Task<OperationDetailDTO<string>> CreateSolutionAsync(SolutionCreateModelDTO dto);
+
+        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoFiltersAsync();
+        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters);
+        public Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id);
 
         // данные для [репозиторий]
         // get Repo subjects
