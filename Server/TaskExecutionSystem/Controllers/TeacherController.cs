@@ -44,13 +44,15 @@ namespace TaskExecutionSystem.Controllers
     public class TeacherController : ControllerBase
     {
         private readonly ITaskService _taskService;
+        private readonly IRepoService _repoService;
         private readonly ITeacherService _teacherService;
         public static IWebHostEnvironment _environment;
 
-        public TeacherController(ITaskService taskService, IWebHostEnvironment environment, 
+        public TeacherController(ITaskService taskService, IRepoService repoService, IWebHostEnvironment environment, 
             ITeacherService teacherService)
         {
             _taskService = taskService;
+            _repoService = repoService;
             _environment = environment;
             _teacherService = teacherService;
         }
@@ -266,6 +268,7 @@ namespace TaskExecutionSystem.Controllers
             {
                 var allForms = Request.Form;
                 StringValues repoIdString;
+                var taskIdRes = allForms.TryGetValue(allForms.Keys.First(), out repoIdString);
                 var strId = repoIdString.ToString();
                 var id = Convert.ToInt32(strId);
                 var file = Request.Form.Files[0];
@@ -276,11 +279,11 @@ namespace TaskExecutionSystem.Controllers
                     {
                         file.CopyTo(fileStream);
                     }
-                    var fileRes = await _taskService.AddFileToTaskAsync(id, file.FileName);
+                    var fileRes = await _repoService.AddFileToRepoAsync(id, file.FileName);
 
                     if (!fileRes.Succeeded)
                     {
-                        detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
+                        detail.ErrorMessages.Add("Не удалось загрузить файл для репозитория.");
                         detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
                         return Ok(detail);
                     }
