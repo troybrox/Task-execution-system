@@ -481,16 +481,18 @@ class OneTaskComponent extends React.Component {
                     role='student'
                 /> : 
                 null :
-            this.props.taskAdditionData.solutions.map((item, index) => {
-                return (
-                    <Answer 
-                        key={index}
-                        source='user.svg'
-                        data={item}
-                        role='student'
-                    />
-                )
-            })
+            'solutions' in this.props.taskAdditionData ?
+                this.props.taskAdditionData.solutions.map((item, index) => {
+                    return (
+                        <Answer 
+                            key={index}
+                            source='user.svg'
+                            data={item}
+                            role='student'
+                        />
+                    )
+                }) :
+                null
 
         const teacherObject = {
             contentText: this.props.taskAdditionData.contentText,

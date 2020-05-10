@@ -2,6 +2,8 @@ import React from 'react'
 import './RepositoryComponent.scss'
 import Frame from '../../../hoc/Frame/Frame'
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary'
+import { Link } from 'react-router-dom'
+import Button from '../../UI/Button/Button'
 
 // Компонент отображения репозиториев для препода и студента
 class RepositoryComponent extends React.Component {
@@ -31,48 +33,57 @@ class RepositoryComponent extends React.Component {
         })
     }
 
-    renderMiniList(topics) {
-        return topics.map((item, index) => {
-            const cls = ['small_items']
-            if (this.state.smallIndex === index) cls.push('active_small')
-            return (
-                <li 
-                    key={index}
-                    className={cls.join(' ')}
-                    onClick={this.choiceGroup.bind(this, item, index)}
-                >
-                    <img src='images/folder-regular.svg' alt='' />
-                    {item}
-                </li>
-            )
-        })
-    }
+    // renderMiniList() {
+    //     return this.props.someData.map((item, index) => {
+    //         const cls = ['small_items']
+    //         if (this.state.smallIndex === index) cls.push('active_small')
+    //         return (
+    //             <li 
+    //                 key={index}
+    //                 className={cls.join(' ')}
+    //                 onClick={this.choiceGroup.bind(this, item, index)}
+    //             >
+    //                 <img src='images/folder-regular.svg' alt='' />
+    //                 {item}
+    //             </li>
+    //         )
+    //     })
+    // }
 
     renderList() {
-        const list = this.props.subjects.map((item, index) => {
-            const cls = ['big_items']
-            let src = 'images/angle-right-solid.svg'
-            if (item.open) {
-                src = 'images/angle-down-solid.svg'
+        const list = this.props.repositoryData.length === 0 ? 
+            localStorage.getItem('role') === 'teacher' ?
+                <p className='empty_field'>
+                    <Link to='/create_repository'>Создайте репозиторий</Link>,
+                    чтобы видеть предметы по созданным репозиториям
+                </p> : 
+                <p className='empty_field'>
+                    Здесь будет список предметов ваших задач, пока задач нет
+                </p> :
+            this.props.repositoryData.map((item, index) => {
+                const cls = ['big_items']
+                let src = 'images/angle-right-solid.svg'
+                if (item.open) {
+                    src = 'images/angle-down-solid.svg'
 
-            }
-            return (
-                <Auxiliary key={index}>
-                    <li 
-                        className={cls.join(' ')}
-                        onClick={this.props.choiceSubject.bind(this, index)}
-                    >
-                        {<img src={src} alt='' />}
-                        {item.value}
-                    </li>
+                }
+                return (
+                    <Auxiliary key={index}>
+                        <li 
+                            className={cls.join(' ')}
+                            onClick={this.props.choiceSubject.bind(this, index)}
+                        >
+                            {<img src={src} alt='' />}
+                            {item.name}
+                        </li>
 
-                    {item.open ? 
-                        <ul className='small_list'>
-                            {this.renderMiniList(item.topics)}
-                        </ul> : null
-                    }
-                </Auxiliary>
-            )
+                        {/* {item.open ? 
+                            <ul className='small_list'>
+                                {this.renderMiniList()}
+                            </ul> : null
+                        } */}
+                    </Auxiliary>
+                )
         })
 
         return (
@@ -148,6 +159,19 @@ class RepositoryComponent extends React.Component {
             <Frame active_index={3}>
                 <div className='main_subject'>
                     <aside className='aside_subject'>
+                        { this.props.repositoryData.length !== 0 && localStorage.getItem('role') === 'teacher' ?
+                            <div className='create_repo_button'>
+                                <Link 
+                                    to='/create_repository'
+                                >
+                                    <Button 
+                                        typeButton='blue'
+                                        value='Создать репозиторий'
+                                    />
+                                </Link>
+                            </div> : 
+                            null    
+                        }
                         {this.renderList()}
                     </aside>
                     { this.state.active ? main : null}

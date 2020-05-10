@@ -1,14 +1,10 @@
 import React from 'react'
 import RepositoryComponent from '../../../components/User/RepositoryComponent/RepositoryComponent'
+import { connect } from 'react-redux'
+import {fetchRepository, choiceSubjectHandler} from '../../../store/actions/student'
 
 class Repository extends React.Component {
     state = { 
-        subjects: [
-            {value: 'Математический анализ', topics: ['Множества', 'Отображения', 'Вещественные числа', 'Предел последовательности'], open: false},
-            {value: 'UML', topics: [], open: false},
-            {value: 'Моделирование сложных систем', topics: [], open: false},
-            {value: 'ЭВМ', topics: [], open: false}
-        ],
         topicText: {
             'Множества': 'Под множеством понимают совокупность определенных и отличных друг от друга объектов (элементов), объединенных общим характерным признаком в единое целое. Множество, не содержащее ни одного элемента, называют пустым и обозначают символом O. В математике вместо термина «множество» часто говорят «класс», «семейство», «совокупность». Множество считается определенным, если указаны все его элементы или правило их нахождения (характерное свойство элементов).',
             'Отображения': 'Соответствие, при котором каждому из элементов множества X сопоставялется единственный элемент из множества Y, называется отображением.',
@@ -16,25 +12,29 @@ class Repository extends React.Component {
             'Предел последовательности': ''
         }
     }
-
-    choiceSubjectHandler = index => {
-        const subjects = [...this.state.subjects]
-        subjects[index].open = !subjects[index].open
-
-        this.setState({
-            subjects
-        })
-    }
-
+    
     render() {
         return (
             <RepositoryComponent 
-                subjects={this.state.subjects}
-                topicText={this.state.topicText}
-                choiceSubject={this.choiceSubjectHandler}
+                // topicText={this.state.topicText}
+                repositoryData={this.props.repositoryData}
+                choiceSubject={this.props.choiceSubjectHandler}
             />
         )
     }
 }
 
-export default Repository
+function mapStateToProps(state) {
+    return {
+        repositoryData: state.student.repositoryData
+    }
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        fetchRepository: () => dispatch(fetchRepository()),
+        choiceSubjectHandler: (index) => dispatch(choiceSubjectHandler(index))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Repository)

@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -8,6 +8,11 @@ const initialState = {
     },
     tasks: [],
     taskAdditionData: {},
+    repositoryData: [
+        {id: 1, name: 'Алгебра', open: true},
+        {id: 2, name: 'Информатика', open: false},
+        {id: 3, name: 'Физика', open: false}
+    ],
 
     errorShow: false,
     errorMessage: [],
@@ -35,6 +40,10 @@ export default function studentReducer(state = initialState, action) {
         case SUCCESS_TASK_ADDITION:
             return {
                 ...state, taskAdditionData: action.taskAdditionData, loading: false
+            }
+        case SUCCESS_REPOSITORY:
+            return {
+                ...state, repositoryData: action.repositoryData
             }
         case ERROR_WINDOW:
             return {

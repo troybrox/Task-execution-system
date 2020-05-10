@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -466,7 +466,118 @@ export function onCloseTask(id) {
         }
     }
 }
-// export function fetchRepository() {}
+
+export function fetchRepository() {
+    return async dispatch => {
+        try {
+            const response = await axios.get('/teacher/repo/subjects')
+            const data = response.data
+            if (data.succeeded) {
+                const repositoryData = []
+                data.data.forEach((el, index) => {
+                    const object = el
+                    if (index === 0)
+                        object.open = true
+                    else
+                    object.open = false
+
+                    repositoryData.push(object)
+                })
+                dispatch(successRepository(repositoryData))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+            
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function choiceSubjectHandler(index) {
+    return (dispatch, getState) => {
+        const state = getState().teacher
+        const repositoryData = state.repositoryData
+        repositoryData.forEach((el, num) => {
+            if (num === index) el.open = true
+            else el.open = false
+        })
+
+        dispatch(successRepository(repositoryData))
+    }
+}
+
+export function fetchCreateRepository() {
+    return async dispatch => {
+        try {
+            const response = await axios.get('/teacher/repo/add/filters')
+            const data = response.data
+            if (data.succeeded) {
+                const createRepository = [...data.data]
+                createRepository.unshift({id: null, name: 'Выбрать предмет'})
+                dispatch(successCreateRepository(data.data))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+            
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function sendCreateRepository(filters) {
+    return async dispatch => {
+        try {
+            const response = await axios.post('/teacher/repo/add', filters.repo)
+            const data = response.data
+            if (data.succeeded) {
+
+                if (data.file !== null)
+                    try {
+                        const filters2 = {
+                            repoId: data.data,
+                            file: filters.file
+                        }
+                        const response2 = await axios.post('/teacher/repo/add/file', filters2)
+                        const data2 = response2.data
+
+                            if (data2.succeeded) {
+                                dispatch(successCreateRepositoryEnd())
+                            } else {
+                                const err = [...data2.errorMessages]
+                                err.unshift('Сообщение с сервера.')
+                                dispatch(errorWindow(true, err))
+                            }
+                    } catch (error) {
+                        dispatch(successCreateRepositoryEnd())
+                        const err = [...data.errorMessages]
+                        err.unshift('Сообщение с сервера.')
+                        dispatch(errorWindow(true, err))
+                    }
+                else {
+                    dispatch(successCreateRepositoryEnd())
+                }
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
 
 export function loadingStart() {
     return {
@@ -520,6 +631,26 @@ export function successTaskAddition(taskAdditionData) {
     return {
         type: SUCCESS_TASK_ADDITION,
         taskAdditionData
+    }
+}
+
+export function successRepository(repositoryData) {
+    return {
+        type: SUCCESS_REPOSITORY,
+        repositoryData
+    }
+}
+
+export function successCreateRepository(createRepository) {
+    return {
+        type: SUCCESS_CREATE_REPOSITORY,
+        createRepository
+    }
+}
+
+export function successCreateRepositoryEnd() {
+    return {
+        type: SUCCESS_CREATE_REPOSITORY_END
     }
 }
 

@@ -7,7 +7,10 @@ import {
     SUCCESS_TASKS, 
     SUCCESS_CREATE, 
     SUCCESS_CREATE_DATA,
-    LOADING_START } from "../actions/actionTypes"
+    LOADING_START, 
+    SUCCESS_CREATE_REPOSITORY,
+    SUCCESS_REPOSITORY,
+    SUCCESS_CREATE_REPOSITORY_END} from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -22,58 +25,18 @@ const initialState = {
         types: [],
         groups: []
     },
-    taskAdditionData: {
-        teacherName: "Xxx",
-        teacherSurname: "Xxx",
-        teacherPatronymic: "Xxx",
-        subject: "Моделирование",
-        type: "Лабораторная работа",
-        name: "№33",
-        contentText: "xxxxxxx",
-        fileURI: "https://localhost44303/files/taskFile/Math_Lab1_task.docx",
-        group: "6315-020304D",
-        beginDate: "11.12.2019",
-        finishDate: "11.12.2020",
-        updateDate: "dd.mm.yyyy",
-        isOpen: true,
-        timeBar: 12,
-        students: [
-            {
-                id: 1,
-                name: "Подзаголовкин",
-                surname: "Лупа"
-            },
-            {
-                id: 2,
-                name: "Заголовкин",
-                surname: "Пупа"
-            }
-        ],
-        solutions: [
-            {
-                contentText: "xxxxxxx",
-                creationDate: "dd.mm.yyyy",
-                fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
-                isExpired: false,
-                student: {
-                    id: 1,
-                    name: "Подзаголовкин",
-                    surname: "Лупа"
-                }
-            },
-            {
-                contentText: "xxxxxxx",
-                creationDate: "dd.mm.yyyy",
-                fileURI: "https://localhost44303/files/solutionfiles/ЛР_1_Отчёт.docx",
-                isExpired: false,
-                student: {
-                    id: 2,
-                    name: "Заголовкин",
-                    surname: "Пупа"
-                }
-            }
-        ]
-    },
+    taskAdditionData: {},
+    createRepository: [
+        {id: null, name: 'Выбрать предмет'},
+        {id: 1, name: 'Алгебра'},
+        {id: 2, name: 'Информатика'},
+        {id: 3, name: 'Физика'}
+    ],
+    repositoryData: [
+        {id: 1, name: 'Алгебра', open: true},
+        {id: 2, name: 'Информатика', open: false},
+        {id: 3, name: 'Физика', open: false}
+    ],
 
     successId: null,
     errorShow: false,
@@ -115,6 +78,18 @@ export default function teacherReducer(state = initialState, action) {
         case SUCCESS_TASK_ADDITION:
             return {
                 ...state, taskAdditionData: action.taskAdditionData, loading: false
+            }
+        case SUCCESS_CREATE_REPOSITORY:
+            return {
+                ...state, createRepository: action.createRepository
+            }
+        case SUCCESS_REPOSITORY:
+            return {
+                ...state, repositoryData: action.repositoryData, repoActive: false
+            }
+        case SUCCESS_CREATE_REPOSITORY_END:
+            return {
+                ...state, repoActive: true
             }
         case ERROR_WINDOW:
             return {

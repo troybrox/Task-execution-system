@@ -20,6 +20,11 @@
         width: max-content;
         min-width: 250px;
 
+        .create_repo_button {
+            width: min-content;
+            margin: 10px auto;
+        }
+
         .big_list {
             list-style: none;
 

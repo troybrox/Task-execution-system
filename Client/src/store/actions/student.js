@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -280,6 +280,50 @@ export function onSendSolution(createSolution, id) {
     }
 }
 
+export function fetchRepository() {
+    return async dispatch => {
+        try {
+            const response = await axios.get('/student/repo/subjects')
+            const data = response.data
+            if (data.succeeded) {
+                const repositoryData = []
+                data.data.forEach((el, index) => {
+                    const object = el
+                    if (index === 0)
+                        object.open = true
+                    else
+                    object.open = false
+
+                    repositoryData.push(object)
+                })
+                dispatch(successRepository(repositoryData))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+            
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function choiceSubjectHandler(index) {
+    return (dispatch, getState) => {
+        const state = getState().student
+        const repositoryData = state.repositoryData
+        repositoryData.forEach((el, num) => {
+            if (num === index) el.open = true
+            else el.open = false
+        })
+
+        dispatch(successRepository(repositoryData))
+    }
+}
+
 export function loadingStart() {
     return {
         type: LOADING_START
@@ -311,6 +355,13 @@ export function successTaskAddition(taskAdditionData) {
     return {
         type: SUCCESS_TASK_ADDITION,
         taskAdditionData
+    }
+}
+
+export function successRepository(repositoryData) {
+    return {
+        type: SUCCESS_REPOSITORY,
+        repositoryData
     }
 }
 
