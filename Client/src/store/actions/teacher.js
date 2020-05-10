@@ -471,7 +471,7 @@ export function fetchRepository() {
     return async dispatch => {
         dispatch(loadingStart())
         try {
-            const response = await axios.get('/teacher/repo/subjects')
+            const response = await axios.get('/api/teacher/repo/subjects')
             const data = response.data
             if (data.succeeded) {
                 const repositoryData = []
@@ -516,12 +516,12 @@ export function fetchCreateRepository() {
     return async dispatch => {
         dispatch(loadingStart())
         try {
-            const response = await axios.get('/teacher/repo/add/filters')
+            const response = await axios.get('/api/teacher/repo/add/filters')
             const data = response.data
             if (data.succeeded) {
                 const createRepository = [...data.data]
                 createRepository.unshift({id: null, name: 'Выбрать предмет'})
-                dispatch(successCreateRepository(data.data))
+                dispatch(successCreateRepository(createRepository))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
@@ -539,7 +539,7 @@ export function fetchCreateRepository() {
 export function sendCreateRepository(filters) {
     return async dispatch => {
         try {
-            const response = await axios.post('/teacher/repo/add', filters.repo)
+            const response = await axios.post('/api/teacher/repo/add', filters.repo)
             const data = response.data
             if (data.succeeded) {
 
@@ -549,7 +549,7 @@ export function sendCreateRepository(filters) {
                             repoId: data.data,
                             file: filters.file
                         }
-                        const response2 = await axios.post('/teacher/repo/add/file', filters2)
+                        const response2 = await axios.post('/api/teacher/repo/add/file', filters2)
                         const data2 = response2.data
 
                             if (data2.succeeded) {

@@ -12,7 +12,7 @@ class CreateRepository extends React.Component {
     state = {
         fields: [
             { value: null, label: 'Предмет', type: 'select', serverName: 'SubjectId', valid: false },
-			{ value: '', label: 'Имя репозитория', type: 'text', serverName: 'RepoTitle', valid: false },
+			{ value: '', label: 'Имя репозитория', type: 'text', serverName: 'Name', valid: false },
             { value: '', label: 'Описание', type: 'textarea', serverName: 'ContentText', valid: false },
         ],
         files: null
@@ -81,7 +81,7 @@ class CreateRepository extends React.Component {
             filters.repo[el.serverName] = el.value
         })
         filters.file = this.state.files
-
+    
         this.props.sendCreateRepository(filters)
     }
 
@@ -230,7 +230,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchCreateRepository: () => dispatch(fetchCreateRepository()),
-        sendCreateRepository: () => dispatch(sendCreateRepository())
+        sendCreateRepository: (filters) => dispatch(sendCreateRepository(filters))
     }
 }
 

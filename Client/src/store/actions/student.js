@@ -284,7 +284,7 @@ export function fetchRepository() {
     return async dispatch => {
         dispatch(loadingStart())
         try {
-            const response = await axios.get('/student/repo/subjects')
+            const response = await axios.get('/api/student/repo/subjects')
             const data = response.data
             if (data.succeeded) {
                 const repositoryData = []
@@ -322,8 +322,37 @@ export function choiceSubjectHandler(index) {
         })
 
         dispatch(successRepository(repositoryData))
+
+        // const filters = [
+        //     {name: 'subjectId', value: repositoryData[index].id}
+        // ]
+        // dispatch(fetchSubjectFull(filters))
     }
 }
+
+// fetchSubjectFull = filters => {
+//     return async dispatch => {
+//         try {
+//             const url = '/api/teacher/repo'
+//             const response = await axios.post(url, filters)
+//             const data = response.data
+//             if (data.succeeded) {
+//                 const subjectFullData = []
+//                 data.data.forEach(el => {
+                    
+//                 })
+//             } else {
+//                 const err = [...data.errorMessages]
+//                 err.unshift('Сообщение с сервера.')
+//                 dispatch(errorWindow(true, err))
+//             }
+//         } catch (e) {
+//             const err = ['Ошибка подключения']
+//             err.push(e.message)
+//             dispatch(errorWindow(true, err))
+//         }
+//     }
+// }
 
 export function loadingStart() {
     return {
