@@ -68,9 +68,6 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add("Ошибка при добавлении файла к репозиторию " + e.Message);
                 return detail;
             }
-
-
-
         }
 
         public Task<OperationDetailDTO> UpdateRepoAsync(RepositoryDTO dto)

@@ -903,6 +903,7 @@ namespace TaskExecutionSystem.BLL.Services
             var repos = from r in _context.RepositoryModels
                         .Where(r => r.TeacherId == teacherEntity.Id)
                         .Include(r => r.Subject)
+                        .Include(r => r.Files)
                         select r;
 
             repos.OrderBy(r => r.Name);
