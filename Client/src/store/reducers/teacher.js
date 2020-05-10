@@ -10,7 +10,8 @@ import {
     LOADING_START, 
     SUCCESS_CREATE_REPOSITORY,
     SUCCESS_REPOSITORY,
-    SUCCESS_CREATE_REPOSITORY_END} from "../actions/actionTypes"
+    SUCCESS_CREATE_REPOSITORY_END,
+    SUCCESS_SUBJECT_FULL} from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -37,6 +38,7 @@ const initialState = {
         {id: 2, name: 'Информатика', open: false},
         {id: 3, name: 'Физика', open: false}
     ],
+    subjectFullData: [],
 
     successId: null,
     errorShow: false,
@@ -86,6 +88,10 @@ export default function teacherReducer(state = initialState, action) {
         case SUCCESS_REPOSITORY:
             return {
                 ...state, repositoryData: action.repositoryData, repoActive: false, loading: false
+            }
+        case SUCCESS_SUBJECT_FULL:
+            return {
+                ...state, subjectFullData: action.subjectFullData, loading: false
             }
         case SUCCESS_CREATE_REPOSITORY_END:
             return {

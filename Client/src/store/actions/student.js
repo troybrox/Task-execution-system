@@ -332,15 +332,21 @@ export function choiceSubjectHandler(index) {
 
 export function fetchSubjectFull(filters) {
     return async dispatch => {
+        dispatch(loadingStart())
         try {
             const url = '/api/student/repo'
             const response = await axios.post(url, filters)
             const data = response.data
             if (data.succeeded) {
-                // const subjectFullData = []
-                // data.data.forEach(el => {
-                    
-                // })
+                const subjectFullData = []
+                data.data.forEach((el, num) => {
+                    if (num === 0)
+                        el.open = true
+                    else 
+                        el.open = false
+                    subjectFullData.push(el)
+                })
+                dispatch(successSubjectFull(subjectFullData))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

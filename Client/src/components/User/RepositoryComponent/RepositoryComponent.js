@@ -23,9 +23,9 @@ class RepositoryComponent extends React.Component {
         })
     }
 
-    choiceGroup = (item, index) => {
-        const topicText = this.props.topicText
-        const text = [item, topicText[item]]
+    choiceRepo = (item, index) => {
+
+        const text = [item.name, item.contentText]
         this.setState({
             smallIndex: index,
             text,
@@ -34,22 +34,24 @@ class RepositoryComponent extends React.Component {
         })
     }
 
-    // renderMiniList() {
-    //     return this.props.someData.map((item, index) => {
-    //         const cls = ['small_items']
-    //         if (this.state.smallIndex === index) cls.push('active_small')
-    //         return (
-    //             <li 
-    //                 key={index}
-    //                 className={cls.join(' ')}
-    //                 onClick={this.choiceGroup.bind(this, item, index)}
-    //             >
-    //                 <img src='images/folder-regular.svg' alt='' />
-    //                 {item}
-    //             </li>
-    //         )
-    //     })
-    // }
+    renderMiniList() {
+        return this.props.subjectFullData.length !== 0 ? 
+            this.props.subjectFullData.map((item, index) => {
+                const cls = ['small_items']
+                if (this.state.smallIndex === index) cls.push('active_small')
+                return (
+                    <li 
+                        key={index}
+                        className={cls.join(' ')}
+                        onClick={this.choiceRepo.bind(this, item, index)}
+                    >
+                        <img src='images/folder-regular.svg' alt='' />
+                        {item.name}
+                    </li>
+                )
+            }) :
+            null
+    }
 
     renderList() {
         const list = this.props.repositoryData.length === 0 ? 
@@ -78,11 +80,11 @@ class RepositoryComponent extends React.Component {
                             {item.name}
                         </li>
 
-                        {/* {item.open ? 
+                        {item.open ? 
                             <ul className='small_list'>
-                                {this.renderMiniList()}
+                                {this.props.loading ? <Loader /> : this.renderMiniList()}
                             </ul> : null
-                        } */}
+                        }
                     </Auxiliary>
                 )
         })
@@ -143,14 +145,14 @@ class RepositoryComponent extends React.Component {
 
         const main = (
             <div className='topic'>
-                <div className='search'>
+                {/* <div className='search'>
                     <input type='search' placeholder='Поиск...' />
                     <button 
                         // onClick={this.searchHandler}
                     >
                         Поиск
                     </button>
-                </div>
+                </div> */}
 
                 {!this.state.edit ? teacherLook : teacherEdit}
             </div>
@@ -173,7 +175,7 @@ class RepositoryComponent extends React.Component {
                             </div> : 
                             null    
                         }
-                        {this.props.loading ? <Loader /> : this.renderList()}
+                        {this.props.loading && this.props.repositoryData.length === 0? <Loader /> : this.renderList()}
                     </aside>
                     { this.state.active ? main : null}
 
