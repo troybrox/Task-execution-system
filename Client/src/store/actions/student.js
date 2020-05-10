@@ -324,7 +324,7 @@ export function choiceSubjectHandler(index) {
         dispatch(successRepository(repositoryData))
 
         const filters = [
-            {name: 'subjectId', value: repositoryData[index].id}
+            {name: 'subjectId', value: String(repositoryData[index].id)}
         ]
         dispatch(fetchSubjectFull(filters))
     }
