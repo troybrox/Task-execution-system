@@ -117,6 +117,8 @@ export function fetchMain() {
                                         task.beginDate = parseDate(new Date(task.beginDate))
                                         if (task.finishDate !== null)
                                             task.finishDate = parseDate(new Date(task.finishDate))
+                                        if (task.updateDate !== null)
+                                            task.updateDate = parseDate(new Date(task.updateDate))
                                     })
                             })
                         })
