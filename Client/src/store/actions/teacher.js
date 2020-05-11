@@ -562,7 +562,7 @@ export function deleteRepo(index) {
         const id = subjectFullData[index].id
 
         try {
-            const response = await axios.post('/api/teacher/repo/delete', {id})
+            const response = await axios.post('/api/teacher/repo/delete', [id])
             const data = response.data
             if (data.succeeded) {
                 subjectFullData.splice(index, 1)
@@ -580,11 +580,12 @@ export function deleteRepo(index) {
     }
 }
 
-export function editRepo(index, contentText) {
+export function editRepo(index, contentText, name) {
     return async (dispatch, getState) => {
         const state = getState().teacher
         const subjectFullData = [...state.subjectFullData]
         subjectFullData[index].contentText = contentText
+        subjectFullData[index].name = name
 
         try {
             const response = await axios.post('/api/teacher/repo/update', subjectFullData[index])

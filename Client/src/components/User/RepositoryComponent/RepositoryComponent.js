@@ -11,6 +11,8 @@ class RepositoryComponent extends React.Component {
     state = {
         text: '',
         editText: '',
+        title: '',
+        editTitle: '',
         edit: false,
         activeSubjectIndex: null,
         activeRepoIndex: null
@@ -19,11 +21,13 @@ class RepositoryComponent extends React.Component {
     editRepository = () => {
         const edit = !this.state.edit
         const editText = this.state.text
+        const editTitle = this.state.title
         
 
         this.setState({
             edit,
-            editText
+            editText,
+            editTitle
         })
     }
 
@@ -36,9 +40,11 @@ class RepositoryComponent extends React.Component {
 
     choiceRepo = (item, index) => {
         const text = item.contentText
+        const title = item.name
         this.setState({
             activeRepoIndex: index,
             text,
+            title,
             edit: false
         })
     }
@@ -54,12 +60,27 @@ class RepositoryComponent extends React.Component {
     editRepoHandler = index => {
         const edit = !this.state.edit
         const text = this.state.editText
-        this.props.editRepo(index, this.state.editText)
+        let editTitle = this.state.editTitle
+        let title = this.state.title
+        if (this.state.editTitle.trim() === '')
+            editTitle = title
+        else 
+            title = editTitle
+        this.props.editRepo(index, text, title)
         
 
         this.setState({
             edit,
-            text
+            text,
+            title,
+            editTitle
+        })
+    }
+
+    deleteRepoHandler = index => {
+        this.props.deleteRepo(index)
+        this.setState({
+            activeRepoIndex: null
         })
     }
 
@@ -153,7 +174,7 @@ class RepositoryComponent extends React.Component {
                     <Button 
                         typeButton='blue'
                         value='Удалить'
-                        onClickButton={() => this.props.deleteRepo(this.state.activeRepoIndex)}
+                        onClickButton={() => this.deleteRepoHandler(this.state.activeRepoIndex)}
                     />
                     <Button 
                         typeButton='blue'
@@ -187,11 +208,15 @@ class RepositoryComponent extends React.Component {
         )
     }
 
-    changeRepository = target => {
-        // const editText = this.state.editText
-        // editText = target.value
+    changeRepositoryText = target => {
         this.setState({
             editText: target.value
+        })
+    }
+
+    changeRepositoryTitle = target => {
+        this.setState({
+            editTitle: target.value
         })
     }
 
@@ -210,17 +235,24 @@ class RepositoryComponent extends React.Component {
                 <textarea 
                     className='text_topic_edit' 
                     defaultValue={this.state.editText} 
-                    onChange={event => this.changeRepository(event.target)}
+                    onChange={event => this.changeRepositoryText(event.target)}
                 />
                 {this.renderButtonsEdit()}
             </Auxiliary>
         )
 
+        const name = ( 
+            this.props.subjectFullData.length !== 0 && this.state.activeRepoIndex !== null && !this.state.edit ?
+                <span>{this.state.title}</span> :
+                
+                <input type='text' value={this.state.editTitle} onChange={event => this.changeRepositoryTitle(event.target)} />
+        )
+
         const main = (
             <div className='topic'>
-                { this.props.subjectFullData.length !== 0 && this.state.activeRepoIndex !== null ?
+                { this.props.subjectFullData.length !== 0 && this.state.activeRepoIndex !== null && this.props.subjectFullData[this.state.activeRepoIndex] !== undefined ?
                     <div className='repo_title'>
-                        <h2>{this.props.subjectFullData[this.state.activeRepoIndex].subject}. {this.props.subjectFullData[this.state.activeRepoIndex].name}</h2> 
+                        <h2>{this.props.subjectFullData[this.state.activeRepoIndex].subject}. {name}</h2> 
                         { localStorage.getItem('role') === 'student' ? 
                             <p className='author'>Автор: {this.props.subjectFullData[this.state.activeRepoIndex].teacherSurname} {this.props.subjectFullData[this.state.activeRepoIndex].teacherName} {this.props.subjectFullData[this.state.activeRepoIndex].teacherPatronymic}</p> : 
                             null

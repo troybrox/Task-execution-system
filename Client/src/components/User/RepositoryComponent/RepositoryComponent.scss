@@ -4,6 +4,13 @@
     .repo_title {
         border-bottom: 1px solid grey;
         padding: 3px 10px;
+
+        input {
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 5px;
+            border: 1px solid grey;
+        }
     
         .author {
             color: grey;

@@ -36,7 +36,7 @@ function mapDispatchToProps(dispatch) {
         fetchRepository: () => dispatch(fetchRepository()),
         choiceSubjectHandler: (index) => dispatch(choiceSubjectHandler(index)),
         deleteRepo: (index) => dispatch(deleteRepo(index)),
-        editRepo: (index, contentText) => dispatch(editRepo(index, contentText)),
+        editRepo: (index, contentText, name) => dispatch(editRepo(index, contentText, name)),
         sendCreateRepositoryFile: (filters) => dispatch(sendCreateRepositoryFile(filters))
     }
 }
