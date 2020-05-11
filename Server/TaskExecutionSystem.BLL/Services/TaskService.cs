@@ -130,6 +130,12 @@ namespace TaskExecutionSystem.BLL.Services
             var totalInterval = dto.FinishDate - dto.BeginDate;
             var pastInterval = DateTime.Now - dto.BeginDate;
 
+            if(pastInterval > totalInterval)
+            {
+                timeProgressPercentage = 0;
+                return;
+            }
+
             if (totalInterval.TotalMinutes > 0)
             {
                 if(pastInterval.TotalMinutes > 0)
@@ -138,7 +144,10 @@ namespace TaskExecutionSystem.BLL.Services
                 }
             }
 
-            dto.TimeBar = timeProgressPercentage;
+            if(timeProgressPercentage >= 0 && timeProgressPercentage < 100)
+            {
+                dto.TimeBar = timeProgressPercentage;
+            }Lf lf
         }
 
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
@@ -192,7 +201,5 @@ namespace TaskExecutionSystem.BLL.Services
         {
             throw new NotImplementedException();
         }
-
-        
     }
 }
