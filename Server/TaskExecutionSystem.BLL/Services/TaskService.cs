@@ -147,7 +147,7 @@ namespace TaskExecutionSystem.BLL.Services
             if(timeProgressPercentage >= 0 && timeProgressPercentage < 100)
             {
                 dto.TimeBar = timeProgressPercentage;
-            }Lf lf
+            }
         }
 
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
