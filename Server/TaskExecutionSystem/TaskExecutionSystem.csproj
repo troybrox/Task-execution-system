@@ -30,7 +30,7 @@
     <Folder Include="Application\Contracts\" />
     <Folder Include="wwwroot\Files\TaskFiles\" />
     <Folder Include="wwwroot\Files\SolutionFiles\" />
-    <Folder Include="wwwroot\Files\repoFiles\" />
+    <Folder Include="wwwroot\Files\RepoFiles\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

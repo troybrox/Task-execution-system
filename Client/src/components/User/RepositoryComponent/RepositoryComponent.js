@@ -12,7 +12,6 @@ class RepositoryComponent extends React.Component {
         text: '',
         editText: '',
         edit: false,
-
         activeSubjectIndex: null,
         activeRepoIndex: null
     }
@@ -42,6 +41,14 @@ class RepositoryComponent extends React.Component {
             text,
             edit: false
         })
+    }
+
+    onLoadFile = event => {
+        const file = event.target.files[0]
+        const filters = new FormData()
+        filters.append('repoId', this.props.subjectFullData[this.state.activeRepoIndex].id)
+        filters.append('file', file)
+        this.props.sendCreateRepositoryFile(filters)
     }
 
     renderFileList(files) {
@@ -141,6 +148,11 @@ class RepositoryComponent extends React.Component {
                         typeButton='blue'
                         value='Изменить'
                         onClickButton={this.editRepository}
+                    />
+                    <Button 
+                        typeButton='download'
+                        value='Добавить файл'
+                        onClickButton={this.onLoadFile}
                     />
                 </div>
             )

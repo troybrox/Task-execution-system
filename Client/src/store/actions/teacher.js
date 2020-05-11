@@ -634,30 +634,12 @@ export function sendCreateRepository(filters) {
             const response = await axios.post('/api/teacher/repo/add', filters.repo)
             const data = response.data
             if (data.succeeded) {
-                if (filters.file !== null)
-                    try {
-                        const filters2 = new FormData()
-                        filters2.append('repoId', data.data)
-                        filters2.append('file', filters.file)
-
-                        const response2 = await axios.post('/api/teacher/repo/add/file', filters2)
-                        const data2 = response2.data
-
-                            if (data2.succeeded) {
-                                dispatch(successCreateRepositoryEnd())
-                            } else {
-                                dispatch(successCreateRepositoryEnd())
-                                const err = [...data2.errorMessages]
-                                err.unshift('Сообщение с сервера.')
-                                dispatch(errorWindow(true, err))
-                            }
-                    } catch (error) {
-                        dispatch(successCreateRepositoryEnd())
-                        const err = [...data.errorMessages]
-                        err.unshift('Сообщение с сервера.')
-                        dispatch(errorWindow(true, err))
-                    }
-                else {
+                if (filters.file !== null) {
+                    const filters2 = new FormData()
+                    filters2.append('repoId', data.data)
+                    filters2.append('file', filters.file)
+                    this.sendCreateRepositoryFile(filters2)
+                } else {
                     dispatch(successCreateRepositoryEnd())
                 }
             } else {
@@ -668,6 +650,29 @@ export function sendCreateRepository(filters) {
         } catch (e) {
             const err = ['Ошибка подключения']
             err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function sendCreateRepositoryFile(filters) {
+    return async dispatch => {
+        try {
+            const response = await axios.post('/api/teacher/repo/add/file', filters)
+            const data = response.data
+
+                if (data.succeeded) {
+                    dispatch(successCreateRepositoryEnd())
+                } else {
+                    dispatch(successCreateRepositoryEnd())
+                    const err = [...data.errorMessages]
+                    err.unshift('Сообщение с сервера.')
+                    dispatch(errorWindow(true, err))
+                }
+        } catch (error) {
+            dispatch(successCreateRepositoryEnd())
+            const err = ['Ошибка подключения']
+            err.push(error.message)
             dispatch(errorWindow(true, err))
         }
     }
