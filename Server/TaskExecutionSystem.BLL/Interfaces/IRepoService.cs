@@ -15,7 +15,7 @@ namespace TaskExecutionSystem.BLL.Interfaces
 {
     public interface IRepoService
     {
-        public Task<OperationDetailDTO> AddFileToRepoAsync(int id, string fileName);
+        public Task<OperationDetailDTO> AddFileToRepoAsync(int id, string userfileName, string fileName = null);
 
         public Task<OperationDetailDTO> UpdateRepoAsync(RepositoryDTO dto);
     }

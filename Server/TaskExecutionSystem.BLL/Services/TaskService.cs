@@ -28,7 +28,7 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
-        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string fileName)
+        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string fileName = null)
         {
             var detail = new OperationDetailDTO();
             try
@@ -36,13 +36,28 @@ namespace TaskExecutionSystem.BLL.Services
                 var task = await _context.TaskModels.FindAsync(taskID);
                 if (task != null)
                 {
-                    var newFile = new TaskFile
+                    TaskFile newFile;
+                    if(fileName != null)
                     {
-                        TaskModel = task,
-                        FileName = fileName,
-                        Path = TaskFilePath + fileName,
-                        FileURI = TaskFileURI + fileName,
-                    };
+                        newFile = new TaskFile
+                        {
+                            TaskModel = task,
+                            FileName = fileName,
+                            Path = TaskFilePath + userFileName,
+                            FileURI = TaskFileURI + userFileName,
+                        };
+                    }
+                    else
+                    {
+                        newFile = new TaskFile
+                        {
+                            TaskModel = task,
+                            FileName = userFileName,
+                            Path = TaskFilePath + userFileName,
+                            FileURI = TaskFileURI + userFileName,
+                        };
+                    }
+                    
                     await _context.TaskFiles.AddAsync(newFile);
                     await _context.SaveChangesAsync();
                     detail.Succeeded = true;
@@ -60,7 +75,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string fileName)
+        public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string userFileName, string fileName = null)
         {
             var detail = new OperationDetailDTO();
             try
@@ -69,14 +84,28 @@ namespace TaskExecutionSystem.BLL.Services
 
                 if (solution != null)
                 {
-                    var newFile = new SolutionFile
+                    SolutionFile newFile;
+                    if (fileName != null)
                     {
-                        Solution = solution,
-                        FileName = fileName,
-                        Path = SolutionFilePath + fileName,
-                        FileURI = SolutionFileURI + fileName,
-                    };
-
+                        newFile = new SolutionFile
+                        {
+                            Solution = solution,
+                            FileName = userFileName,
+                            Path = SolutionFilePath + fileName,
+                            FileURI = SolutionFileURI + fileName,
+                        };
+                    }
+                    else
+                    {
+                        newFile = new SolutionFile
+                        {
+                            Solution = solution,
+                            FileName = userFileName,
+                            Path = SolutionFilePath + userFileName,
+                            FileURI = SolutionFileURI + userFileName,
+                        };
+                    }
+                    
                     await _context.SolutionFiles.AddAsync(newFile);
                     await _context.SaveChangesAsync();
                     detail.Succeeded = true;
@@ -101,6 +130,12 @@ namespace TaskExecutionSystem.BLL.Services
             var totalInterval = dto.FinishDate - dto.BeginDate;
             var pastInterval = DateTime.Now - dto.BeginDate;
 
+            if(pastInterval > totalInterval)
+            {
+                timeProgressPercentage = 0;
+                return;
+            }
+
             if (totalInterval.TotalMinutes > 0)
             {
                 if(pastInterval.TotalMinutes > 0)
@@ -109,7 +144,10 @@ namespace TaskExecutionSystem.BLL.Services
                 }
             }
 
-            dto.TimeBar = timeProgressPercentage;
+            if(timeProgressPercentage >= 0 && timeProgressPercentage < 100)
+            {
+                dto.TimeBar = timeProgressPercentage;
+            }Lf lf
         }
 
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
@@ -163,7 +201,5 @@ namespace TaskExecutionSystem.BLL.Services
         {
             throw new NotImplementedException();
         }
-
-        
     }
 }
