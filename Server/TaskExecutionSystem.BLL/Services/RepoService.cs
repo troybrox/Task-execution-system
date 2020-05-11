@@ -37,7 +37,7 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
-        public async Task<OperationDetailDTO> AddFileToRepoAsync(int id, string fileName)
+        public async Task<OperationDetailDTO> AddFileToRepoAsync(int id, string userfileName, string fileName = null)
         {
             var detail = new OperationDetailDTO();
             try
@@ -45,13 +45,28 @@ namespace TaskExecutionSystem.BLL.Services
                 var repo = await _context.RepositoryModels.FindAsync(id);
                 if (repo != null)
                 {
-                    var newFile = new RepoFile
+                    RepoFile newFile;
+                    if (fileName != null)
                     {
-                        RepositoryModel = repo,
-                        FileName = fileName,
-                        Path = RepoFilePath + fileName,
-                        FileURI = RepoFileURI + fileName
-                    };
+                        newFile = new RepoFile
+                        {
+                            RepositoryModel = repo,
+                            FileName = userfileName,
+                            Path = RepoFilePath + fileName,
+                            FileURI = RepoFileURI + fileName
+                        };
+
+                    }
+                    else
+                    {
+                        newFile = new RepoFile
+                        {
+                            RepositoryModel = repo,
+                            FileName = userfileName,
+                            Path = RepoFilePath + userfileName,
+                            FileURI = RepoFileURI + userfileName
+                        };
+                    }
 
                     await _context.RepoFiles.AddAsync(newFile);
                     await _context.SaveChangesAsync();

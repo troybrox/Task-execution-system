@@ -845,7 +845,48 @@ namespace TaskExecutionSystem.BLL.Services
         {
             var detail = new OperationDetailDTO();
 
-            var repoEntity = await _context.RepositoryModels.FindAsync(dto.Id);
+            if(dto != null)
+            {
+                var repoEntity = await _context.RepositoryModels.FindAsync(dto.Id);
+
+                if(repoEntity == null)
+                {
+                    detail.ErrorMessages.Add("Репозиторий не найден."); 
+                    return detail;
+                }
+
+                repoEntity.ContentText = dto.ContentText;
+                repoEntity.Name = dto.Name;
+
+                _context.RepositoryModels.Update(repoEntity);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+            }
+            else
+            {
+                detail.ErrorMessages.Add("Объекта параметра репозитория был равен null");
+            }
+
+            return detail;
+        }
+
+        public async Task<OperationDetailDTO> DeleteRepositoryAsync(int id)
+        {
+            var detail = new OperationDetailDTO();
+
+            var entity = await _context.RepositoryModels.FindAsync(id);
+
+            if (entity != null)
+            {
+                _context.RepositoryModels.Remove(entity);
+                await _context.SaveChangesAsync();
+                detail.Succeeded = true;
+            }
+            else
+            {
+                detail.ErrorMessages.Add("Репозиторий не найден.");
+            }
 
             return detail;
         }
@@ -1056,5 +1097,7 @@ namespace TaskExecutionSystem.BLL.Services
                 return detail;
             }
         }
+
+        
     }
 }

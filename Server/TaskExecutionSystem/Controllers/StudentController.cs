@@ -50,6 +50,8 @@ namespace TaskExecutionSystem.Controllers
             _taskService = taskService;
         }
 
+        //private readonly string solutionFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\";
+
         // todo: update Password
 
         [HttpGet("profile")]
@@ -90,16 +92,25 @@ namespace TaskExecutionSystem.Controllers
 
 
         [HttpPost("solution/add")]
-        public async Task<IActionResult> GetFilteredTasksAsync([FromBody]SolutionCreateModelDTO dto)
+        public async Task<IActionResult> AddSolution([FromBody]SolutionCreateModelDTO dto)
         {
             var res = await _studentService.CreateSolutionAsync(dto);
+            return Ok(res);
+        }
+
+        [HttpPost("solution/update")]
+        public async Task<IActionResult> UpdateSolution([FromBody]SolutionCreateModelDTO dto)
+        {
+            var res = await _studentService.UpdateSolutionAsync(dto);
             return Ok(res);
         }
 
         [HttpPost("solution/add/file")]
         public async Task<IActionResult> AddFile()
         {
+            string solutionFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\";
             var detail = new OperationDetailDTO();
+
             try
             {
                 var allForms = Request.Form;
@@ -113,11 +124,25 @@ namespace TaskExecutionSystem.Controllers
                 if (file != null)
                 {
                     var fileName = file.FileName;
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\" + fileName))
+                    var fileRes = new OperationDetailDTO();
+                    if (System.IO.File.Exists(solutionFileLoadPath + fileName))
                     {
-                        file.CopyTo(fileStream);
+                        var newFileName = System.Guid.NewGuid() + fileName;
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
                     }
-                    var fileRes = await _taskService.AddFileToSolutionAsync(id, file.FileName);
+                    else
+                    {
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        fileRes = await _taskService.AddFileToSolutionAsync(id, fileName);
+                    }
+                    
 
                     if (!fileRes.Succeeded)
                     {

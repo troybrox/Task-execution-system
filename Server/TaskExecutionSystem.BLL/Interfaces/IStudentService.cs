@@ -25,6 +25,7 @@ namespace TaskExecutionSystem.BLL.Interfaces
 
         // решение
         public Task<OperationDetailDTO<string>> CreateSolutionAsync(SolutionCreateModelDTO dto);
+        public Task<OperationDetailDTO> UpdateSolutionAsync(SolutionCreateModelDTO dto);
 
         public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoFiltersAsync();
         public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters);
