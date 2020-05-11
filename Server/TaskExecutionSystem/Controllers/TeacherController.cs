@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.IO;
 using Microsoft.Extensions.Primitives;
 using System.Linq;
@@ -10,7 +11,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Repository;
@@ -18,6 +18,7 @@ using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
+using System.Diagnostics;
 
 namespace TaskExecutionSystem.Controllers
 {
@@ -206,22 +207,31 @@ namespace TaskExecutionSystem.Controllers
                 {
                     var fileName = file.FileName;
                     var fileRes = new OperationDetailDTO();
-                    if (System.IO.File.Exists(taskFileLoadPath + fileName))
+
+                    var newFileName = System.Guid.NewGuid() + fileName;
+                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + newFileName))
                     {
-                        var newFileName = System.Guid.NewGuid() + fileName;
-                        using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + newFileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        fileRes = await _taskService.AddFileToTaskAsync(id, fileName, newFileName);
+                        file.CopyTo(fileStream);
                     }
-                    else
-                    {
-                        using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                    }
+                    fileRes = await _taskService.AddFileToTaskAsync(id, fileName, newFileName);
+
+                    //if (System.IO.File.Exists(taskFileLoadPath + fileName))
+                    //{
+                    //    var newFileName = System.Guid.NewGuid() + fileName;
+                    //    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + newFileName))
+                    //    {
+                    //        file.CopyTo(fileStream);
+                    //    }
+                    //    fileRes = await _taskService.AddFileToTaskAsync(id, fileName, newFileName);
+                    //}
+                    //else
+                    //{
+                    //    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
+                    //    {
+                    //        file.CopyTo(fileStream);
+                    //    }
+                    //}
+
                     fileRes = await _taskService.AddFileToTaskAsync(id, fileName);
 
                     if (!fileRes.Succeeded)
@@ -281,8 +291,33 @@ namespace TaskExecutionSystem.Controllers
         [HttpPost("repo/delete")]
         public async Task<IActionResult> DeleteRepoAsync([FromBody]int[] id)
         {
-            var res = await _teacherService.DeleteRepositoryAsync(id[0]);
-            return Ok(res);
+            var detail = new OperationDetailDTO();
+
+            try
+            {
+                var res = await _teacherService.DeleteRepositoryAsync(id[0]);
+                if (res.Succeeded)
+                {
+                    detail.Succeeded = true;
+                    foreach (var path in res.Data)
+                    {
+                        var filePath = _environment.WebRootPath + path;
+                        if (System.IO.File.Exists(filePath))
+                        {
+                            System.IO.File.Delete(filePath);
+                        }
+                    }
+                }
+                return Ok(detail);
+            }
+            catch(Exception e)
+            {
+                detail.ErrorMessages.Add("Ошибка на сервере при удалении файлов репозитория. Описании ошибки: " + e.Message);
+                Debug.WriteLine(e.InnerException);
+                Debug.WriteLine("Source :" + e.Source);
+                return Ok(detail);
+            }
+            
         }
 
         [HttpPost("repo/update")]
@@ -299,6 +334,7 @@ namespace TaskExecutionSystem.Controllers
         {
             string repoFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\RepoFiles\\";
             var detail = new OperationDetailDTO();
+
             try
             {
                 var allForms = Request.Form;
@@ -312,23 +348,30 @@ namespace TaskExecutionSystem.Controllers
                     var fileName = file.FileName;
                     var fileRes = new OperationDetailDTO();
 
-                    if(System.IO.File.Exists(repoFileLoadPath + fileName))
+                    var newFileName = System.Guid.NewGuid() + fileName;
+                    using (var fileStream = System.IO.File.Create(repoFileLoadPath + newFileName))
                     {
-                        var newFileName = System.Guid.NewGuid() + fileName;
-                        using (var fileStream = System.IO.File.Create(repoFileLoadPath + newFileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
+                        file.CopyTo(fileStream);
                     }
-                    else
-                    {
-                        using (var fileStream = System.IO.File.Create(repoFileLoadPath + fileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        fileRes = await _repoService.AddFileToRepoAsync(id, file.FileName);
-                    }
+                    fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
+
+                    //if(System.IO.File.Exists(repoFileLoadPath + fileName))
+                    //{
+                    //    var newFileName = System.Guid.NewGuid() + fileName;
+                    //    using (var fileStream = System.IO.File.Create(repoFileLoadPath + newFileName))
+                    //    {
+                    //        file.CopyTo(fileStream);
+                    //    }
+                    //    fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
+                    //}
+                    //else
+                    //{
+                    //    using (var fileStream = System.IO.File.Create(repoFileLoadPath + fileName))
+                    //    {
+                    //        file.CopyTo(fileStream);
+                    //    }
+                    //    fileRes = await _repoService.AddFileToRepoAsync(id, file.FileName);
+                    //}
 
                     if (!fileRes.Succeeded)
                     {
@@ -351,6 +394,8 @@ namespace TaskExecutionSystem.Controllers
             catch (Exception e)
             {
                 detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
+                Debug.WriteLine(e.InnerException);
+                Debug.WriteLine("Source :" + e.Source);
                 return Ok(detail);
             }
         }

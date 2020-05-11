@@ -50,6 +50,7 @@ namespace TaskExecutionSystem
                 builder =>
                 {
                     builder.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://localhost:44303")
+                   //builder.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -91,9 +92,11 @@ namespace TaskExecutionSystem
             });
 
             app.UseCors(MyAllowSpecificOrigins);
+
             app.UseSecureJwt();
+
             app.UseAuthentication();
-            
+
             app.UseRouting();
 
             app.UseAuthorization();

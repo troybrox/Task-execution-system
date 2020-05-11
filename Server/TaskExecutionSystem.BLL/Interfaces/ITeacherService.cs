@@ -39,7 +39,7 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters();
         public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters);
         public Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id);
-        public Task<OperationDetailDTO> DeleteRepositoryAsync(int id);
+        public Task<OperationDetailDTO<List<string>>> DeleteRepositoryAsync(int id);
         public Task<OperationDetailDTO> UpdateRepositoryAsync(RepositoryCreateModelDTO dto);
 
         public Task<User> GetUserFromClaimsAsync();

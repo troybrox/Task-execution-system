@@ -369,7 +369,7 @@ namespace TaskExecutionSystem.BLL.Services
 
                     if (taskEntity.FinishDate > solutionEntity.CreationDate)
                     {
-                        solutionEntity.InTime = false;
+                        solutionEntity.InTime = true;
                     }
 
                     await _context.Solutions.AddAsync(solutionEntity);
