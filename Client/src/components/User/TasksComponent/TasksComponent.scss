@@ -55,6 +55,7 @@
         text-decoration: none;
         color: #000;
         min-width: 510px;
+        align-content: space-between;
 
         .tasks_left {
             margin-top: 20px;
@@ -70,7 +71,7 @@
 
         .tasks_right {
             display: flex;
-            margin: auto 0 auto 40%;
+            margin: auto 50px auto auto;
 
             img {
                 width: 30px;

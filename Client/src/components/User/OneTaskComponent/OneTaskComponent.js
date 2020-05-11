@@ -79,12 +79,12 @@ class OneTaskComponent extends React.Component {
     changeDate = (event, type) => {
         if (type === 'begin') {
             let beginDate = null
-            if (event.target.value !== '')
+            if (event.target.value !== ''  && event.target.validity.valid)
                 beginDate = event.target.value
             this.setState({beginDate})
         } else {
             let finishDate = null
-            if (event.target.value !== '')
+            if (event.target.value !== ''  && event.target.validity.valid)
                 finishDate = event.target.value
             this.setState({finishDate})
         }
@@ -407,7 +407,7 @@ class OneTaskComponent extends React.Component {
                             </span><br />
                             <input 
                                 type='file' 
-                                accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
+                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
                                 onChange={event => this.onLoadFile(event)}
                             />
                         </Auxiliary> :
@@ -557,7 +557,7 @@ class OneTaskComponent extends React.Component {
                             </span><br />
                             <input 
                                 type='file' 
-                                accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
+                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
                                 onChange={event => this.onLoadFile(event)}
                             />
                         </Auxiliary> :
