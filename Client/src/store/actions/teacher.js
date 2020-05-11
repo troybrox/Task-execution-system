@@ -639,7 +639,7 @@ export function sendCreateRepository(filters) {
                     const filters2 = new FormData()
                     filters2.append('repoId', data.data)
                     filters2.append('file', filters.file)
-                    this.sendCreateRepositoryFile(filters2)
+                    dispatch(sendCreateRepositoryFile(filters2))
                 } else {
                     dispatch(successCreateRepositoryEnd())
                 }

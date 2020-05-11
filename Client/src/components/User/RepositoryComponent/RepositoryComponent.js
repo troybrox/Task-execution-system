@@ -66,22 +66,29 @@ class RepositoryComponent extends React.Component {
             editTitle = title
         else 
             title = editTitle
-        this.props.editRepo(index, text, title)
+
+        let success = window.confirm('Подтвердите ваше действие!');
+        if (success) {
+            this.props.editRepo(index, text, title)
         
 
-        this.setState({
-            edit,
-            text,
-            title,
-            editTitle
-        })
+            this.setState({
+                edit,
+                text,
+                title,
+                editTitle
+            })
+        }
     }
 
     deleteRepoHandler = index => {
-        this.props.deleteRepo(index)
-        this.setState({
-            activeRepoIndex: null
-        })
+        let success = window.confirm('Подтвердите ваше действие!');
+        if (success) {
+            this.props.deleteRepo(index)
+            this.setState({
+                activeRepoIndex: null
+            })
+        }
     }
 
     renderFileList(files) {
@@ -112,11 +119,11 @@ class RepositoryComponent extends React.Component {
                                 <img src='images/folder-regular.svg' alt='' />
                                 {item.name}
                             </li>
-                            {this.state.activeRepoIndex === index && item.files.length !== 0 ? 
+                            {/* {this.state.activeRepoIndex === index && item.files.length !== 0 ?  */}
                                 <ul className='small_list'>
                                     {this.renderFileList(item.files)}
-                                </ul> : null
-                            }
+                                </ul>
+                            {/* } */}
                         </Auxiliary>
 
                     )
@@ -184,8 +191,13 @@ class RepositoryComponent extends React.Component {
                     <Button 
                         typeButton='download'
                         value='Добавить файл'
-                        onClickButton={this.onLoadFile}
-                    />
+                    >
+                        <input 
+                            type='file' 
+                            accept='application/msword,application/pdf,image/jpeg,image/pjpeg' 
+                            onChange={event => this.onLoadFile(event)}
+                        />
+                    </Button>
                 </div>
             )
         }

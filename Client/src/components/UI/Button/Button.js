@@ -45,6 +45,7 @@ const Button = props => {
         >
             {props.value}
             {props.typeButton === 'download' ? <img src='/images/download-solid.svg' alt='' /> : null}
+            {props.children}
         </button>
     )
 }
