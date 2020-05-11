@@ -51,10 +51,22 @@ class RepositoryComponent extends React.Component {
         this.props.sendCreateRepositoryFile(filters)
     }
 
+    editRepoHandler = index => {
+        const edit = !this.state.edit
+        const text = this.state.editText
+        this.props.editRepo(index, this.state.editText)
+        
+
+        this.setState({
+            edit,
+            text
+        })
+    }
+
     renderFileList(files) {
         return files.map(item => {
             return (
-                <li className='download_small'>
+                <li key={item.fileURI} className='download_small'>
                     <a href={item.fileURI} download={item.fileName}>
                         <img src='/images/download-solid.svg' alt='' />
                         {item.fileName} 
@@ -71,9 +83,8 @@ class RepositoryComponent extends React.Component {
                     const cls = ['small_items']
                     if (this.state.activeRepoIndex === index) cls.push('active_small')
                     return (
-                        <Auxiliary>
+                        <Auxiliary key={index}>
                             <li 
-                                key={index}
                                 className={cls.join(' ')}
                                 onClick={this.choiceRepo.bind(this, item, index)}
                             >
@@ -165,7 +176,7 @@ class RepositoryComponent extends React.Component {
                 <Button 
                     typeButton='blue'
                     value='Изменить'
-                    onClickButton={() => this.props.editRepo(this.state.activeRepoIndex)}
+                    onClickButton={() => this.editRepoHandler(this.state.activeRepoIndex)}
                 />
                 <Button 
                     typeButton='grey'
@@ -198,7 +209,7 @@ class RepositoryComponent extends React.Component {
             <Auxiliary>
                 <textarea 
                     className='text_topic_edit' 
-                    value={this.state.editText} 
+                    defaultValue={this.state.editText} 
                     onChange={event => this.changeRepository(event.target)}
                 />
                 {this.renderButtonsEdit()}
