@@ -562,7 +562,7 @@ export function deleteRepo(index) {
         const id = subjectFullData[index].id
 
         try {
-            const response = await axios.post('/api/teacher/repo/delete', id)
+            const response = await axios.post('/api/teacher/repo/delete', {id})
             const data = response.data
             if (data.succeeded) {
                 subjectFullData.splice(index, 1)
@@ -587,7 +587,7 @@ export function editRepo(index, contentText) {
         subjectFullData[index].contentText = contentText
 
         try {
-            const response = await axios.post('/api/teacher/repo/update', subjectFullData)
+            const response = await axios.post('/api/teacher/repo/update', subjectFullData[index])
             const data = response.data
             if (data.succeeded) {
                 dispatch(successSubjectFull(subjectFullData))
