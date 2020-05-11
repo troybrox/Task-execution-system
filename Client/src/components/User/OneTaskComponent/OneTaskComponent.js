@@ -77,7 +77,6 @@ class OneTaskComponent extends React.Component {
     }
 
     changeDate = (event, type) => {
-        console.log(event.target.validity.valid)
         if (type === 'begin') {
             let beginDate = null
             if (event.target.value !== ''  && event.target.validity.valid)
