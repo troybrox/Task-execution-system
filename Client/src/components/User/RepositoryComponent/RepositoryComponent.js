@@ -194,10 +194,12 @@ class RepositoryComponent extends React.Component {
                     >
                         <input 
                             type='file' 
-                            accept='application/msword,application/pdf,image/jpeg,image/pjpeg' 
+                            accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
                             onChange={event => this.onLoadFile(event)}
                         />
                     </Button>
+    
+
                 </div>
             )
         }
