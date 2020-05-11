@@ -91,7 +91,7 @@ class Main extends React.Component {
         return tasks.map((item, index) => {
             let src = 'images/times-solid.svg'
             
-            if (solution !== null) 
+            if (item.solution !== null) 
                 src = 'images/check-square-regular.svg'
         
             return (
@@ -104,7 +104,7 @@ class Main extends React.Component {
                     </Link>
                     <span className='time'>
                         <span>Открыта {item.beginDate}</span><br />
-                        {!item.isOpen ? <span>Закрыта {item.finishDate}</span> : null}
+                        {!item.isOpen ? <span>Закрыта {item.updateDate}</span> : null}
                     </span>
                     <img src={src} alt='' />
                 </div>
