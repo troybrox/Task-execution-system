@@ -279,9 +279,9 @@ namespace TaskExecutionSystem.Controllers
         }
 
         [HttpPost("repo/delete")]
-        public async Task<IActionResult> DeleteRepoAsync([FromBody]int id)
+        public async Task<IActionResult> DeleteRepoAsync([FromBody]int[] id)
         {
-            var res = await _teacherService.DeleteRepositoryAsync(id);
+            var res = await _teacherService.DeleteRepositoryAsync(id[0]);
             return Ok(res);
         }
 
