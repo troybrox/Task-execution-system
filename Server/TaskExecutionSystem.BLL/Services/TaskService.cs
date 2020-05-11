@@ -28,7 +28,7 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
-        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string fileName = null)
+        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string newUniquefileName = null)
         {
             var detail = new OperationDetailDTO();
             try
@@ -37,14 +37,14 @@ namespace TaskExecutionSystem.BLL.Services
                 if (task != null)
                 {
                     TaskFile newFile;
-                    if(fileName != null)
+                    if(newUniquefileName != null)
                     {
                         newFile = new TaskFile
                         {
                             TaskModel = task,
-                            FileName = fileName,
-                            Path = TaskFilePath + userFileName,
-                            FileURI = TaskFileURI + userFileName,
+                            FileName = userFileName,
+                            Path = TaskFilePath + newUniquefileName,
+                            FileURI = TaskFileURI + newUniquefileName,
                         };
                     }
                     else
@@ -75,7 +75,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string userFileName, string fileName = null)
+        public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string userFileName, string newUniquefileName = null)
         {
             var detail = new OperationDetailDTO();
             try
@@ -85,14 +85,14 @@ namespace TaskExecutionSystem.BLL.Services
                 if (solution != null)
                 {
                     SolutionFile newFile;
-                    if (fileName != null)
+                    if (newUniquefileName != null)
                     {
                         newFile = new SolutionFile
                         {
                             Solution = solution,
                             FileName = userFileName,
-                            Path = SolutionFilePath + fileName,
-                            FileURI = SolutionFileURI + fileName,
+                            Path = SolutionFilePath + newUniquefileName,
+                            FileURI = SolutionFileURI + newUniquefileName,
                         };
                     }
                     else
@@ -127,24 +127,32 @@ namespace TaskExecutionSystem.BLL.Services
         {
             int timeProgressPercentage = 100;
 
-            var totalInterval = dto.FinishDate - dto.BeginDate;
-            var pastInterval = DateTime.Now - dto.BeginDate;
-
-            if(pastInterval > totalInterval)
+            if(DateTime.Now <= dto.BeginDate)
             {
-                timeProgressPercentage = 0;
+                dto.TimeBar = timeProgressPercentage;
                 return;
             }
-
-            if (totalInterval.TotalMinutes > 0)
+            else
             {
-                if(pastInterval.TotalMinutes > 0)
+                var totalInterval = dto.FinishDate - dto.BeginDate;
+                var pastInterval = DateTime.Now - dto.BeginDate;
+
+                if (pastInterval >= totalInterval)
                 {
-                    timeProgressPercentage = (int)(Math.Abs((1 - (pastInterval.TotalMinutes / totalInterval.TotalMinutes)) * 100));
+                    dto.TimeBar = 0;
+                    return;
+                }
+
+                if (totalInterval.TotalMinutes > 0)
+                {
+                    if (pastInterval.TotalMinutes > 0)
+                    {
+                        timeProgressPercentage = (int)(Math.Abs((1 - (pastInterval.TotalMinutes / totalInterval.TotalMinutes)) * 100));
+                    }
                 }
             }
 
-            if(timeProgressPercentage >= 0 && timeProgressPercentage < 100)
+            if(timeProgressPercentage >= 0 && timeProgressPercentage <= 100)
             {
                 dto.TimeBar = timeProgressPercentage;
             }

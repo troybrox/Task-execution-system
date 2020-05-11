@@ -607,6 +607,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // TEST: files for solutions
         // done
         public async Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
         {
@@ -638,9 +639,14 @@ namespace TaskExecutionSystem.BLL.Services
                     resStudentDTOList.Add(StudentDTO.Map(studentEntuty));
                 }
 
-                foreach (var s in entity.Solutions)
+                // [files]
+                foreach (var solution in entity.Solutions)
                 {
-                    resSolutionDTOList.Add(SolutionDTO.Map(s));
+                    var solutionEntity = await _context.Solutions
+                        .Include(s => s.File)
+                        .Where(s => s == solution)
+                        .FirstOrDefaultAsync();
+                    resSolutionDTOList.Add(SolutionDTO.Map(solutionEntity));
                 }
 
                 resultTaskDTO = TaskDTO.Map(entity);
@@ -847,7 +853,8 @@ namespace TaskExecutionSystem.BLL.Services
 
             if(dto != null)
             {
-                var repoEntity = await _context.RepositoryModels.FindAsync(dto.Id);
+                var repoEntity = await _context.RepositoryModels
+                    .FindAsync(dto.Id);
 
                 if(repoEntity == null)
                 {
@@ -871,16 +878,26 @@ namespace TaskExecutionSystem.BLL.Services
             return detail;
         }
 
-        public async Task<OperationDetailDTO> DeleteRepositoryAsync(int id)
+        public async Task<OperationDetailDTO<List<string>>> DeleteRepositoryAsync(int id)
         {
-            var detail = new OperationDetailDTO();
+            var detail = new OperationDetailDTO<List<string>>();
+            var removingFiles = new List<string>();
 
-            var entity = await _context.RepositoryModels.FindAsync(id);
+            var entity = await _context.RepositoryModels
+                .Include(r => r.Files)
+                .Where(r => r.Id == id)
+                .FirstOrDefaultAsync();
 
             if (entity != null)
             {
+                foreach (var fileEntity in entity.Files)
+                {
+                    removingFiles.Add(fileEntity.Path);
+                }
                 _context.RepositoryModels.Remove(entity);
                 await _context.SaveChangesAsync();
+
+                detail.Data = removingFiles;
                 detail.Succeeded = true;
             }
             else

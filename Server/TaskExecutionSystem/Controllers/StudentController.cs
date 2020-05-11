@@ -125,24 +125,31 @@ namespace TaskExecutionSystem.Controllers
                 {
                     var fileName = file.FileName;
                     var fileRes = new OperationDetailDTO();
-                    if (System.IO.File.Exists(solutionFileLoadPath + fileName))
+
+                    var newFileName = System.Guid.NewGuid() + fileName;
+                    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + newFileName))
                     {
-                        var newFileName = System.Guid.NewGuid() + fileName;
-                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
+                        file.CopyTo(fileStream);
                     }
-                    else
-                    {
-                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        fileRes = await _taskService.AddFileToSolutionAsync(id, fileName);
-                    }
-                    
+                    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
+
+                    //if (System.IO.File.Exists(solutionFileLoadPath + fileName))
+                    //{
+                    //    var newFileName = System.Guid.NewGuid() + fileName;
+                    //    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
+                    //    {
+                    //        file.CopyTo(fileStream);
+                    //    }
+                    //    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
+                    //}
+                    //else
+                    //{
+                    //    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
+                    //    {
+                    //        file.CopyTo(fileStream);
+                    //    }
+                    //    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName);
+                    //}
 
                     if (!fileRes.Succeeded)
                     {
