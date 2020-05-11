@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 using TaskExecutionSystem.BLL.DTO;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Repository;
@@ -56,6 +57,9 @@ namespace TaskExecutionSystem.Controllers
             _environment = environment;
             _teacherService = teacherService;
         }
+
+        //private readonly string repoFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\RepoFiles\\";
+        //private readonly string taskFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\";
 
 
         [HttpGet("profile")]
@@ -187,7 +191,9 @@ namespace TaskExecutionSystem.Controllers
         [HttpPost("task/add/file")]
         public async Task<IActionResult> AddFileForTaskAsync()
         {
+            string taskFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\";
             var detail = new OperationDetailDTO();
+            
             try
             {
                 var allForms = Request.Form;
@@ -199,11 +205,24 @@ namespace TaskExecutionSystem.Controllers
                 if (file != null)
                 {
                     var fileName = file.FileName;
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
+                    var fileRes = new OperationDetailDTO();
+                    if (System.IO.File.Exists(taskFileLoadPath + fileName))
                     {
-                        file.CopyTo(fileStream);
+                        var newFileName = System.Guid.NewGuid() + fileName;
+                        using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + newFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        fileRes = await _taskService.AddFileToTaskAsync(id, fileName, newFileName);
                     }
-                    var fileRes = await _taskService.AddFileToTaskAsync(id, file.FileName);
+                    else
+                    {
+                        using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                    }
+                    fileRes = await _taskService.AddFileToTaskAsync(id, fileName);
 
                     if (!fileRes.Succeeded)
                     {
@@ -259,10 +278,26 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        [HttpPost("repo/delete")]
+        public async Task<IActionResult> DeleteRepoAsync([FromBody]int id)
+        {
+            var res = await _teacherService.DeleteRepositoryAsync(id);
+            return Ok(res);
+        }
+
+        [HttpPost("repo/update")]
+        public async Task<IActionResult> UpdateRepoAsync([FromBody]RepositoryCreateModelDTO dto)
+        {
+            var res = await _teacherService.UpdateRepositoryAsync(dto);
+            return Ok(res);
+        }
+
+
         // edit for repo
         [HttpPost("repo/add/file")]
         public async Task<IActionResult> AddFileForRepositoryaAsync()
         {
+            string repoFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\RepoFiles\\";
             var detail = new OperationDetailDTO();
             try
             {
@@ -275,11 +310,25 @@ namespace TaskExecutionSystem.Controllers
                 if (file != null)
                 {
                     var fileName = file.FileName;
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\RepoFiles\\" + fileName))
+                    var fileRes = new OperationDetailDTO();
+
+                    if(System.IO.File.Exists(repoFileLoadPath + fileName))
                     {
-                        file.CopyTo(fileStream);
+                        var newFileName = System.Guid.NewGuid() + fileName;
+                        using (var fileStream = System.IO.File.Create(repoFileLoadPath + newFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
                     }
-                    var fileRes = await _repoService.AddFileToRepoAsync(id, file.FileName);
+                    else
+                    {
+                        using (var fileStream = System.IO.File.Create(repoFileLoadPath + fileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        fileRes = await _repoService.AddFileToRepoAsync(id, file.FileName);
+                    }
 
                     if (!fileRes.Succeeded)
                     {

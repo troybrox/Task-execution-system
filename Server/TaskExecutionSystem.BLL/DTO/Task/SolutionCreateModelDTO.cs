@@ -7,6 +7,8 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 {
     public class SolutionCreateModelDTO
     {
+        public int Id { get; set; }
+
         public string ContentText { get; set; }
 
         public int TaskId { get; set; }

@@ -402,13 +402,38 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-
-        private async Task<User> GetUserFromClaimsAsync()
+        public async Task<OperationDetailDTO> UpdateSolutionAsync(SolutionCreateModelDTO dto)
         {
-            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
-            string stringID = userNameClaim.Value;
-            var user = await _userManager.FindByIdAsync(stringID);
-            return user;
+            var detail = new OperationDetailDTO<TaskDTO>();
+            try
+            {
+                if (dto == null)
+                {
+                    detail.ErrorMessages.Add("Объект входного параметра был равен NULL.");
+                    return detail;
+                }
+
+                var entity = await _context.Solutions.FindAsync(dto.Id);
+
+                if (entity == null)
+                {
+                    detail.ErrorMessages.Add("Решение задачи не найдено.");
+                    return detail;
+                }
+
+                entity.ContentText = dto.ContentText;
+
+                _context.Solutions.Update(entity);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
 
@@ -507,6 +532,16 @@ namespace TaskExecutionSystem.BLL.Services
                 return detail;
             }
         }
+
+
+        private async Task<User> GetUserFromClaimsAsync()
+        {
+            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            string stringID = userNameClaim.Value;
+            var user = await _userManager.FindByIdAsync(stringID);
+            return user;
+        }
+
 
     }
 }
