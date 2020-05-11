@@ -55,6 +55,16 @@
                     width: calc(100% - 40px);
                 }
 
+                .download_small {
+                    padding: 5px 0 5px 60px;
+                    display: flex; 
+                    background: rgb(241, 255, 241);
+
+                    a {
+                        width: 100%;
+                    }
+                }
+
                 .active_small {
                     background: rgb(187, 187, 187);
                 }

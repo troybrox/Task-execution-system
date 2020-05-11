@@ -27,17 +27,8 @@ const initialState = {
         groups: []
     },
     taskAdditionData: {},
-    createRepository: [
-        {id: null, name: 'Выбрать предмет'},
-        {id: 1, name: 'Алгебра'},
-        {id: 2, name: 'Информатика'},
-        {id: 3, name: 'Физика'}
-    ],
-    repositoryData: [
-        {id: 1, name: 'Алгебра', open: true},
-        {id: 2, name: 'Информатика', open: false},
-        {id: 3, name: 'Физика', open: false}
-    ],
+    createRepository: [],
+    repositoryData: [],
     subjectFullData: [],
 
     successId: null,

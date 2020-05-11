@@ -316,10 +316,7 @@ export function choiceSubjectHandler(index) {
     return (dispatch, getState) => {
         const state = getState().student
         const repositoryData = [...state.repositoryData]
-        repositoryData.forEach((el, num) => {
-            if (num === index) el.open = true
-            else el.open = false
-        })
+        repositoryData[index].open = !repositoryData[index].open
 
         dispatch(successRepository(repositoryData))
 
@@ -339,11 +336,8 @@ export function fetchSubjectFull(filters) {
             const data = response.data
             if (data.succeeded) {
                 const subjectFullData = []
-                data.data.forEach((el, num) => {
-                    if (num === 0)
-                        el.open = true
-                    else 
-                        el.open = false
+                data.data.forEach(el => {
+                    el.open = false
                     subjectFullData.push(el)
                 })
                 dispatch(successSubjectFull(subjectFullData))

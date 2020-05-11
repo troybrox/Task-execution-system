@@ -475,11 +475,11 @@ export function fetchRepository() {
             const data = response.data
             if (data.succeeded) {
                 const repositoryData = []
-                data.data.forEach((el, index) => {
+                data.data.forEach(el => {
                     const object = el
-                    if (index === 0)
-                        object.open = true
-                    else
+                    // if (index === 0)
+                    //     object.open = true
+                    // else
                     object.open = false
 
                     repositoryData.push(object)
@@ -503,10 +503,7 @@ export function choiceSubjectHandler(index) {
     return (dispatch, getState) => {
         const state = getState().teacher
         const repositoryData = [...state.repositoryData]
-        repositoryData.forEach((el, num) => {
-            if (num === index) el.open = true
-            else el.open = false
-        })
+        repositoryData[index].open = !repositoryData[index].open
 
         dispatch(successRepository(repositoryData))
 
@@ -518,21 +515,81 @@ export function choiceSubjectHandler(index) {
 }
 
 export function fetchSubjectFull(filters) {
-    return async dispatch => {
-        dispatch(loadingStart())
+    return (dispatch, getState) => {
+        const state = getState().teacher
+        const repositoryData = state.repositoryData
+        repositoryData.forEach(async element => {
+            if (element.id === +filters[0].value && element.open) {
+                dispatch(loadingStart())
+                try {
+                    const url = '/api/teacher/repo'
+                    const response = await axios.post(url, filters)
+                    const data = response.data
+                    if (data.succeeded) {
+                        
+                        const subjectFullData = [...state.subjectFullData]
+                        
+                        data.data.forEach(el => {
+                            let index = null
+                            subjectFullData.forEach((element, num) => {
+                                if (el.id === element.id) index = num
+                            })
+                            if (index === null) {
+                                el.open = false
+                                subjectFullData.push(el)
+                            }                        
+                        })
+                        dispatch(successSubjectFull(subjectFullData))
+                    } else {
+                        const err = [...data.errorMessages]
+                        err.unshift('Сообщение с сервера.')
+                        dispatch(errorWindow(true, err))
+                    }
+                } catch (e) {
+                    const err = ['Ошибка подключения']
+                    err.push(e.message)
+                    dispatch(errorWindow(true, err))
+                }
+            }
+        })
+    }
+}
+
+export function deleteRepo(index) {
+    return async (dispatch, getState) => {
+        const state = getState().teacher
+        const subjectFullData = [...state.subjectFullData]
+        const id = subjectFullData[index].id
+
         try {
-            const url = '/api/teacher/repo'
-            const response = await axios.post(url, filters)
+            const response = await axios.post('/api/teacher/repo/delete', id)
             const data = response.data
             if (data.succeeded) {
-                const subjectFullData = []
-                data.data.forEach((el, num) => {
-                    if (num === 0)
-                        el.open = true
-                    else 
-                        el.open = false
-                    subjectFullData.push(el)
-                })
+                subjectFullData.splice(index, 1)
+                dispatch(successSubjectFull(subjectFullData))
+            } else {
+                const err = [...data.errorMessages]
+                err.unshift('Сообщение с сервера.')
+                dispatch(errorWindow(true, err))
+            }
+        } catch (e) {
+            const err = ['Ошибка подключения']
+            err.push(e.message)
+            dispatch(errorWindow(true, err))
+        }
+    }
+}
+
+export function editRepo(index, contentText) {
+    return async (dispatch, getState) => {
+        const state = getState().teacher
+        const subjectFullData = [...state.subjectFullData]
+        subjectFullData[index].contentText = contentText
+
+        try {
+            const response = await axios.post('/api/teacher/repo/update', subjectFullData)
+            const data = response.data
+            if (data.succeeded) {
                 dispatch(successSubjectFull(subjectFullData))
             } else {
                 const err = [...data.errorMessages]

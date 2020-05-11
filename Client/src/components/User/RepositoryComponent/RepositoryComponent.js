@@ -9,46 +9,80 @@ import Loader from '../../UI/Loader/Loader'
 // Компонент отображения репозиториев для препода и студента
 class RepositoryComponent extends React.Component {
     state = {
-        active: false,
-        smallIndex: null,
-        text: [],
+        text: '',
+        editText: '',
         edit: false,
+
+        activeSubjectIndex: null,
+        activeRepoIndex: null
     }
 
     editRepository = () => {
         const edit = !this.state.edit
+        const editText = this.state.text
+        
 
         this.setState({
-            edit
+            edit,
+            editText
+        })
+    }
+
+    onChoiceSubject = async (index) => {
+        await this.props.choiceSubject(index)
+        this.setState({
+            activeSubjectIndex: index  
         })
     }
 
     choiceRepo = (item, index) => {
-
-        const text = [item.name, item.contentText]
+        const text = item.contentText
         this.setState({
-            smallIndex: index,
+            activeRepoIndex: index,
             text,
-            active: true,
             edit: false
         })
     }
 
-    renderMiniList() {
+    renderFileList(files) {
+        return files.map(item => {
+            return (
+                <li className='download_small'>
+                    <a href={item.fileURI} download={item.fileName}>
+                        <img src='/images/download-solid.svg' alt='' />
+                        {item.fileName} 
+                    </a>
+                </li>
+            )
+        })
+    }
+
+    renderMiniList(subjectId) {
         return this.props.subjectFullData.length !== 0 ? 
             this.props.subjectFullData.map((item, index) => {
-                const cls = ['small_items']
-                if (this.state.smallIndex === index) cls.push('active_small')
-                return (
-                    <li 
-                        key={index}
-                        className={cls.join(' ')}
-                        onClick={this.choiceRepo.bind(this, item, index)}
-                    >
-                        <img src='images/folder-regular.svg' alt='' />
-                        {item.name}
-                    </li>
-                )
+                if (item.subjectId === subjectId) {
+                    const cls = ['small_items']
+                    if (this.state.activeRepoIndex === index) cls.push('active_small')
+                    return (
+                        <Auxiliary>
+                            <li 
+                                key={index}
+                                className={cls.join(' ')}
+                                onClick={this.choiceRepo.bind(this, item, index)}
+                            >
+                                <img src='images/folder-regular.svg' alt='' />
+                                {item.name}
+                            </li>
+                            {this.state.activeRepoIndex === index && item.files.length !== 0 ? 
+                                <ul className='small_list'>
+                                    {this.renderFileList(item.files)}
+                                </ul> : null
+                            }
+                        </Auxiliary>
+
+                    )
+                } else 
+                    return null
             }) :
             null
     }
@@ -74,7 +108,7 @@ class RepositoryComponent extends React.Component {
                     <Auxiliary key={index}>
                         <li 
                             className={cls.join(' ')}
-                            onClick={this.props.choiceSubject.bind(this, index)}
+                            onClick={this.onChoiceSubject.bind(this, index)}
                         >
                             {<img src={src} alt='' />}
                             {item.name}
@@ -82,7 +116,7 @@ class RepositoryComponent extends React.Component {
 
                         {item.open ? 
                             <ul className='small_list'>
-                                {this.props.loading ? <Loader /> : this.renderMiniList()}
+                                {this.props.loading ? <Loader /> : this.renderMiniList(item.id)}
                             </ul> : null
                         }
                     </Auxiliary>
@@ -98,8 +132,16 @@ class RepositoryComponent extends React.Component {
         if (localStorage.getItem('role') === 'teacher') {
             return (
                 <div className='buttons'>
-                    <button>Удалить</button>
-                    <button onClick={this.editRepository}>Изменить</button>
+                    <Button 
+                        typeButton='blue'
+                        value='Удалить'
+                        onClickButton={() => this.props.deleteRepo(this.state.activeRepoIndex)}
+                    />
+                    <Button 
+                        typeButton='blue'
+                        value='Изменить'
+                        onClickButton={this.editRepository}
+                    />
                 </div>
             )
         }
@@ -108,17 +150,25 @@ class RepositoryComponent extends React.Component {
     renderButtonsEdit() {
         return (
             <div className='buttons'>
-                <button>Изменить</button>
-                <button className='cancel' onClick={this.editRepository}>Отмена</button>
+                <Button 
+                    typeButton='blue'
+                    value='Изменить'
+                    onClickButton={() => this.props.editRepo(this.state.activeRepoIndex)}
+                />
+                <Button 
+                    typeButton='grey'
+                    value='Отмена'
+                    onClickButton={this.editRepository}
+                />
             </div>
         )
     }
 
     changeRepository = target => {
-        const text = this.state.text
-        text[1] = target.value
+        // const editText = this.state.editText
+        // editText = target.value
         this.setState({
-            text
+            editText: target.value
         })
     }
 
@@ -126,7 +176,7 @@ class RepositoryComponent extends React.Component {
         const teacherLook = (
             <Auxiliary>
                 <p className='text_topic'>
-                        {this.state.text[1]}
+                        {this.state.text}
                 </p>
                 {this.renderButtonsLook()}
             </Auxiliary>
@@ -136,7 +186,7 @@ class RepositoryComponent extends React.Component {
             <Auxiliary>
                 <textarea 
                     className='text_topic_edit' 
-                    value={this.state.text[1]} 
+                    value={this.state.editText} 
                     onChange={event => this.changeRepository(event.target)}
                 />
                 {this.renderButtonsEdit()}
@@ -145,14 +195,16 @@ class RepositoryComponent extends React.Component {
 
         const main = (
             <div className='topic'>
-                {/* <div className='search'>
-                    <input type='search' placeholder='Поиск...' />
-                    <button 
-                        // onClick={this.searchHandler}
-                    >
-                        Поиск
-                    </button>
-                </div> */}
+                { this.props.subjectFullData.length !== 0 && this.state.activeRepoIndex !== null ?
+                    <div className='repo_title'>
+                        <h2>{this.props.subjectFullData[this.state.activeRepoIndex].subject}. {this.props.subjectFullData[this.state.activeRepoIndex].name}</h2> 
+                        { localStorage.getItem('role') === 'student' ? 
+                            <p className='author'>Автор: {this.props.subjectFullData[this.state.activeRepoIndex].teacherSurname} {this.props.subjectFullData[this.state.activeRepoIndex].teacherName} {this.props.subjectFullData[this.state.activeRepoIndex].teacherPatronymic}</p> : 
+                            null
+                        } 
+                    </div>:
+                    null
+                }
 
                 {!this.state.edit ? teacherLook : teacherEdit}
             </div>
@@ -177,7 +229,7 @@ class RepositoryComponent extends React.Component {
                         }
                         {this.props.loading && this.props.repositoryData.length === 0? <Loader /> : this.renderList()}
                     </aside>
-                    { this.state.active ? main : null}
+                    { this.state.activeRepoIndex !== null ? main : null}
 
                 </div>
             </Frame>

@@ -123,15 +123,6 @@ class CreateRepository extends React.Component {
                         valid={true}
                         onChange={event => this.onChangeField(event, index)}
                     />
-                case 'textarea':
-                    return <textarea  
-                        key={index}
-                        type='text' 
-                        className='description_textarea' 
-                        placeholder='Добавьте описание репозитория...'
-                        defaultValue={item.value}
-                        onChange={event => this.onChangeField(event, index)}
-                    />
                 default:
                     return null;
             }
@@ -203,6 +194,13 @@ class CreateRepository extends React.Component {
                             { this.renderInputs() }
                         </div>
                     </div>
+                    <textarea  
+                        type='text' 
+                        className='description_textarea' 
+                        placeholder='Добавьте описание репозитория...'
+                        defaultValue={this.state.fields[2].value}
+                        onChange={event => this.onChangeField(event, 2)}
+                    />
                     { this.renderFileField() }
                     <div className='buttons'>
                         <Button 

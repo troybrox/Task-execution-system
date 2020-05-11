@@ -14,9 +14,8 @@
         display: flex;
 
         .labels {
-            text-align: right;
-            width: 40%;
-            min-width: 200px;
+            margin-left: 15px;
+            min-width: max-content;
         }
 
         .label {
@@ -30,15 +29,11 @@
             text-align: left;
             width: 100%;
             
-            .description_textarea {
-                display: block;
-                padding: 5px 10px;
-                margin: 10px 20px 0 10px;
-                height: 150px;
-                width: 85%;
-                font-size: 16px;
-                resize: none;
-                border-radius: 10px;
+            input {
+                border-radius: 5px;
+                border: 1px solid grey;
+                padding: 2px;
+                font-size: 14px;
             }
         }
 
@@ -49,6 +44,17 @@
             width: calc(60% + 5px);
             background: white;
         }
+    }
+
+    .description_textarea {
+        display: block;
+        padding: 5px 10px;
+        margin: 10px auto;
+        height: 150px;
+        width: 90%;
+        font-size: 16px;
+        resize: none;
+        border-radius: 10px;
     }
 
     .label_file {
