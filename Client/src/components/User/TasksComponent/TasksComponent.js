@@ -34,7 +34,7 @@ class TasksComponent extends React.Component {
             activeSubjectIndex = this.props.subjects[0].id
             filters = [
                 {name: 'subjectId', value: String(activeSubjectIndex)},
-                {name: 'isOpen', value: this.state.tabTitles[0].active}
+                // {name: 'isOpen', value: this.state.tabTitles[0].active}
             ]
             if (localStorage.getItem('role') === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
@@ -44,6 +44,7 @@ class TasksComponent extends React.Component {
                 }
             } else {
                 title = this.props.subjects[0].name
+                filters.push({name: 'isOpen', value: this.state.tabTitles[0].active})
             }
             this.props.fetchListTasks(filters)
         }
@@ -239,11 +240,14 @@ class TasksComponent extends React.Component {
         const typeId = event.target.options[index].getAttribute('index')
         const filters = [
             {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-            {name: 'isOpen', value: this.state.tabTitles[0].active}
+            // {name: 'isOpen', value: this.state.tabTitles[0].active}
         ]
         if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
         if (typeId !== null) filters.push({name: 'typeId', value: typeId})
         if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+
+        if (localStorage.getItem('role') === 'student') 
+            filters.push({name: 'isOpen', value: this.state.tabTitles[0].active})
 
         this.props.fetchListTasks(filters)
 
@@ -263,12 +267,16 @@ class TasksComponent extends React.Component {
     onSearchHandler = () => {
             const filters = [
                 {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-                {name: 'isOpen', value: this.state.tabTitles[0].active}
+                // {name: 'isOpen', value: this.state.tabTitles[0].active}
             ]
             if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
             if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
             if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
             
+            if (localStorage.getItem('role') === 'student') 
+                filters.push({name: 'isOpen', value: this.state.tabTitles[0].active})
+            
+
             this.props.fetchListTasks(filters)
     }
 
