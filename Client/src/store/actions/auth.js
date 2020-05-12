@@ -3,7 +3,6 @@ import {
     AUTH_SUCCESS, 
     LOGOUT, 
     SUCCESS, 
-    // ERROR_MESSAGE_AUTH, 
     PUSH_FILTERS, 
     ERROR_WINDOW,
     LOADING_START } from './actionTypes'
@@ -38,10 +37,9 @@ export function auth(data) {
             const url = 'api/account/login'
             const response = await axios.post(url, data)
             const respData = response.data
-            document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
+            // document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
             localStorage.setItem('token', respData.data.idToken)
             localStorage.setItem('role', respData.data.role)
-            document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
 
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.data.idToken, respData.data.role))
@@ -98,7 +96,6 @@ export function loadingFilters() {
 function setCookie(name, value, options = {}) {
     options = {
         path: '/',
-        // при необходимости добавьте другие значения по умолчанию
         ...options
     }
   
@@ -130,7 +127,7 @@ export function logoutHandler() {
         try {
             await axios.get('api/account/signout')
             
-            deleteCookie('.AspNetCore.Application.Id')
+            // deleteCookie('.AspNetCore.Application.Id')
             localStorage.removeItem('token')
             localStorage.removeItem('role')
             dispatch(logout())
@@ -181,11 +178,3 @@ export function loadingStart() {
         type: LOADING_START
     }
 }
-
-
-// export function errorMessageAuth(errorMessages) {
-//     return {
-//         type: ERROR_MESSAGE_AUTH,
-//         errorMessages
-//     }
-// }
