@@ -8,7 +8,15 @@ namespace TaskExecutionSystem.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder.HasOne(user => user.Teacher)
+                .WithOne(t => t.User)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
 
+            builder.HasOne(user => user.Student)
+                .WithOne(s => s.User)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
         }
     }
 }

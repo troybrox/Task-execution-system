@@ -31,8 +31,6 @@ namespace TaskExecutionSystem.DAL.Data
         public DbSet<TypeOfTask> TaskTypes { get; set; }
 
         public DbSet<RepositoryModel> RepositoryModels { get; set; }
-        public DbSet<Theme> Themes { get; set; }
-        public DbSet<Paragraph> Paragraphs { get; set; }
 
         public DbSet<TaskFile> TaskFiles { get; set; }
         public DbSet<SolutionFile> SolutionFiles { get; set; }
@@ -40,7 +38,7 @@ namespace TaskExecutionSystem.DAL.Data
 
         public DbSet<TaskStudentItem> TaskStudentItems { get; set; }
 
-        // add Task, Repo configs => relations [!]
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -70,6 +68,8 @@ namespace TaskExecutionSystem.DAL.Data
 
             modelBuilder.ApplyConfiguration(new GroupTeacherSubjectConfiguration());
             modelBuilder.ApplyConfiguration(new TaskStudentItemConfiguration());
+
+            modelBuilder.ApplyConfiguration(new RepositoryConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

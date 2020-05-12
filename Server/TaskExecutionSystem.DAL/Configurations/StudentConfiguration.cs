@@ -8,10 +8,16 @@ namespace TaskExecutionSystem.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Student> builder)
         {
-            builder.HasAlternateKey(s => s.UserId);
+            //builder.HasAlternateKey(s => s.UserId);
 
             builder.HasMany(student => student.Solutions)
                 .WithOne(s => s.Student)
+                .HasForeignKey(s => s.StudentId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
+            builder.HasMany(s => s.TaskStudentItems)
+                .WithOne(ts => ts.Student)
                 .HasForeignKey(s => s.StudentId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using TaskExecutionSystem.DAL.Entities.Studies;
 using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.Task;
+using TaskExecutionSystem.DAL.Entities.Repository;
 
 namespace TaskExecutionSystem.DAL.Entities.Identity
 {
@@ -35,6 +36,8 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
 
         public List<TaskModel> Tasks { get; set; }
 
+        public List<RepositoryModel> Repositories { get; set; }
+
 
         [Required]
         public long UserId { get; set; }
@@ -53,8 +56,8 @@ namespace TaskExecutionSystem.DAL.Entities.Identity
         public Teacher()
         {
             GroupTeacherSubjectItems = new List<GroupTeacherSubjectItem>();
-
             Tasks = new List<TaskModel>();
+            Repositories = new List<RepositoryModel>();
         }
     }
 }
