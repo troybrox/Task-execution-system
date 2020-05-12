@@ -34,7 +34,6 @@ class TasksComponent extends React.Component {
             activeSubjectIndex = this.props.subjects[0].id
             filters = [
                 {name: 'subjectId', value: String(activeSubjectIndex)},
-                // {name: 'isOpen', value: this.state.tabTitles[0].active}
             ]
             if (localStorage.getItem('role') === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
@@ -202,12 +201,13 @@ class TasksComponent extends React.Component {
                             <div className='tasks_left'>
                                 <span className='subject_for_lab'>{subject[0]}</span>
                                 <span>{item.type}. {item.name}</span><br />
-                                <span className='small_text'>Открыта {item.dateOpen}</span>
+                                <span className='small_text'>Открыта {item.beginDate}</span>
+                                {/* {!item.isOpen ? <span className='small_text'>Закрыта {item.finishDate}</span> : null } */}
                             </div>
                             { localStorage.getItem('role') === 'teacher' ?
                                 <div className='tasks_right'>
                                     <img src='images/check-circle-solid.svg' alt='' />
-                                    <span>{item.countAnswers}/{item.countStudents}</span>
+                                    <span>{item.solutionsCount}/{item.studentsCount}</span>
                                 </div> :
                                 item.solution !== null ?
                                     <div className='tasks_right'>
@@ -240,7 +240,6 @@ class TasksComponent extends React.Component {
         const typeId = event.target.options[index].getAttribute('index')
         const filters = [
             {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-            // {name: 'isOpen', value: this.state.tabTitles[0].active}
         ]
         if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
         if (typeId !== null) filters.push({name: 'typeId', value: typeId})
@@ -266,8 +265,7 @@ class TasksComponent extends React.Component {
 
     onSearchHandler = () => {
             const filters = [
-                {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-                // {name: 'isOpen', value: this.state.tabTitles[0].active}
+                {name: 'subjectId', value: String(this.state.activeSubjectIndex)}
             ]
             if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
             if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
