@@ -10,8 +10,14 @@ import Select from '../../UI/Select/Select'
 // Компонент отображения страницы задач для препода и студента
 class TasksComponent extends React.Component {
     state = {
+        tabTitles: [
+            {title: 'Открытые', active: true}, 
+            {title: 'Закрытые', active: false}
+        ],
+
         activeSubjectIndex: null,
         activeGroupIndex: null,
+        typeId: null,
         title: '',
         search: ''
     }
@@ -28,6 +34,7 @@ class TasksComponent extends React.Component {
             activeSubjectIndex = this.props.subjects[0].id
             filters = [
                 {name: 'subjectId', value: String(activeSubjectIndex)},
+                {name: 'isOpen', value: this.state.tabTitles[0].active}
             ]
             if (localStorage.getItem('role') === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
@@ -54,7 +61,17 @@ class TasksComponent extends React.Component {
     }
 
     choiceSubjectStudent = (indexSubject, title) => {
-        this.props.choiceSubjectTask(indexSubject)
+        const filters = [
+            {
+                name: 'subjectId',
+                value: String(indexSubject)
+            },
+            {
+                name: 'isOpen',
+                value: this.state.tabTitles[0].active
+            }
+        ]
+        this.props.choiceSubjectTask(filters)
 
         this.setState({
             activeSubjectIndex: indexSubject,
@@ -183,7 +200,7 @@ class TasksComponent extends React.Component {
                         >
                             <div className='tasks_left'>
                                 <span className='subject_for_lab'>{subject[0]}</span>
-                                <span>{item.type} {item.name}</span><br />
+                                <span>{item.type}. {item.name}</span><br />
                                 <span className='small_text'>Открыта {item.dateOpen}</span>
                             </div>
                             { localStorage.getItem('role') === 'teacher' ?
@@ -191,7 +208,11 @@ class TasksComponent extends React.Component {
                                     <img src='images/check-circle-solid.svg' alt='' />
                                     <span>{item.countAnswers}/{item.countStudents}</span>
                                 </div> :
-                                null
+                                item.solution !== null ?
+                                    <div className='tasks_right'>
+                                        <span className={item.solution.isInTime ? 'green_status' :'red_status'}>{item.solution.isInTime ? 'Сдано вовремя' : 'Просрочено'}</span>
+                                    </div> :
+                                    null
                             }
                         </Link>
                 )
@@ -216,15 +237,19 @@ class TasksComponent extends React.Component {
     onChangeSelect = event => {
         const index = event.target.options.selectedIndex
         const typeId = event.target.options[index].getAttribute('index')
-        console.log(index)
-        console.log(typeId)
         const filters = [
             {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-            {name: 'groupId', value: String(this.state.activeGroupIndex)},
-            {name: 'typeId', value: typeId}
+            {name: 'isOpen', value: this.state.tabTitles[0].active}
         ]
+        if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
+        if (typeId !== null) filters.push({name: 'typeId', value: typeId})
+        if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
 
         this.props.fetchListTasks(filters)
+
+        this.setState({
+            typeId
+        })
     }
 
     onChangeSearch = event => {
@@ -236,19 +261,63 @@ class TasksComponent extends React.Component {
     }
 
     onSearchHandler = () => {
-        if (this.state.search.trim() !== '') {
             const filters = [
                 {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-                {name: 'groupId', value: String(this.state.activeGroupIndex)},
-                {name: 'searchString', value: this.state.search}
+                {name: 'isOpen', value: this.state.tabTitles[0].active}
             ]
+            if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
+            if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
+            if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+            
             this.props.fetchListTasks(filters)
-        }
+    }
+
+    changeTab = index => {
+        const tabTitles = [...this.state.tabTitles]
+        tabTitles.forEach(el => {
+            el.active = false
+        })
+        tabTitles[index].active = true
+
+        this.setState({
+            tabTitles
+        }, () => {
+            const filters = [
+                {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
+                {name: 'isOpen', value: this.state.tabTitles[0].active}
+            ]
+
+            if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+            if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
+            this.props.fetchListTasks(filters)
+        })
+    }
+
+    renderTab() {
+        return this.state.tabTitles.map((item, index) => {
+            const cls = ['tab']
+            if (item.active) cls.push('active_tab')
+            return (
+                <h4
+                    key={index}
+                    className={cls.join(' ')}
+                    onClick={this.changeTab.bind(this, index)}
+                >
+                    {item.title}
+                </h4>
+            )
+        })    
     }
     
     render() {
         const main = (
-            <div className='tasks_group'>               
+            <div className='tasks_group'>   
+                {localStorage.getItem('role') === 'student' ?
+                    <div className='nav'>
+                        {this.renderTab()}
+                    </div> :
+                    null
+                }            
                 <div className='search'>
                     <input 
                         type='search' 
