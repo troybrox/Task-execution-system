@@ -1030,90 +1030,90 @@ namespace TaskExecutionSystem.BLL.Services
 
         // test
         // add try - catch
-        public async Task<OperationDetailDTO<string>> CreateNewThemeAsync(ThemeCreateModelDTO dto)
-        {
-            var detail = new OperationDetailDTO<string>();
+        //public async Task<OperationDetailDTO<string>> CreateNewThemeAsync(ThemeCreateModelDTO dto)
+        //{
+        //    var detail = new OperationDetailDTO<string>();
 
-            if (dto != null)
-            {
-                var repositoryEntity = await _context.RepositoryModels.FindAsync(dto.RepositoryId);
+        //    if (dto != null)
+        //    {
+        //        var repositoryEntity = await _context.RepositoryModels.FindAsync(dto.RepositoryId);
 
-                if (repositoryEntity != null)
-                {
-                    var themeEntity = ThemeCreateModelDTO.Map(dto);
-                    themeEntity.Repository = repositoryEntity;
-                    await _context.Themes.AddAsync(themeEntity);
-                    await _context.SaveChangesAsync();
+        //        if (repositoryEntity != null)
+        //        {
+        //            var themeEntity = ThemeCreateModelDTO.Map(dto);
+        //            themeEntity.Repository = repositoryEntity;
+        //            await _context.Themes.AddAsync(themeEntity);
+        //            await _context.SaveChangesAsync();
 
-                    var createdTheme = await _context.Themes.FindAsync(themeEntity);  // by id ?
-                    if (createdTheme != null)
-                    {
-                        detail.Data = createdTheme.Id.ToString();
-                        detail.Succeeded = true;
-                    }
-                    else
-                    {
-                        detail.ErrorMessages.Add("Не удалось получить созданную тему");
-                    }
-                }
+        //            var createdTheme = await _context.Themes.FindAsync(themeEntity);  // by id ?
+        //            if (createdTheme != null)
+        //            {
+        //                detail.Data = createdTheme.Id.ToString();
+        //                detail.Succeeded = true;
+        //            }
+        //            else
+        //            {
+        //                detail.ErrorMessages.Add("Не удалось получить созданную тему");
+        //            }
+        //        }
 
-                else
-                {
-                    detail.ErrorMessages.Add("Параметр репозитория создаваемой темы был равен NULL");
-                }
+        //        else
+        //        {
+        //            detail.ErrorMessages.Add("Параметр репозитория создаваемой темы был равен NULL");
+        //        }
 
-                return detail;
-            }
+        //        return detail;
+        //    }
 
-            else
-            {
-                detail.ErrorMessages.Add("Входные данные создаваемой темы равны NULL");
-                return detail;
-            }
-        }
+        //    else
+        //    {
+        //        detail.ErrorMessages.Add("Входные данные создаваемой темы равны NULL");
+        //        return detail;
+        //    }
+        //}
 
         // test
         // add try - catch
-        public async Task<OperationDetailDTO<string>> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
-        {
-            var detail = new OperationDetailDTO<string>();
+        //public async Task<OperationDetailDTO<string>> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
+        //{
+        //    var detail = new OperationDetailDTO<string>();
 
-            if (dto != null)
-            {
-                var themeEntity = await _context.Themes.FindAsync(dto.ThemeId);
+        //    if (dto != null)
+        //    {
+        //        var themeEntity = await _context.Themes.FindAsync(dto.ThemeId);
 
-                if (themeEntity != null)
-                {
-                    var paragraphEntity = ParagraphCreateModelDTO.Map(dto);
-                    await _context.Paragraphs.AddAsync(paragraphEntity);
-                    await _context.SaveChangesAsync();
+        //        if (themeEntity != null)
+        //        {
+        //            var paragraphEntity = ParagraphCreateModelDTO.Map(dto);
+        //            await _context.Paragraphs.AddAsync(paragraphEntity);
+        //            await _context.SaveChangesAsync();
 
-                    var createdParagraph = await _context.Paragraphs.FindAsync(paragraphEntity);  // by id ?
-                    if (createdParagraph != null)
-                    {
-                        detail.Data = createdParagraph.Id.ToString();
-                        detail.Succeeded = true;
-                    }
-                    else
-                    {
-                        detail.ErrorMessages.Add("Не удалось получить созданный параграф");
-                    }
-                }
+        //            var createdParagraph = await _context.Paragraphs.FindAsync(paragraphEntity);  // by id ?
+        //            if (createdParagraph != null)
+        //            {
+        //                detail.Data = createdParagraph.Id.ToString();
+        //                detail.Succeeded = true;
+        //            }
+        //            else
+        //            {
+        //                detail.ErrorMessages.Add("Не удалось получить созданный параграф");
+        //            }
+        //        }
 
-                else
-                {
-                    detail.ErrorMessages.Add("Параметр темы создаваемого параграфа был равен NULL");
-                }
+        //        else
+        //        {
+        //            detail.ErrorMessages.Add("Параметр темы создаваемого параграфа был равен NULL");
+        //        }
 
-                return detail;
-            }
+        //        return detail;
+        //    }
 
-            else
-            {
-                detail.ErrorMessages.Add("Входные данные создаваемого параграфа равны NULL");
-                return detail;
-            }
-        }
+        //    else
+        //    {
+        //        detail.ErrorMessages.Add("Входные данные создаваемого параграфа равны NULL");
+        //        return detail;
+        //    }
+        //}
 
         
     }

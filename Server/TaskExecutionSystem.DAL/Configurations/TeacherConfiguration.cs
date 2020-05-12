@@ -8,7 +8,7 @@ namespace TaskExecutionSystem.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Teacher> builder)
         {
-            builder.HasAlternateKey(t => t.UserId);
+            //builder.HasAlternateKey(t => t.UserId);
 
             builder.HasMany(t => t.GroupTeacherSubjectItems)
                 .WithOne(gts => gts.Teacher)
@@ -20,6 +20,12 @@ namespace TaskExecutionSystem.DAL.Configurations
                 .WithOne(task => task.Teacher)
                 .HasForeignKey(task => task.TeacherId)
                 .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
+
+            builder.HasMany(teacher => teacher.Repositories)
+                .WithOne(repo => repo.Teacher)
+                .HasForeignKey(repo => repo.TeacherId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             builder.Property(t => t.Name)

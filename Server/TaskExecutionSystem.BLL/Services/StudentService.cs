@@ -144,6 +144,7 @@ namespace TaskExecutionSystem.BLL.Services
                                      .Include(t => t.Teacher)
                                      .Include(t => t.Subject)
                                      .Include(t => t.Type)
+                                     .Include(t => t.Solutions)
                                      .Where(t => (t.TaskStudentItems.FirstOrDefault(x => x.StudentId == studentEntity.Id) != null))
                                                              select t;
 
@@ -185,13 +186,42 @@ namespace TaskExecutionSystem.BLL.Services
                                     }
                                     break;
                                 }
+
+
+                            case "isOpen":
+                                {
+                                    bool param = true;
+                                    var value = bool.TryParse(filter.Value, out param);
+                                    if (value)
+                                    {
+                                        tasks = tasks
+                                        .Where(t => t.IsOpen);
+
+                                    }
+                                    else
+                                    {
+                                        tasks = tasks
+                                        .Where(t => !t.IsOpen);
+                                    }
+                                    break;
+                                }
                         }
                     }
                 }
 
                 foreach (var entity in tasks)
                 {
+                    var solution = new Solution();
                     var taskDTO = TaskDTO.Map(entity);
+                    var currentSolution = new SolutionDTO();
+                    if (entity.Solutions.Count > 0)
+                    {
+                        if((solution = entity.Solutions.FirstOrDefault(s => s.StudentId == studentEntity.Id)) != null)
+                        {
+                            currentSolution.IsInTime = solution.InTime;
+                            taskDTO.Solution = currentSolution;
+                        }
+                    }
                     resultList.Add(taskDTO);
                 }
 
