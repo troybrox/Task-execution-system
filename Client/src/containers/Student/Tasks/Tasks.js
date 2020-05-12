@@ -30,7 +30,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchTaskFilters: () => dispatch(fetchTaskFilters()),
-        choiceSubjectTask: (indexSubject) => dispatch(choiceSubjectTask(indexSubject)),
+        choiceSubjectTask: (filters) => dispatch(choiceSubjectTask(filters)),
         fetchListTasks: (filters) => dispatch(fetchListTasks(filters)),
     }
 }

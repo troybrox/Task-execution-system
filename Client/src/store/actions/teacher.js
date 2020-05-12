@@ -273,18 +273,10 @@ export function fetchListTasks(filters) {
             const data = response.data
 
             if (data.succeeded) {
-                const tasks = []
-                if (data.data.length !== 0) {
-                    data.data.forEach(el => {
-                        const beginDate = new Date(el.beginDate) 
-                        const object = {id: el.id, type: el.type, name: el.name, dateOpen: parseDate(beginDate)}
-                    
-                        object.countAnswers = el.solutionsCount 
-                        object.countStudents = el.studentsCount
-    
-                        tasks.push(object)
-                    })
-                }
+                const tasks = [...data.data]
+                tasks.forEach(el => {
+                    el.beginDate = parseDate(new Date(el.beginDate))
+                })
 
                 dispatch(successTasks(tasks))
             } else {
@@ -332,7 +324,9 @@ export function fetchTaskById(id) {
                 taskAdditionData.beginDate = parseDate(beginDate) 
                 taskAdditionData.finishDate = parseDate(finishDate) 
                 if (taskAdditionData.solutions.length !== 0) {
-                    taskAdditionData.solutions.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                    taskAdditionData.solutions.forEach(el => {
+                        el.creationDate = parseDate(new Date(el.creationDate))
+                    })
                 }
 
                 if (taskAdditionData.solution !== null) {

@@ -127,23 +127,16 @@ export function fetchTaskFilters() {
     }
 }
 
-export function choiceSubjectTask(indexSubject) {
+export function choiceSubjectTask(filters) {
     return async(dispatch, getState) => {
         const state = getState().student
         const taskData = state.taskData
         taskData.subjects.forEach(el => {
-            if (el.id === indexSubject)
+            if (el.id === +filters[0].value)
                 el.open = true
             else
                 el.open = false
-        })
-
-        const filters = [
-            {
-                name: 'subjectId',
-                value: String(indexSubject)
-            }
-        ]        
+        })    
 
         await dispatch(fetchListTasks(filters))
 
@@ -177,9 +170,9 @@ export function fetchListTasks(filters) {
             const data = response.data
 
             if (data.succeeded) {
-                const tasks = []
-                data.data.forEach(el => {
-                    tasks.push({id: el.id, type: el.type, name: el.name, dateOpen: parseDate(new Date(el.beginDate))})
+                const tasks = [...data.data]
+                tasks.forEach(el => {
+                    el.beginDate = parseDate(new Date(el.beginDate))
                 })
 
                 dispatch(successTasks(tasks))
@@ -208,12 +201,9 @@ export function fetchTaskById(id) {
                 const taskAdditionData = data.data
                 taskAdditionData.beginDate = parseDate(new Date(data.data.beginDate)) 
                 taskAdditionData.finishDate = parseDate(new Date(data.data.finishDate)) 
-                if (taskAdditionData.solutions.length !== 0) {
-                    taskAdditionData.solutions.creationDate = parseDate(new Date(data.data.solutions.creationDate))
-                }
-
+    
                 if (taskAdditionData.solution !== null) {
-                    taskAdditionData.solution.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                    taskAdditionData.solution.creationDate = parseDate(new Date(data.data.solution.creationDate))
                 }
 
                 if (taskAdditionData.updateDate !== null) {
