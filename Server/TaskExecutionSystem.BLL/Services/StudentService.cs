@@ -432,6 +432,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // TODO: fileUpdate [!]
         public async Task<OperationDetailDTO> UpdateSolutionAsync(SolutionCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
@@ -452,6 +453,7 @@ namespace TaskExecutionSystem.BLL.Services
                 }
 
                 entity.ContentText = dto.ContentText;
+                entity.CreationDate = DateTime.Now;
 
                 _context.Solutions.Update(entity);
                 await _context.SaveChangesAsync();

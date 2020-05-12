@@ -98,6 +98,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // TODO: fileUpdate [!]
         [HttpPost("solution/update")]
         public async Task<IActionResult> UpdateSolution([FromBody]SolutionCreateModelDTO dto)
         {
@@ -105,12 +106,17 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // TODO: fileUpdate [!]
+        // TODO: add getSolFile(solId) in taskService
         [HttpPost("solution/add/file")]
         public async Task<IActionResult> AddFile()
         {
+            // todo: проверка на наличие файла у решения ->
+            // string fileName = _taskService(getSolFile(solId))
+            // if(fileName != null) ->  файл перезаписывается, solutionFile меняется 
+            // else -> newFile
             string solutionFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\";
             var detail = new OperationDetailDTO();
-
             try
             {
                 var allForms = Request.Form;
