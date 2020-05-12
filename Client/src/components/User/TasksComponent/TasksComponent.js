@@ -17,6 +17,7 @@ class TasksComponent extends React.Component {
 
         activeSubjectIndex: null,
         activeGroupIndex: null,
+        typeId: null,
         title: '',
         search: ''
     }
@@ -238,12 +239,17 @@ class TasksComponent extends React.Component {
         const typeId = event.target.options[index].getAttribute('index')
         const filters = [
             {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-            {name: 'groupId', value: String(this.state.activeGroupIndex)},
-            {name: 'typeId', value: typeId},
             {name: 'isOpen', value: this.state.tabTitles[0].active}
         ]
+        if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
+        if (typeId !== null) filters.push({name: 'typeId', value: typeId})
+        if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
 
         this.props.fetchListTasks(filters)
+
+        this.setState({
+            typeId
+        })
     }
 
     onChangeSearch = event => {
@@ -255,15 +261,15 @@ class TasksComponent extends React.Component {
     }
 
     onSearchHandler = () => {
-        if (this.state.search.trim() !== '') {
             const filters = [
                 {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-                {name: 'groupId', value: String(this.state.activeGroupIndex)},
-                {name: 'searchString', value: this.state.search},
                 {name: 'isOpen', value: this.state.tabTitles[0].active}
             ]
+            if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
+            if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
+            if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+            
             this.props.fetchListTasks(filters)
-        }
     }
 
     changeTab = index => {
@@ -275,9 +281,15 @@ class TasksComponent extends React.Component {
 
         this.setState({
             tabTitles
-        // }, () => {
-        //     this.requestUserHandler()
-        //     this.requestListHandler()
+        }, () => {
+            const filters = [
+                {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
+                {name: 'isOpen', value: this.state.tabTitles[0].active}
+            ]
+
+            if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+            if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
+            this.props.fetchListTasks(filters)
         })
     }
 
