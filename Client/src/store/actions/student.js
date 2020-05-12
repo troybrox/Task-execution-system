@@ -172,7 +172,7 @@ export function fetchListTasks(filters) {
             if (data.succeeded) {
                 const tasks = [...data.data]
                 tasks.forEach(el => {
-                    el.dateOpen = parseDate(new Date(el.beginDate))
+                    el.beginDate = parseDate(new Date(el.beginDate))
                 })
 
                 dispatch(successTasks(tasks))
