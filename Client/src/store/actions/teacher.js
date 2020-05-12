@@ -332,7 +332,10 @@ export function fetchTaskById(id) {
                 taskAdditionData.beginDate = parseDate(beginDate) 
                 taskAdditionData.finishDate = parseDate(finishDate) 
                 if (taskAdditionData.solutions.length !== 0) {
-                    taskAdditionData.solutions.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                    taskAdditionData.solutions.forEach(el => {
+                        el.creationDate = parseDate(new Date(el.creationDate))
+                    })
+                    // taskAdditionData.solutions.creationDate = parseDate(new Date(data.data.solutions.creationDate))
                 }
 
                 if (taskAdditionData.solution !== null) {
