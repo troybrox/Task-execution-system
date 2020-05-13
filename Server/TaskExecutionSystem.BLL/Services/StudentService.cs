@@ -190,18 +190,19 @@ namespace TaskExecutionSystem.BLL.Services
 
                             case "isOpen":
                                 {
-                                    bool param = true;
-                                    var value = bool.TryParse(filter.Value, out param);
-                                    if (value)
+                                    var value = filter.Value;
+                                    if (!String.IsNullOrEmpty(value))
                                     {
-                                        tasks = tasks
-                                        .Where(t => t.IsOpen);
-
-                                    }
-                                    else
-                                    {
-                                        tasks = tasks
-                                        .Where(t => !t.IsOpen);
+                                        if(value == "true")
+                                        {
+                                            tasks = tasks
+                                            .Where(t => t.IsOpen);
+                                        }
+                                        if(value == "false")
+                                        {
+                                            tasks = tasks
+                                            .Where(t => !t.IsOpen);
+                                        }
                                     }
                                     break;
                                 }
