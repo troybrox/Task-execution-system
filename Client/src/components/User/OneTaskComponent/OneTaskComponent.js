@@ -17,10 +17,12 @@ class OneTaskComponent extends React.Component {
         studentIds: [],
         titleInput: Object.keys(this.props.taskAdditionData).length !== 0 ? this.props.taskAdditionData.name : '',
         descriptionInput: Object.keys(this.props.taskAdditionData).length !== 0 ? this.props.taskAdditionData.contentText : '',
+        descriptionTextarea: '',
         files: null,
         beginDate: '',
         finishDate: '',
-        checkAll: false
+        checkAll: false,
+        editAnswer: false
     }
 
     choiceSubject = event => {
@@ -126,14 +128,31 @@ class OneTaskComponent extends React.Component {
         })
     }
 
-    sendSolution = () => {
+    sendSolution = (path) => {
         const createSolution = {
             task: {}
         }
-        createSolution.task.contentText = this.state.descriptionInput
+        createSolution.task.contentText = this.state.descriptionTextarea
         createSolution.task.taskId = +this.props.idTask
         createSolution.file = this.state.files
-        this.props.onSendSolution(createSolution, this.props.idTask)
+        this.props.onSendSolution(createSolution, this.props.idTask, path)
+    }
+
+    onEditAnswer = () => {
+        if (this.state.editAnswer) {
+            this.sendSolution('update')
+        }
+
+        this.setState({
+            editAnswer: !this.state.editAnswer,
+            descriptionTextarea: this.props.descriptionTextarea
+        })
+    }
+
+    onEditAnswerFalse = () => {
+        this.setState({
+            editAnswer: false
+        })
     }
 
     renderMemberCreate() {
@@ -562,11 +581,13 @@ class OneTaskComponent extends React.Component {
     renderContainTask() {
         const all = localStorage.getItem('role') === 'student' ? 
             'solution' in this.props.taskAdditionData && this.props.taskAdditionData.solution !== null ?
-                <Answer 
-                    source='user.svg'
-                    data={this.props.taskAdditionData.solution}
-                    role='student'
-                /> : 
+                !this.state.editAnswer ?
+                    <Answer 
+                        source='user.svg'
+                        data={this.props.taskAdditionData.solution}
+                        role='student'
+                    /> : 
+                    this.renderAnswerField() :
                 null :
             'solutions' in this.props.taskAdditionData ?
                 this.props.taskAdditionData.solutions.map((item, index) => {
@@ -613,16 +634,21 @@ class OneTaskComponent extends React.Component {
                         {students}
                     </ul>
                     {all}
-                    {localStorage.getItem('role') === 'student' && this.props.taskAdditionData.isOpen ? this.props.taskAdditionData.solution === null ? this.renderAnswerField() : <Button typeButton='blue' value='Изменить' /> : null}
+                    {localStorage.getItem('role') === 'student' && this.props.taskAdditionData.isOpen ? 
+                        this.props.taskAdditionData.solution === null ? 
+                            this.renderAnswerField() : 
+                            <Auxiliary>
+                                <Button typeButton='blue' value='Изменить' onClickButton={this.onEditAnswer} /> 
+                                {this.state.editAnswer ? <Button typeButton='grey' value='Отмена' onClickButton={this.onEditAnswerFalse} /> : null}
+                            </Auxiliary> : 
+                        null}
                 </div>
         )
     }
 
     renderAnswerField() {
-        const clsForFile = ['label_file']
-        if (this.state.files !== null) clsForFile.push('ready_file')
         let cls = 'blue_big'
-        if (this.state.descriptionInput.trim() === '')
+        if (this.state.descriptionTextarea.trim() === '')
             cls = 'disactive_big'
 
         return (
@@ -631,9 +657,27 @@ class OneTaskComponent extends React.Component {
                     type='text' 
                     className='description_textarea text_block' 
                     placeholder='Добавьте описание решения...'
-                    defaultValue={this.state.descriptionInput}
+                    defaultValue={this.state.descriptionTextarea}
                     onChange={event => this.onChangeDescription(event)}
                 />
+                {this.renderFileAnswer()}
+                {localStorage.getItem('role') === 'student' && !this.state.editAnswer ? 
+                    <Button 
+                        typeButton={cls}
+                        value='Отправить решение'
+                        onClickButton={() => this.sendSolution('add')}
+                    /> : 
+                    null
+                }
+            </div>
+        )
+    }
+
+    renderFileAnswer() {
+        const clsForFile = ['label_file']
+        if (!this.state.editAnswer) {
+            if (this.state.files !== null) clsForFile.push('ready_file')
+            return (
                 <label 
                     className={clsForFile.join(' ')}
                 >
@@ -665,16 +709,43 @@ class OneTaskComponent extends React.Component {
                         </Auxiliary>
                     }
                 </label>
-                {localStorage.getItem('role') === 'student' ? 
-                    <Button 
-                        typeButton={cls}
-                        value='Отправить решение'
-                        onClickButton={this.sendSolution}
-                    /> : 
-                    null
-                }
-            </div>
-        )
+            )
+        } else {
+            if (this.props.taskAdditionData.fileName !== null) clsForFile.push('ready_file')
+            return (
+                <label 
+                    className={clsForFile.join(' ')}
+                >
+                    {this.state.files === null ?
+                        <Auxiliary>
+                            <span className='title_file'>
+                                Перетащите файл в это поле или кликните сюда для загрузки
+                            </span><br />
+                            <input 
+                                type='file' 
+                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                onChange={event => this.onLoadFile(event)}
+                            />
+                        </Auxiliary> :
+                        <Auxiliary>
+                            <span className='title_file'>
+                                Ваш файл
+                            </span><br />
+                            <p>
+                                <img src='/images/file-solid.svg' alt='' /><br />
+                                <span>{this.props.taskAdditionData.solution.fileName}</span>  
+                            </p><br />
+                            <span 
+                                className='delete_file'
+                                onClick={this.removeFile}
+                            >
+                                Заменить файл
+                            </span>
+                        </Auxiliary>
+                    }
+                </label>
+            )
+        }
     }
    
     renderContain() {        
@@ -715,7 +786,10 @@ class OneTaskComponent extends React.Component {
                             <span>{this.props.taskAdditionData.type} </span>
                             <span>{this.props.taskAdditionData.name}</span>
                             <p className='small_text'>
-                                Открыта {this.props.taskAdditionData.beginDate}
+                                {this.props.taskAdditionData.updateDate !== null && this.props.taskAdditionData.isOpen ?
+                                    `Обновлено ${this.props.taskAdditionData.updateDate}` :
+                                    null    
+                                }
                                 <span className='small_text'>
                                     Кол-во ответов:
                                     {' ' + this.props.taskAdditionData.solutionsCount}

@@ -226,10 +226,10 @@ export function fetchTaskById(id) {
     }
 }
 
-export function onSendSolution(createSolution, id) {
+export function onSendSolution(createSolution, id, path) {
     return async dispatch => {
         try {
-            const url = 'api/student/solution/add'
+            const url = `api/student/solution/${path}`
             const response = await axios.post(url, createSolution.task)
             const data = response.data
 
@@ -238,7 +238,7 @@ export function onSendSolution(createSolution, id) {
                     try {
                         const url2 = 'api/student/solution/add/file'
                         const file = new FormData()
-                        file.append('taskId', data.data)
+                        file.append('taskId', id)
                         file.append('file', createSolution.file)
                         const response2 = await axios.post(url2, file)
                         const data2 = response2.data

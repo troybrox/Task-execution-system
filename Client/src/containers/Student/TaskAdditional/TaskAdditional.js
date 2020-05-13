@@ -15,6 +15,7 @@ class TasksComponent extends React.Component {
                 typeTask='task'
                 idTask={this.props.match.params.id}
                 taskAdditionData={this.props.taskAdditionData}
+                descriptionTextarea={Object.keys(this.props.taskAdditionData).length !== 0 && this.props.taskAdditionData.solution !== null ? this.props.taskAdditionData.solution.contentText : ''}
                 loading={this.props.loading}
                 onSendSolution={this.props.onSendSolution}
             >
@@ -42,7 +43,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchTaskById: id => dispatch(fetchTaskById(id)),
-        onSendSolution: (createSolution, id) => dispatch(onSendSolution(createSolution, id)),
+        onSendSolution: (createSolution, id, path) => dispatch(onSendSolution(createSolution, id, path)),
         errorWindow: (errorShow, errorMessage) => dispatch(errorWindow(errorShow, errorMessage)),
     }
 }
