@@ -294,7 +294,7 @@ namespace TaskExecutionSystem.BLL.Services
                                      .Include(t => t.Group)
                                      .ThenInclude(g => g.Tasks)
                                      .Include(t => t.Group)
-                                     .ThenInclude(g => g.Students) 
+                                     .ThenInclude(g => g.Students)
                                      .Include(t => t.Subject)
                                      .Include(t => t.Type)
                                      .Include(t => t.Solutions)
@@ -317,71 +317,59 @@ namespace TaskExecutionSystem.BLL.Services
                 // из всех задач препода получить список предметов по которым у препода есть задачи
                 foreach (var task in teacherTaskQueryList)
                 {
-                    var currentSubjectDTO = new SubjectDTO();
-                    var currentGroupDTO = GroupDTO.Map(task.Group);
+                    SubjectDTO currentSubjectDTO;
+                    GroupDTO currentGroupDTO;
                     var newStudentDTO = new StudentDTO();
 
                     if ((currentSubjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
                     {
-                        if ((currentGroupDTO = currentSubjectDTO.Groups.FirstOrDefault(g => g.Id == currentGroupDTO.Id)) != null)
+                        if ((currentGroupDTO = currentSubjectDTO.Groups.FirstOrDefault(g => g.Id == task.GroupId)) != null)
                         {
-                            foreach (var student in currentGroupDTO.Students)
+                            if (currentGroupDTO.Students != null)
                             {
-                                // get every student solution for current task
-                                var ts = new TaskStudentItem();
-                                var solution = new Solution();
-                                if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                                foreach (var student in currentGroupDTO.Students)
                                 {
-                                    var taskDTO = TaskDTO.Map(task);
-                                    var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
-                                    //var solEnt = await _context.Solutions
-                                    //    .Where(s => s.StudentId == student.Id)
-                                    //    .Where(s => s.TaskId == task.Id)
-                                    //    .FirstOrDefaultAsync();
-                                    //if((solution = task.Solutions.FirstOrDefault(s => s.StudentId == student.Id)) != null)
-                                    //{
-                                    //    taskDTO.Solution = SolutionDTO.Map(solution);
-                                    //}
-                                    if (solEnt != null)
+                                    // get every student solution for current task
+                                    var ts = new TaskStudentItem();
+                                    var solution = new Solution();
+                                    if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                                     {
-                                        taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                        var taskDTO = TaskDTO.Map(task);
+
+                                        var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                        if (solEnt != null)
+                                        {
+                                            taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                        }
+
+                                        student.Tasks.Add(taskDTO);
                                     }
-                                    student.Tasks.Add(taskDTO);
-                                    //if(solution != null)
-                                    //{
-                                        //student.Tasks.
-                                        //student.Solution = SolutionDTO.Map(solution);
-                                        //student.Solutions.Add(SolutionDTO.Map(solution));
-                                        //student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
-                                    //}
                                 }
                             }
+
                         }
                         else
                         {
+                            currentGroupDTO = GroupDTO.Map(task.Group); //
                             currentSubjectDTO.Groups.Add(currentGroupDTO);
-                            foreach (var student in currentGroupDTO.Students)
+                            if (currentGroupDTO.Students != null)
                             {
-                                var ts = new TaskStudentItem();
-                                var solution = new Solution();
-                                if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                                foreach (var student in currentGroupDTO.Students)
                                 {
-                                    var taskDTO = TaskDTO.Map(task);
-                                    var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
-                                    //var solEnt = await _context.Solutions
-                                    //    .Where(s => s.StudentId == student.Id)
-                                    //    .Where(s => s.TaskId == task.Id)
-                                    //    .FirstOrDefaultAsync();
-                                    //if((solution = task.Solutions.FirstOrDefault(s => s.StudentId == student.Id)) != null)
-                                    //{
-                                    //    taskDTO.Solution = SolutionDTO.Map(solution);
-                                    //}
-                                    if (solEnt != null)
+                                    var ts = new TaskStudentItem();
+                                    var solution = new Solution();
+                                    if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                                     {
-                                        taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                        var taskDTO = TaskDTO.Map(task);
+
+                                        var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                        if (solEnt != null)
+                                        {
+                                            taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                        }
+
+                                        student.Tasks.Add(taskDTO);
                                     }
-                                    student.Tasks.Add(taskDTO);
-                                    //student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
                                 }
                             }
                         }
@@ -389,6 +377,7 @@ namespace TaskExecutionSystem.BLL.Services
 
                     else
                     {
+                        currentGroupDTO = GroupDTO.Map(task.Group);
                         currentSubjectDTO = SubjectDTO.Map(task.Subject);
                         // наполняем студентов группы заданиями и решениями 
                         foreach (var student in currentGroupDTO.Students)
@@ -403,7 +392,6 @@ namespace TaskExecutionSystem.BLL.Services
                                     taskDTO.Solution = SolutionDTO.Map(solEnt);
                                 }
                                 student.Tasks.Add(taskDTO);
-                                //student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
                             }
                         }
                         currentSubjectDTO.Groups.Add(currentGroupDTO);
@@ -685,24 +673,40 @@ namespace TaskExecutionSystem.BLL.Services
                     return detail;
                 }
 
-                if(dto.BeginDate < dto.FinishDate)
+                entity.Name = dto.Name;
+                entity.ContentText = dto.ContentText;
+                entity.FinishDate = dto.FinishDate;
+
+                if (entity.BeginDate < entity.FinishDate
+                   && !String.IsNullOrEmpty(dto.Name) && !String.IsNullOrEmpty(dto.ContentText))
                 {
-                    entity.ContentText = dto.ContentText;
-                    entity.BeginDate = dto.BeginDate;
-                    entity.FinishDate = dto.FinishDate;
-                    entity.Name = dto.Name;
-                    entity.TypeId = dto.TypeId;
-                    entity.UpdateDate = DateTime.Now;
                     _context.TaskModels.Update(entity);
                     await _context.SaveChangesAsync();
                     detail.Succeeded = true;
                 }
+
                 else
                 {
-                    detail.ErrorMessages.Add("Дата крайнего срока сдачи должна быть позднее даты начала.");
+                    detail.ErrorMessages.Add("Данные задачи заполнены некорректно, попробуйте заново.");
                 }
 
-                
+                    
+
+                //if (entity.BeginDate < dto.FinishDate && DateTime.Now < dto.FinishDate
+                //    && !String.IsNullOrEmpty(dto.Name) && !String.IsNullOrEmpty(dto.ContentText))
+                //{
+                //    entity.Name = dto.Name;
+                //    entity.ContentText = dto.ContentText;
+                //    entity.FinishDate = dto.FinishDate;
+                //    _context.TaskModels.Update(entity);
+                //    await _context.SaveChangesAsync();
+                //    detail.Succeeded = true;
+                //}
+                //else
+                //{
+                //    detail.ErrorMessages.Add("Данные задачи заполнены некорректно, попробуйте заново.");
+                //}
+
                 return detail;
             }
             catch (Exception e)
