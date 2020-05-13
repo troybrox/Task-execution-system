@@ -202,19 +202,12 @@ class TasksComponent extends React.Component {
                                 <span className='subject_for_lab'>{subject[0]}</span>
                                 <span>{item.type}. {item.name}</span><br />
                                 <p className='small_text'>
-                                    <span>Открыта {item.beginDate}</span><br />
-                                    {!item.isOpen ? 
-                                        <Auxiliary>
-                                            <span>Закрыта {item.finishDate}</span>
-                                            <br />
-                                        </Auxiliary> : 
-                                        null 
-                                    }
+                                    <span>Открыта: {item.beginDate}</span>
+                                    <span> Крайний срок: {item.finishDate}</span>
                                     {item.updateDate !== null ? 
-                                        <Auxiliary>
-                                            <span>Обновлена {item.updateDate}</span>
-                                            <br />
-                                        </Auxiliary> :
+                                            <span>
+                                                {item.isOpen ? ' Обновлена:' :' Закрыта:'} {item.updateDate}
+                                            </span> :
                                         null 
                                     }
                                 </p>
@@ -226,7 +219,7 @@ class TasksComponent extends React.Component {
                                 </div> :
                                 item.solution !== null ?
                                     <div className='tasks_right'>
-                                        <span className={item.solution.isInTime ? 'green_status' :'red_status'}>{item.solution.isInTime ? 'Сдано вовремя' : 'Просрочено'}</span>
+                                        <span className={item.isOpen ? 'grey_status' : item.solution === null ? 'red_status' : item.solution.isInTime ? 'green_status' :'red_status'}>{item.solution === null ? 'Не сдано' : item.solution.isInTime ? 'Сдано вовремя' : 'Не сдано'}</span>
                                     </div> :
                                     null
                             }

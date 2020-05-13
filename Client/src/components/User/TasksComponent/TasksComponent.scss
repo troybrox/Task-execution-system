@@ -108,6 +108,11 @@
                 line-height: 30px;
             }
 
+            .grey_status {
+                color: grey;
+                font-weight: bold;
+            }
+
             .green_status {
                 color: green;
                 font-weight: bold;
@@ -125,5 +130,9 @@
         margin: 20px 0 10px 10px;
         font-size: 12px;
         color: gray;
+
+        span {
+            margin-right: 15px;
+        }
     }
 }

@@ -173,7 +173,7 @@ export function fetchListTasks(filters) {
                 const tasks = [...data.data]
                 tasks.forEach(el => {
                     el.beginDate = parseDate(new Date(el.beginDate))
-                    el.updateDate = parseDate(new Date(el.updateDate))
+                    if (el.updateDate !== null) el.updateDate = parseDate(new Date(el.updateDate))
                     el.finishDate = parseDate(new Date(el.finishDate))
                 })
 
