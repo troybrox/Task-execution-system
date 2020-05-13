@@ -201,8 +201,23 @@ class TasksComponent extends React.Component {
                             <div className='tasks_left'>
                                 <span className='subject_for_lab'>{subject[0]}</span>
                                 <span>{item.type}. {item.name}</span><br />
-                                <span className='small_text'>Открыта {item.beginDate}</span>
-                                {/* {!item.isOpen ? <span className='small_text'>Закрыта {item.finishDate}</span> : null } */}
+                                <p className='small_text'>
+                                    <span>Открыта {item.beginDate}</span><br />
+                                    {!item.isOpen ? 
+                                        <Auxiliary>
+                                            <span>Закрыта {item.finishDate}</span>
+                                            <br />
+                                        </Auxiliary> : 
+                                        null 
+                                    }
+                                    {item.updateDate !== null ? 
+                                        <Auxiliary>
+                                            <span>Обновлена {item.updateDate}</span>
+                                            <br />
+                                        </Auxiliary> :
+                                        null 
+                                    }
+                                </p>
                             </div>
                             { localStorage.getItem('role') === 'teacher' ?
                                 <div className='tasks_right'>

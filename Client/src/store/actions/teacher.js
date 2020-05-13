@@ -276,6 +276,8 @@ export function fetchListTasks(filters) {
                 const tasks = [...data.data]
                 tasks.forEach(el => {
                     el.beginDate = parseDate(new Date(el.beginDate))
+                    el.updateDate = parseDate(new Date(el.updateDate))
+                    el.finishDate = parseDate(new Date(el.finishDate))
                 })
 
                 dispatch(successTasks(tasks))
@@ -397,10 +399,10 @@ export function changeChecked(groupIndex, studentIndex, val) {
     }
 }
 
-export function onSendCreate(task) {
+export function onSendCreate(task, path) {
     return async dispatch => {
         try {
-            const url = 'api/teacher/task/add'
+            const url = `api/teacher/task/${path}`
             const response = await axios.post(url, task.task)
             const data = response.data
 

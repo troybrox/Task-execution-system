@@ -2,7 +2,6 @@ import {
     AUTH_SUCCESS, 
     LOGOUT, 
     SUCCESS, 
-    // ERROR_MESSAGE_AUTH, 
     PUSH_FILTERS, 
     ERROR_WINDOW,
     LOADING_START} from "../actions/actionTypes"
@@ -28,8 +27,6 @@ const initialState = {
 
     successPage: false,
 
-    // errorMessages: null,
-
     catchError: false,
     catchErrorMessage: [],
 
@@ -51,10 +48,6 @@ export default function authReducer(state = initialState, action) {
             return {
                 ...state, successPage: action.successPage, loading: false
             }
-        // case ERROR_MESSAGE_AUTH:
-        //     return {
-        //         ...state, errorMessages: action.errorMessages
-        //     }
         case PUSH_FILTERS:
             return {
                 ...state, faculties: action.faculties, groups: action.groups, departments: action.departments,
