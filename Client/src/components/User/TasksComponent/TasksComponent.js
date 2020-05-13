@@ -217,11 +217,9 @@ class TasksComponent extends React.Component {
                                     <img src='images/check-circle-solid.svg' alt='' />
                                     <span>{item.solutionsCount}/{item.studentsCount}</span>
                                 </div> :
-                                item.solution !== null ?
-                                    <div className='tasks_right'>
-                                        <span className={item.isOpen ? 'grey_status' : item.solution === null ? 'red_status' : item.solution.isInTime ? 'green_status' :'red_status'}>{item.solution === null ? 'Не сдано' : item.solution.isInTime ? 'Сдано вовремя' : 'Не сдано'}</span>
-                                    </div> :
-                                    null
+                                <div className='tasks_right'>
+                                    <span className={item.isOpen ? 'grey_status' : item.solution === null || !item.solution.isInTime ? 'red_status' : 'green_status'}>{item.solution === null || !item.solution.isInTime ? 'Не сдано' : 'Сдано вовремя'}</span>
+                                </div>
                             }
                         </Link>
                 )
