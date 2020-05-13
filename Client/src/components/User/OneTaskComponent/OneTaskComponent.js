@@ -65,10 +65,10 @@ class OneTaskComponent extends React.Component {
     }
 
     onChangeDescription = event => {
-        const descriptionInput = event.target.value
+        const descriptionTextarea = event.target.value
 
         this.setState({
-            descriptionInput
+            descriptionTextarea
         })
     }
 
@@ -133,15 +133,17 @@ class OneTaskComponent extends React.Component {
             task: {}
         }
         createSolution.task.contentText = this.state.descriptionTextarea
-        createSolution.task.taskId = +this.props.idTask
+        if (path === 'update') 
+            createSolution.task.id = +this.props.taskAdditionData.solution.id
+        else 
+            createSolution.task.taskId = +this.props.idTask
         createSolution.file = this.state.files
         this.props.onSendSolution(createSolution, this.props.idTask, path)
     }
 
     onEditAnswer = () => {
-        if (this.state.editAnswer) {
+        if (this.state.editAnswer)
             this.sendSolution('update')
-        }
 
         this.setState({
             editAnswer: !this.state.editAnswer,
