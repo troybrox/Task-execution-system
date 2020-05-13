@@ -43,7 +43,7 @@ class TasksComponent extends React.Component {
                 }
             } else {
                 title = this.props.subjects[0].name
-                filters.push({name: 'isOpen', value: this.state.tabTitles[0].active})
+                filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
             }
             this.props.fetchListTasks(filters)
         }
@@ -68,7 +68,7 @@ class TasksComponent extends React.Component {
             },
             {
                 name: 'isOpen',
-                value: this.state.tabTitles[0].active
+                value: String(this.state.tabTitles[0].active)
             }
         ]
         this.props.choiceSubjectTask(filters)
@@ -246,7 +246,7 @@ class TasksComponent extends React.Component {
         if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
 
         if (localStorage.getItem('role') === 'student') 
-            filters.push({name: 'isOpen', value: this.state.tabTitles[0].active})
+            filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
 
         this.props.fetchListTasks(filters)
 
@@ -272,7 +272,7 @@ class TasksComponent extends React.Component {
             if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
             
             if (localStorage.getItem('role') === 'student') 
-                filters.push({name: 'isOpen', value: this.state.tabTitles[0].active})
+                filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
             
 
             this.props.fetchListTasks(filters)
@@ -290,7 +290,7 @@ class TasksComponent extends React.Component {
         }, () => {
             const filters = [
                 {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-                {name: 'isOpen', value: this.state.tabTitles[0].active}
+                {name: 'isOpen', value: String(this.state.tabTitles[0].active)}
             ]
 
             if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
