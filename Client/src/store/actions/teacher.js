@@ -276,7 +276,7 @@ export function fetchListTasks(filters) {
                 const tasks = [...data.data]
                 tasks.forEach(el => {
                     el.beginDate = parseDate(new Date(el.beginDate))
-                    el.updateDate = parseDate(new Date(el.updateDate))
+                    if (el.updateDate !== null) el.updateDate = parseDate(new Date(el.updateDate))
                     el.finishDate = parseDate(new Date(el.finishDate))
                 })
 
@@ -407,17 +407,19 @@ export function onSendCreate(task, path) {
             const data = response.data
 
             if (data.succeeded) {
+                let idTask = data.data
+                if (path === 'update') idTask = task.task.id
                 if (task.file !== null)
                     try {
                         const url2 = 'api/teacher/task/add/file'
                         const file = new FormData()
-                        file.append('taskId', data.data)
+                        file.append('taskId', idTask)
                         file.append('file', task.file)
                         const response2 = await axios.post(url2, file)
                         const data2 = response2.data
 
                         if (data2.succeeded) {
-                            dispatch(successCreate(+data.data))
+                            dispatch(successCreate(+idTask))
                         } else {
                             const err = [...data2.errorMessages]
                             err.unshift('Сообщение с сервера.')
@@ -430,7 +432,7 @@ export function onSendCreate(task, path) {
                         dispatch(errorWindow(true, err))
                     }
                 else 
-                    dispatch(successCreate(+data.data))
+                    dispatch(successCreate(+idTask))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')

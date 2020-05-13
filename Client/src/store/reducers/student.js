@@ -24,11 +24,11 @@ export default function studentReducer(state = initialState, action) {
             }
         case SUCCESS_PROFILE:
             return {
-                ...state, profileData: action.profileData, loading: false
+                ...state, profileData: action.profileData, loading: false, taskAdditionData: {}
             }
         case SUCCESS_TASK:
             return {
-                ...state, taskData: action.taskData, loading: false
+                ...state, taskData: action.taskData, loading: false, taskAdditionData: {}
             }
         case SUCCESS_TASKS:
             return {
@@ -40,11 +40,11 @@ export default function studentReducer(state = initialState, action) {
             }
         case SUCCESS_REPOSITORY:
             return {
-                ...state, repositoryData: action.repositoryData, loading: false
+                ...state, repositoryData: action.repositoryData, loading: false, taskAdditionData: {}
             }
         case SUCCESS_SUBJECT_FULL:
             return {
-                ...state, subjectFullData: action.subjectFullData, loading: false
+                ...state, subjectFullData: action.subjectFullData, loading: false, taskAdditionData: {}
             }
         case ERROR_WINDOW:
             return {
