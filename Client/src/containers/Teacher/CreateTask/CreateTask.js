@@ -23,6 +23,7 @@ class CreateTask extends React.Component {
                     types={this.props.createData.types}
                     subjects={this.props.createData.subjects} 
                     groups={this.props.createData.groups}
+                    taskAdditionData={this.props.taskAdditionData}
                     onSendCreate={this.props.onSendCreate}
                     changeChecked={this.props.changeChecked}
                 />
@@ -34,14 +35,15 @@ class CreateTask extends React.Component {
 function mapStateToProps(state) {
     return {
         createData: state.teacher.createData,
-        successId: state.teacher.successId
+        successId: state.teacher.successId,
+        taskAdditionData: state.teacher.taskAdditionData
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         fetchTaskCreate: () => dispatch(fetchTaskCreate()),
-        onSendCreate: (task) => dispatch(onSendCreate(task)),
+        onSendCreate: (task, path) => dispatch(onSendCreate(task, path)),
         changeChecked: (studentIndex, groupIndex, val) => dispatch(changeChecked(studentIndex, groupIndex, val))
     }
 }

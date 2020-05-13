@@ -5,7 +5,6 @@ import Button from '../Button/Button'
 // Компонент отображения ответов на странице задачи
 class Answer extends React.Component {
     render() {
-        // console.log(this.props.data)
         return (
             <div className='answer_block'>
                 <img src={`/images/${this.props.source}`} className='author' alt='' />
@@ -21,7 +20,6 @@ class Answer extends React.Component {
                         this.props.data.fileURI !== null ?
                             <p>
                                 <a href={this.props.data.fileURI} download>
-                                {/* <a href='/Files/TaskFiles/test.txt' download='test.txt'> */}
                                     <Button 
                                         typeButton='download'
                                         value={this.props.data.fileName}

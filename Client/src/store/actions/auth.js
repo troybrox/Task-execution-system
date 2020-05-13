@@ -2,8 +2,7 @@ import axios from '../../axios/axiosRole'
 import { 
     AUTH_SUCCESS, 
     LOGOUT, 
-    SUCCESS, 
-    // ERROR_MESSAGE_AUTH, 
+    SUCCESS,
     PUSH_FILTERS, 
     ERROR_WINDOW,
     LOADING_START } from './actionTypes'
@@ -12,7 +11,6 @@ export function registr(url, data) {
     return async dispatch => {
         dispatch(loadingStart())
         try {
-            console.log(data)
             const response = await axios.post(url, data)
             const respData = response.data
             
@@ -98,7 +96,6 @@ export function loadingFilters() {
 function setCookie(name, value, options = {}) {
     options = {
         path: '/',
-        // при необходимости добавьте другие значения по умолчанию
         ...options
     }
   
@@ -181,11 +178,3 @@ export function loadingStart() {
         type: LOADING_START
     }
 }
-
-
-// export function errorMessageAuth(errorMessages) {
-//     return {
-//         type: ERROR_MESSAGE_AUTH,
-//         errorMessages
-//     }
-// }
