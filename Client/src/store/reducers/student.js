@@ -8,11 +8,7 @@ const initialState = {
     },
     tasks: [],
     taskAdditionData: {},
-    repositoryData: [
-        {id: 1, name: 'Алгебра', open: true},
-        {id: 2, name: 'Информатика', open: false},
-        {id: 3, name: 'Физика', open: false}
-    ],
+    repositoryData: [],
     subjectFullData: [],
 
     errorShow: false,

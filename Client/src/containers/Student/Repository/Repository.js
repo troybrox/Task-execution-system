@@ -4,6 +4,10 @@ import { connect } from 'react-redux'
 import {fetchRepository, choiceSubjectHandler} from '../../../store/actions/student'
 
 class Repository extends React.Component {  
+    componentDidMount() {
+        this.props.fetchRepository()
+    }
+
     render() {
         return (
             <RepositoryComponent 
