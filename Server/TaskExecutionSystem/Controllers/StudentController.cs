@@ -124,38 +124,34 @@ namespace TaskExecutionSystem.Controllers
                 StringValues solutionIdString;
                 var solIdRes = allForms.TryGetValue(allForms.Keys.First(), out solutionIdString);
                 var strId = solutionIdString.ToString();
-                var id = Convert.ToInt32(strId);
+                var solutionID = Convert.ToInt32(strId);
 
                 var file = Request.Form.Files[0];
                 if (file != null)
                 {
-                    var fileName = file.FileName;
-                    var fileRes = new OperationDetailDTO();
+                    string userFileName = file.FileName;
+                    string uniqueFileName;
+                    OperationDetailDTO fileRes = new OperationDetailDTO();
 
-                    var newFileName = System.Guid.NewGuid() + fileName;
-                    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + newFileName))
+                    var currentFileName = await _taskService.GetSolutionFileNameAsync(solutionID);
+                    if(currentFileName.Succeeded)
                     {
-                        file.CopyTo(fileStream);
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + currentFileName.fileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        fileRes = await _taskService.UpdateSolutionFileAsync(currentFileName.fileId, currentFileName.fileName);
                     }
-                    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
 
-                    //if (System.IO.File.Exists(solutionFileLoadPath + fileName))
-                    //{
-                    //    var newFileName = System.Guid.NewGuid() + fileName;
-                    //    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
-                    //}
-                    //else
-                    //{
-                    //    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName);
-                    //}
+                    else 
+                    {
+                        uniqueFileName = System.Guid.NewGuid() + "_solution_file";
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        fileRes = await _taskService.AddFileToSolutionAsync(solutionID, userFileName, uniqueFileName);
+                    }
 
                     if (!fileRes.Succeeded)
                     {

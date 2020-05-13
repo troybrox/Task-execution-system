@@ -17,6 +17,7 @@ using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.File;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Studies;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -26,6 +27,50 @@ namespace TaskExecutionSystem.BLL.Services
         public TaskService(DataContext context)
         {
             _context = context;
+        }
+
+        public async Task<(bool Succeeded, string fileName, int fileId)> GetSolutionFileNameAsync(int solutionID)
+        {
+            bool succeeded = false;
+            string fileName = null;
+            int fileId = 0;
+
+            Solution solution;
+            if((solution = await _context.Solutions
+                .Include(s => s.File)
+                .FirstOrDefaultAsync(s => s.Id == solutionID)) != null)
+            {
+                if(solution.File != null)
+                {
+                    succeeded = true;
+                    fileName = solution.File.FileName;
+                    fileId = solution.File.Id;
+                }
+            }
+
+            return (succeeded, fileName, fileId);
+        }
+
+        public async Task<(bool Succeeded, string fileName, int fileId)> GetTaskFileNameAsync(int taskId)
+        {
+            bool succeeded = false;
+            string fileName = null;
+            int fileId = 0;
+
+            TaskModel task;
+            if ((task = await _context.TaskModels
+                .Include(t => t.File)
+                .FirstOrDefaultAsync(t => t.Id == taskId)) != null)
+            {
+                if (task.File != null)
+                {
+                    succeeded = true;
+                    fileName = task.File.FileName;
+                    fileId = task.File.Id;
+                }
+            }
+
+            return (succeeded, fileName, fileId);
         }
 
         public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string newUniquefileName = null)
@@ -121,6 +166,64 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add("Ошибка при добавлении файла к решению задачи. " + e.Message);
                 return detail;
             }
+        }
+
+        public async Task<OperationDetailDTO> UpdateTaskFileAsync(int fileID, string newFileName)
+        {
+            var detail = new OperationDetailDTO();
+
+            try
+            {
+                var file = await _context.TaskFiles.FindAsync(fileID);
+
+                if (file == null)
+                {
+                    detail.ErrorMessages.Add("Файл не найден");
+                }
+
+                file.FileName = newFileName;
+
+                _context.TaskFiles.Update(file);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(e.Message);
+                return detail;
+            }
+
+        }
+
+        public async Task<OperationDetailDTO> UpdateSolutionFileAsync(int fileID, string newFileName)
+        {
+            var detail = new OperationDetailDTO();
+
+            try
+            {
+                var file = await _context.SolutionFiles.FindAsync(fileID);
+
+                if (file == null)
+                {
+                    detail.ErrorMessages.Add("Файл не найден");
+                }
+
+                file.FileName = newFileName;
+
+                _context.SolutionFiles.Update(file);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(e.Message);
+                return detail;
+            }
+            
         }
 
         public void GetCurrentTimePercentage(ref TaskDTO dto)

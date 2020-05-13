@@ -133,7 +133,7 @@ namespace TaskExecutionSystem.BLL.Services
             try
             {
                 var currentUserEntity = await GetUserFromClaimsAsync();
-
+                 
                 var studentEntity = await _context.Students
                     .Include(s => s.User)
                     .Where(s => s.UserId == currentUserEntity.Id)
@@ -433,7 +433,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // TODO: fileUpdate [!]
+        // done: fileUpdate [!] -> test
         public async Task<OperationDetailDTO> UpdateSolutionAsync(SolutionCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
@@ -455,6 +455,12 @@ namespace TaskExecutionSystem.BLL.Services
 
                 entity.ContentText = dto.ContentText;
                 entity.CreationDate = DateTime.Now;
+
+                if (String.IsNullOrEmpty(entity.ContentText))
+                {
+                    detail.ErrorMessages.Add("Данные решения задачи введены некорректно. Поробуйте снова.");
+                    return detail;
+                }
 
                 _context.Solutions.Update(entity);
                 await _context.SaveChangesAsync();
