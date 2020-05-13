@@ -280,11 +280,8 @@ export function fetchRepository() {
             const data = response.data
             if (data.succeeded) {
                 const repositoryData = []
-                data.data.forEach((el, index) => {
+                data.data.forEach(el => {
                     const object = el
-                    if (index === 0)
-                        object.open = true
-                    else
                     object.open = false
 
                     repositoryData.push(object)
