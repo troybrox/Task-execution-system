@@ -502,14 +502,14 @@ class OneTaskComponent extends React.Component {
                 this.state.descriptionInput.trim() !== '' &&
                 this.state.finishDate !== ''      
                 ) {
-                    createTask.task.taskId = +this.props.taskAdditionData.id
+                    createTask.task.id = +this.props.taskAdditionData.id
                     createTask.task.subjectId = 0 
                     createTask.task.typeId = 0 
                     createTask.task.groupId = 0 
                     createTask.task.name = this.state.titleInput 
                     createTask.task.contentText = this.state.descriptionInput
                     createTask.task.studentIds = null
-                    createTask.task.beginDate = null
+                    createTask.task.beginDate = this.state.beginDate
                     createTask.task.finishDate = this.state.finishDate
     
                     createTask.file = this.state.files
