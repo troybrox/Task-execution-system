@@ -207,26 +207,32 @@ namespace TaskExecutionSystem.Controllers
                 if (file != null)
                 {
                     string userFileName = file.FileName;
-                    string uniqueFileName;
+                    string uniqueFileName = System.Guid.NewGuid() + userFileName;
                     OperationDetailDTO fileRes = new OperationDetailDTO();
 
-                    var currentFileName = await _taskService.GetTaskFileNameAsync(taskID);
-                    if (currentFileName.Succeeded)
+                    var currentFileRes = await _taskService.GetTaskFileNameAsync(taskID);
+                    if (currentFileRes.Succeeded)
                     {
-                        using (var fileStream = System.IO.File.Create(taskFileLoadPath + currentFileName.fileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        fileRes = await _taskService.UpdateTaskFileAsync(currentFileName.fileId, currentFileName.fileName);
-                    }
-
-                    else
-                    {
-                        uniqueFileName = System.Guid.NewGuid() + "_task_file";
                         using (var fileStream = System.IO.File.Create(taskFileLoadPath + uniqueFileName))
                         {
                             file.CopyTo(fileStream);
                         }
+
+                        if(System.IO.File.Exists(_environment.WebRootPath + currentFileRes.filePath))
+                        {
+                            System.IO.File.Delete(_environment.WebRootPath + currentFileRes.filePath);
+                        }
+
+                        fileRes = await _taskService.UpdateTaskFileAsync(currentFileRes.fileId, userFileName, uniqueFileName);
+                    }
+
+                    else
+                    {
+                        using (var fileStream = System.IO.File.Create(taskFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
                         fileRes = await _taskService.AddFileToTaskAsync(taskID, userFileName, uniqueFileName);
                     }
 
@@ -252,21 +258,23 @@ namespace TaskExecutionSystem.Controllers
 
                     if (!fileRes.Succeeded)
                     {
+                        if (System.IO.File.Exists(taskFileLoadPath + uniqueFileName))
+                        {
+                            System.IO.File.Delete(taskFileLoadPath + uniqueFileName);
+                        }
                         detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
                         detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                        return Ok(detail);
                     }
                     else
                     {
                         detail.Succeeded = true;
-                        return Ok(detail);
                     }
                 }
                 else
                 {
                     detail.ErrorMessages.Add("Файл равен null");
-                    return Ok(detail);
                 }
+                return Ok(detail);
             }
             catch (Exception e)
             {
