@@ -676,6 +676,7 @@ namespace TaskExecutionSystem.BLL.Services
                 entity.Name = dto.Name;
                 entity.ContentText = dto.ContentText;
                 entity.FinishDate = dto.FinishDate;
+                entity.UpdateDate = DateTime.Now;
 
                 if (entity.BeginDate < entity.FinishDate
                    && !String.IsNullOrEmpty(dto.Name) && !String.IsNullOrEmpty(dto.ContentText))

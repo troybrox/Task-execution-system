@@ -11,15 +11,15 @@ namespace TaskExecutionSystem.BLL.Interfaces
 {
     public interface ITaskService
     {
-        public Task<(bool Succeeded, string fileName, int fileId)> GetTaskFileNameAsync(int taskId);
-        public Task<(bool Succeeded, string fileName, int fileId)> GetSolutionFileNameAsync(int solutionID);
+        public Task<(bool Succeeded, string filePath, int fileId)> GetTaskFileNameAsync(int taskId);
+        public Task<(bool Succeeded, string filePath, int fileId)> GetSolutionFileNameAsync(int solutionID);
 
         public Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string fileName = null);
 
         public Task<OperationDetailDTO> AddFileToSolutionAsync(int fileID, string userFileName, string fileName = null);
 
-        public Task<OperationDetailDTO> UpdateTaskFileAsync(int fileID, string newFileName);
-        public Task<OperationDetailDTO> UpdateSolutionFileAsync(int fileID, string newFileName);
+        public Task<OperationDetailDTO> UpdateTaskFileAsync(int fileID, string newUserFileName, string newFilePath);
+        public Task<OperationDetailDTO> UpdateSolutionFileAsync(int fileID, string newUserFileName, string newUniqueFileName);
 
         public void GetCurrentTimePercentage(ref TaskDTO dto);
 

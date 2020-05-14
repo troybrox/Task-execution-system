@@ -106,15 +106,10 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        // TODO: fileUpdate [!]
-        // TODO: add getSolFile(solId) in taskService
+
         [HttpPost("solution/add/file")]
         public async Task<IActionResult> AddFile()
         {
-            // todo: проверка на наличие файла у решения ->
-            // string fileName = _taskService(getSolFile(solId))
-            // if(fileName != null) ->  файл перезаписывается, solutionFile меняется 
-            // else -> newFile
             string solutionFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\";
             var detail = new OperationDetailDTO();
             try
@@ -130,46 +125,55 @@ namespace TaskExecutionSystem.Controllers
                 if (file != null)
                 {
                     string userFileName = file.FileName;
-                    string uniqueFileName;
+                    string uniqueFileName = System.Guid.NewGuid() + userFileName;
                     OperationDetailDTO fileRes = new OperationDetailDTO();
 
-                    var currentFileName = await _taskService.GetSolutionFileNameAsync(solutionID);
-                    if(currentFileName.Succeeded)
+                    var currentFileRes = await _taskService.GetSolutionFileNameAsync(solutionID);
+                    if(currentFileRes.Succeeded)
                     {
-                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + currentFileName.fileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        fileRes = await _taskService.UpdateSolutionFileAsync(currentFileName.fileId, currentFileName.fileName);
-                    }
-
-                    else 
-                    {
-                        uniqueFileName = System.Guid.NewGuid() + "_solution_file";
                         using (var fileStream = System.IO.File.Create(solutionFileLoadPath + uniqueFileName))
                         {
                             file.CopyTo(fileStream);
                         }
+
+                        if (System.IO.File.Exists(_environment.WebRootPath + currentFileRes.filePath))
+                        {
+                            System.IO.File.Delete(_environment.WebRootPath + currentFileRes.filePath);
+                        }
+
+                        fileRes = await _taskService.UpdateSolutionFileAsync(currentFileRes.fileId, userFileName, uniqueFileName);
+                    }
+
+                    else 
+                    {
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
                         fileRes = await _taskService.AddFileToSolutionAsync(solutionID, userFileName, uniqueFileName);
                     }
 
                     if (!fileRes.Succeeded)
                     {
+                        if (System.IO.File.Exists(solutionFileLoadPath + uniqueFileName))
+                        {
+                            System.IO.File.Delete(solutionFileLoadPath + uniqueFileName);
+                        }
+
                         detail.ErrorMessages.Add("Не удалось загрузить файл к решению задачи.");
                         detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                        return Ok(detail);
                     }
                     else
                     {
                         detail.Succeeded = true;
-                        return Ok(detail);
                     }
                 }
                 else
                 {
                     detail.ErrorMessages.Add("Файл равен null");
-                    return Ok(detail);
                 }
+                return Ok(detail);
             }
             catch (Exception e)
             {

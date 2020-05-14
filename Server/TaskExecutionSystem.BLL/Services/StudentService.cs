@@ -349,8 +349,10 @@ namespace TaskExecutionSystem.BLL.Services
                 {
                     solutionEntity = await _context.Solutions
                     .Include(s => s.Student)
-                    .Where(s => s.Id == studentSolutionForCurTask.Id)
-                    .FirstOrDefaultAsync();
+                    .Include(s => s.File)
+                    //.where()
+                    .FirstOrDefaultAsync(s => s.Id == studentSolutionForCurTask.Id);
+
                     resSolutionDTO = SolutionDTO.Map(solutionEntity);
                     resultTaskDTO.Solution = resSolutionDTO;
                     resultTaskDTO.Solutions.Add(resSolutionDTO);
