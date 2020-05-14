@@ -4,7 +4,8 @@ import {
     PUSH_USERS, 
     PUSH_SELECTS, 
     ERROR_WINDOW, 
-    CHANGE_CONDITION } from './actionTypes'
+    CHANGE_CONDITION, 
+    LOGOUT} from './actionTypes'
 
 export function changeCheckedHandler(index) {
     return (dispatch, getState) => {
@@ -192,5 +193,11 @@ export function changeCondition(actionCondition) {
     return {
         type: CHANGE_CONDITION,
         actionCondition
+    }
+}
+
+export function logoutAdmin() {
+    return {
+        type: LOGOUT
     }
 }

@@ -147,7 +147,7 @@ class ProfileComponent extends React.Component {
         let newPassNum, repeatPassNum
 
         dataPassword.forEach((el, number) => {
-            if (el.serverName === 'newPassword: ') newPassNum = number
+            if (el.serverName === 'newPassword') newPassNum = number
             if (el.serverName === 'repeatPassword') {
                 repeatPassNum = number
                 return

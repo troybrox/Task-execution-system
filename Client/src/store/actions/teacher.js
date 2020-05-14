@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END, SUCCESS_SUBJECT_FULL } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END, SUCCESS_SUBJECT_FULL, LOGOUT } from './actionTypes'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -769,5 +769,11 @@ export function errorWindow(errorShow, errorMessage) {
     return {
         type: ERROR_WINDOW,
         errorShow, errorMessage
+    }
+}
+
+export function logoutTeacher() {
+    return {
+        type: LOGOUT
     }
 }
