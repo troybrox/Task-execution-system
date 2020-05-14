@@ -234,11 +234,18 @@ export function onSendSolution(createSolution, id, path) {
             const data = response.data
 
             if (data.succeeded) {
+                let idSolution = id
+                let titleId = 'taskId'
+                if (path === 'update') {
+                    idSolution = createSolution.task.id
+                    titleId = 'id'
+                }
+                
                 if (createSolution.file !== null)
                     try {
                         const url2 = 'api/student/solution/add/file'
                         const file = new FormData()
-                        file.append('taskId', id)
+                        file.append(titleId, idSolution)
                         file.append('file', createSolution.file)
                         const response2 = await axios.post(url2, file)
                         const data2 = response2.data

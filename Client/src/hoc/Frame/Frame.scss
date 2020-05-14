@@ -148,6 +148,13 @@
         width: max-content;
         margin: 0 auto;
         cursor: pointer;
+        position: relative;
+
+        input {
+            position: absolute;
+            left: 0;
+            width: 110px;
+        }
     }
 
     .need_field {

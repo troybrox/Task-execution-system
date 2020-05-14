@@ -218,7 +218,7 @@ class TasksComponent extends React.Component {
                                     <span>{item.solutionsCount}/{item.studentsCount}</span>
                                 </div> :
                                 <div className='tasks_right'>
-                                    <span className={item.isOpen ? 'grey_status' : item.solution === null || !item.solution.isInTime ? 'red_status' : 'green_status'}>{item.solution === null || !item.solution.isInTime ? 'Не сдано' : 'Сдано вовремя'}</span>
+                                    <span className={item.isOpen ? 'grey_status' : item.solution === null || !item.solution.isInTime ? 'red_status' : 'green_status'}>{item.solution === null ? 'Не сдано' : item.solution.isInTime ? 'Сдано вовремя' : 'Просрочено'}</span>
                                 </div>
                             }
                         </Link>

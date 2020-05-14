@@ -64,12 +64,18 @@ class OneTaskComponent extends React.Component {
         })
     }
 
-    onChangeDescription = event => {
-        const descriptionTextarea = event.target.value
-
-        this.setState({
-            descriptionTextarea
-        })
+    onChangeDescription = (event, type) => {
+        if (type === 'textarea') {
+            const descriptionTextarea = event.target.value
+            this.setState({
+                descriptionTextarea
+            })
+        } else {
+            const descriptionInput = event.target.value
+            this.setState({
+                descriptionInput
+            })
+        }
     }
 
     onLoadFile = event => {
@@ -128,7 +134,7 @@ class OneTaskComponent extends React.Component {
         })
     }
 
-    sendSolution = (path) => {
+    sendSolution = async(path) => {
         const createSolution = {
             task: {}
         }
@@ -138,7 +144,11 @@ class OneTaskComponent extends React.Component {
         else 
             createSolution.task.taskId = +this.props.idTask
         createSolution.file = this.state.files
-        this.props.onSendSolution(createSolution, this.props.idTask, path)
+        await this.props.onSendSolution(createSolution, this.props.idTask, path)
+
+        this.setState({
+            files: null
+        })
     }
 
     onEditAnswer = () => {
@@ -428,7 +438,7 @@ class OneTaskComponent extends React.Component {
                     className='description_textarea' 
                     placeholder='Добавьте описание задачи...'
                     defaultValue={this.state.descriptionInput}
-                    onChange={event => this.onChangeDescription(event)}
+                    onChange={event => this.onChangeDescription(event, 'input')}
                 />
                 {this.renderFile()}
             </div>
@@ -437,60 +447,35 @@ class OneTaskComponent extends React.Component {
 
     renderFile() {
         const clsForFile = ['label_file']
-        if (Object.keys(this.props.taskAdditionData).length === 0) {
-            if (this.state.files !== null) clsForFile.push('ready_file')
-            
+        if (this.state.files !== null) {
+            clsForFile.push('ready_file')
             return (
                 <label 
                     className={clsForFile.join(' ')}
                 >
-                    {this.state.files === null ?
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Перетащите файл в это поле или кликните сюда для загрузки
-                            </span><br />
-                            <input 
-                                type='file' 
-                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
-                                onChange={event => this.onLoadFile(event)}
-                            />
-                        </Auxiliary> :
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Файл успешно загружен
-                            </span><br />
-                            <p>
-                                <img src='/images/file-solid.svg' alt='' /><br />
-                                <span>{this.state.files.name}</span>  
-                            </p><br />
-                            <span 
-                                className='delete_file'
-                                onClick={this.removeFile}
-                            >
-                                Удалить файл
-                            </span>
-                        </Auxiliary>
-                    }
+                    <span className='title_file'>
+                        Файл успешно загружен
+                    </span><br />
+                    <p>
+                        <img src='/images/file-solid.svg' alt='' /><br />
+                        <span>{this.state.files.name}</span>  
+                    </p><br />
+                    <span 
+                        className='delete_file'
+                        onClick={this.removeFile}
+                    >
+                        Удалить файл
+                    </span>
                 </label>
             )
         } else {
-            if (this.props.taskAdditionData.fileName !== null) clsForFile.push('ready_file')
-            return (
-                <label 
-                    className={clsForFile.join(' ')}
-                >
-                    {this.props.taskAdditionData.fileName === null ?
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Перетащите файл в это поле или кликните сюда для загрузки
-                            </span><br />
-                            <input 
-                                type='file' 
-                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
-                                onChange={event => this.onLoadFile(event)}
-                            />
-                        </Auxiliary> :
-                        <Auxiliary>
+            if (Object.keys(this.props.taskAdditionData).length !== 0) {
+                if (this.props.taskAdditionData.fileName !== null) {
+                    clsForFile.push('ready_file')
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
                             <span className='title_file'>
                                 Ваш файл
                             </span><br />
@@ -503,11 +488,46 @@ class OneTaskComponent extends React.Component {
                                 onClick={this.removeFile}
                             >
                                 Заменить файл
+                                <input 
+                                    type='file' 
+                                    accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                    onChange={event => this.onLoadFile(event)}
+                                />
                             </span>
-                        </Auxiliary>
-                    }
-                </label>
-            )
+                        </label>
+                    )
+                } else {
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
+                            <span className='title_file'>
+                                Перетащите файл в это поле или кликните сюда для загрузки
+                            </span><br />
+                            <input 
+                                type='file' 
+                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                onChange={event => this.onLoadFile(event)}
+                            />
+                        </label>
+                    )
+                }
+            } else {
+                return (
+                    <label 
+                        className={clsForFile.join(' ')}
+                    >
+                        <span className='title_file'>
+                            Перетащите файл в это поле или кликните сюда для загрузки
+                        </span><br />
+                        <input 
+                            type='file' 
+                            accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                            onChange={event => this.onLoadFile(event)}
+                        />
+                    </label>
+                )
+            }
         }
     }
 
@@ -660,7 +680,7 @@ class OneTaskComponent extends React.Component {
                     className='description_textarea text_block' 
                     placeholder='Добавьте описание решения...'
                     defaultValue={this.state.descriptionTextarea}
-                    onChange={event => this.onChangeDescription(event)}
+                    onChange={event => this.onChangeDescription(event, 'textarea')}
                 />
                 {this.renderFileAnswer()}
                 {localStorage.getItem('role') === 'student' && !this.state.editAnswer ? 
@@ -677,59 +697,35 @@ class OneTaskComponent extends React.Component {
 
     renderFileAnswer() {
         const clsForFile = ['label_file']
-        if (!this.state.editAnswer) {
-            if (this.state.files !== null) clsForFile.push('ready_file')
+        if (this.state.files !== null) {
+            clsForFile.push('ready_file')
             return (
                 <label 
                     className={clsForFile.join(' ')}
                 >
-                    {this.state.files === null ?
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Перетащите файл в это поле или кликните сюда для загрузки
-                            </span><br />
-                            <input 
-                                type='file' 
-                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
-                                onChange={event => this.onLoadFile(event)}
-                            />
-                        </Auxiliary> :
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Файл успешно загружен
-                            </span><br />
-                            <p>
-                                <img src='/images/file-solid.svg' alt='' /><br />
-                                <span>{this.state.files.name}</span>  
-                            </p><br />
-                            <span 
-                                className='delete_file'
-                                onClick={this.removeFile}
-                            >
-                                Удалить файл
-                            </span>
-                        </Auxiliary>
-                    }
+                    <span className='title_file'>
+                        Файл успешно загружен
+                    </span><br />
+                    <p>
+                        <img src='/images/file-solid.svg' alt='' /><br />
+                        <span>{this.state.files.name}</span>  
+                    </p><br />
+                    <span 
+                        className='delete_file'
+                        onClick={this.removeFile}
+                    >
+                        Удалить файл
+                    </span>
                 </label>
             )
         } else {
-            if (this.props.taskAdditionData.fileName !== null) clsForFile.push('ready_file')
-            return (
-                <label 
-                    className={clsForFile.join(' ')}
-                >
-                    {this.state.files === null ?
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Перетащите файл в это поле или кликните сюда для загрузки
-                            </span><br />
-                            <input 
-                                type='file' 
-                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
-                                onChange={event => this.onLoadFile(event)}
-                            />
-                        </Auxiliary> :
-                        <Auxiliary>
+            if (Object.keys(this.props.taskAdditionData).length !== 0 && this.props.taskAdditionData.solution !== null) {
+                if (this.props.taskAdditionData.solution.fileName !== null) {
+                    clsForFile.push('ready_file')
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
                             <span className='title_file'>
                                 Ваш файл
                             </span><br />
@@ -742,11 +738,46 @@ class OneTaskComponent extends React.Component {
                                 onClick={this.removeFile}
                             >
                                 Заменить файл
+                                <input 
+                                    type='file' 
+                                    accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                    onChange={event => this.onLoadFile(event)}
+                                />
                             </span>
-                        </Auxiliary>
-                    }
-                </label>
-            )
+                        </label>
+                    )
+                } else {
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
+                            <span className='title_file'>
+                                Перетащите файл в это поле или кликните сюда для загрузки
+                            </span><br />
+                            <input 
+                                type='file' 
+                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                onChange={event => this.onLoadFile(event)}
+                            />
+                        </label>
+                    )
+                }
+            } else {
+                return (
+                    <label 
+                        className={clsForFile.join(' ')}
+                    >
+                        <span className='title_file'>
+                            Перетащите файл в это поле или кликните сюда для загрузки
+                        </span><br />
+                        <input 
+                            type='file' 
+                            accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                            onChange={event => this.onLoadFile(event)}
+                        />
+                    </label>
+                )
+            }
         }
     }
    
@@ -859,6 +890,7 @@ class OneTaskComponent extends React.Component {
     }
 
     render() {
+        console.log(this.props.taskAdditionData)
         return (
             <Frame>
                 <div className='big_title_task'>
