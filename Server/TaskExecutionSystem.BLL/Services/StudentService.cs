@@ -509,6 +509,7 @@ namespace TaskExecutionSystem.BLL.Services
 
             var repos = from r in _context.RepositoryModels
                         .Include(r => r.Subject)
+                        .Include(r => r.Files)
                         .Include(r => r.Teacher)
 
                         select r;
