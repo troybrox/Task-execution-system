@@ -337,10 +337,7 @@ class OneTaskComponent extends React.Component {
                     <p className='date_p_create'>
                         Дата сдачи:
                         <span>
-                            {this.props.taskAdditionData.updateDate !== null ? 
-                                this.props.taskAdditionData.updateDate : 
-                                this.props.taskAdditionData.finishDate
-                            }
+                            {this.props.taskAdditionData.finishDate}
                         </span>
                     </p>
                     {this.props.taskAdditionData.isOpen ?
