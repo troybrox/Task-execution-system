@@ -408,12 +408,16 @@ export function onSendCreate(task, path) {
 
             if (data.succeeded) {
                 let idTask = data.data
-                if (path === 'update') idTask = task.task.id
+                let titleId = 'taskId'
+                if (path === 'update') {
+                    idTask = task.task.id
+                    titleId = 'id'
+                }
                 if (task.file !== null)
                     try {
                         const url2 = 'api/teacher/task/add/file'
                         const file = new FormData()
-                        file.append('taskId', idTask)
+                        file.append(titleId, idTask)
                         file.append('file', task.file)
                         const response2 = await axios.post(url2, file)
                         const data2 = response2.data
