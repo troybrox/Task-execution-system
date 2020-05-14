@@ -887,7 +887,6 @@ class OneTaskComponent extends React.Component {
     }
 
     render() {
-        console.log(this.props.taskAdditionData)
         return (
             <Frame>
                 <div className='big_title_task'>

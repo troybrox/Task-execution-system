@@ -11,7 +11,8 @@ import {
     SUCCESS_CREATE_REPOSITORY,
     SUCCESS_REPOSITORY,
     SUCCESS_CREATE_REPOSITORY_END,
-    SUCCESS_SUBJECT_FULL} from "../actions/actionTypes"
+    SUCCESS_SUBJECT_FULL,
+    LOGOUT} from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -95,6 +96,33 @@ export default function teacherReducer(state = initialState, action) {
                 errorMessage: action.errorMessage,
                 loading: false
             }
+        case LOGOUT: {
+            return {
+                ...state,
+                profileData: [],
+                mainData: [],
+                taskData: {
+                    subjects: [],
+                    types: [],
+                },
+                tasks: [],
+                createData: {
+                    subjects:[],
+                    types: [],
+                    groups: []
+                },
+                taskAdditionData: {},
+                createRepository: [],
+                repositoryData: [],
+                subjectFullData: [],
+            
+                successId: null,
+                errorShow: false,
+                errorMessage: [],
+            
+                loading: false
+            }
+        }
         default:
             return state
     }

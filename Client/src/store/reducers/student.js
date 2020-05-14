@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY, SUCCESS_SUBJECT_FULL } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY, SUCCESS_SUBJECT_FULL, LOGOUT } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -51,6 +51,23 @@ export default function studentReducer(state = initialState, action) {
                 ...state,
                 errorShow: action.errorShow,
                 errorMessage: action.errorMessage
+            }
+        case LOGOUT:
+            return {
+                ...state,
+                profileData: [],
+                taskData: {
+                    subjects: [],
+                    types: [],
+                },
+                tasks: [],
+                taskAdditionData: {},
+                repositoryData: [],
+                subjectFullData: [],
+            
+                errorShow: false,
+                errorMessage: [],
+                loading: false
             }
         default:
             return state
