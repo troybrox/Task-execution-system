@@ -53,7 +53,7 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -101,7 +101,7 @@ export function loadingLists(url, roleActive) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -133,7 +133,7 @@ export function actionUsersHandler(url) {
                 dispatch(errorWindow(true, err)) 
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -155,7 +155,7 @@ export function deleteGroupHandler(url, groupId) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }

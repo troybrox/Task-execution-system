@@ -6,7 +6,7 @@ import { logoutTeacher } from '../../store/actions/teacher'
 import { logoutStudent } from '../../store/actions/student'
 import { logoutAdmin } from '../../store/actions/admin'
 
-// Компонент переадресации на выход
+// Компонент переадресации на выход, с очисткой данных о пользователе
 class Logout extends React.Component {
     componentDidMount() {
         this.props.logoutHandler()

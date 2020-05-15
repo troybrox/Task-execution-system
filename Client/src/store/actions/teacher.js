@@ -38,7 +38,7 @@ export function fetchProfile() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -69,7 +69,7 @@ export function updateData(data, path) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -131,7 +131,7 @@ export function fetchMain() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -224,7 +224,7 @@ export function fetchTaskFilters() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -287,7 +287,7 @@ export function fetchListTasks(filters) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -346,7 +346,7 @@ export function fetchTaskById(id) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -375,7 +375,7 @@ export function fetchTaskCreate() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -431,7 +431,7 @@ export function onSendCreate(task, path) {
                         }
 
                     } catch (error) {
-                        const err = ['Ошибка подключения']
+                        const err = [`Ошибка подключения: ${error.name}`]
                         err.push(error.message)
                         dispatch(errorWindow(true, err))
                     }
@@ -444,7 +444,7 @@ export function onSendCreate(task, path) {
             }
 
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -464,7 +464,7 @@ export function onCloseTask(id) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -481,9 +481,6 @@ export function fetchRepository() {
                 const repositoryData = []
                 data.data.forEach(el => {
                     const object = el
-                    // if (index === 0)
-                    //     object.open = true
-                    // else
                     object.open = false
 
                     repositoryData.push(object)
@@ -496,7 +493,7 @@ export function fetchRepository() {
             }
             
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -518,6 +515,16 @@ export function choiceSubjectHandler(index) {
     }
 }
 
+export function choiceRepoHandler(index) {
+    return (dispatch, getState) => {
+        const state = getState().teacher
+        const subjectFullData = [...state.subjectFullData]
+        subjectFullData[index].open = !subjectFullData[index].open
+
+        dispatch(successSubjectFull(subjectFullData))
+    }    
+}
+
 export function fetchSubjectFull(filters) {
     return (dispatch, getState) => {
         const state = getState().teacher
@@ -530,9 +537,7 @@ export function fetchSubjectFull(filters) {
                     const response = await axios.post(url, filters)
                     const data = response.data
                     if (data.succeeded) {
-                        
                         const subjectFullData = [...state.subjectFullData]
-                        
                         data.data.forEach(el => {
                             let index = null
                             subjectFullData.forEach((element, num) => {
@@ -550,7 +555,7 @@ export function fetchSubjectFull(filters) {
                         dispatch(errorWindow(true, err))
                     }
                 } catch (e) {
-                    const err = ['Ошибка подключения']
+                    const err = [`Ошибка подключения: ${e.name}`]
                     err.push(e.message)
                     dispatch(errorWindow(true, err))
                 }
@@ -577,7 +582,7 @@ export function deleteRepo(index) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -602,7 +607,7 @@ export function editRepo(index, contentText, name) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -626,7 +631,7 @@ export function fetchCreateRepository() {
             }
             
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -653,7 +658,7 @@ export function sendCreateRepository(filters) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -676,7 +681,7 @@ export function sendCreateRepositoryFile(filters) {
                 }
         } catch (error) {
             dispatch(successCreateRepositoryEnd())
-            const err = ['Ошибка подключения']
+            const err =[`Ошибка подключения: ${error.name}`]
             err.push(error.message)
             dispatch(errorWindow(true, err))
         }

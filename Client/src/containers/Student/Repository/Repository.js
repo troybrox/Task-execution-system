@@ -1,7 +1,7 @@
 import React from 'react'
 import RepositoryComponent from '../../../components/User/RepositoryComponent/RepositoryComponent'
 import { connect } from 'react-redux'
-import {fetchRepository, choiceSubjectHandler} from '../../../store/actions/student'
+import {fetchRepository, choiceSubjectHandler, choiceRepoHandler} from '../../../store/actions/student'
 
 class Repository extends React.Component {  
     componentDidMount() {
@@ -15,6 +15,7 @@ class Repository extends React.Component {
                 subjectFullData={this.props.subjectFullData}
                 loading={this.props.loading}
                 choiceSubject={this.props.choiceSubjectHandler}
+                choiceRepo={this.props.choiceRepoHandler}
             />
         )
     }
@@ -31,7 +32,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         fetchRepository: () => dispatch(fetchRepository()),
-        choiceSubjectHandler: (index) => dispatch(choiceSubjectHandler(index))
+        choiceSubjectHandler: (index) => dispatch(choiceSubjectHandler(index)),
+        choiceRepoHandler: (index) => dispatch(choiceRepoHandler(index)),
     }
 }
 
