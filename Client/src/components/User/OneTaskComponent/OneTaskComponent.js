@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 import Answer from '../../UI/Answer/Answer'
 import Loader from '../../UI/Loader/Loader'
 
-// Компонент отображения отдельного окна задач(создание задачи и открытая задача) для препода и студента
+// Компонент отображения отдельного окна задач(создание и редактирование задачи для преподавателя + открытая задача для студента)
 class OneTaskComponent extends React.Component {
     state = {
         subjectId: null,

@@ -37,7 +37,7 @@ export function fetchProfile() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -67,7 +67,7 @@ export function updateData(data, path) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -120,7 +120,7 @@ export function fetchTaskFilters() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -184,7 +184,7 @@ export function fetchListTasks(filters) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -219,7 +219,7 @@ export function fetchTaskById(id) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -260,7 +260,7 @@ export function onSendSolution(createSolution, id, path) {
                         }
                     } catch (error) {
                         dispatch(fetchTaskById(id))
-                        const err = ['Ошибка подключения']
+                        const err = [`Ошибка подключения: ${error.name}`]
                         err.push(error.message)
                         dispatch(errorWindow(true, err))
                     }
@@ -272,7 +272,7 @@ export function onSendSolution(createSolution, id, path) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -301,7 +301,7 @@ export function fetchRepository() {
             }
             
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
             dispatch(errorWindow(true, err))
         }
@@ -323,30 +323,52 @@ export function choiceSubjectHandler(index) {
     }
 }
 
+export function choiceRepoHandler(index) {
+    return (dispatch, getState) => {
+        const state = getState().student
+        const subjectFullData = [...state.subjectFullData]
+        subjectFullData[index].open = !subjectFullData[index].open
+
+        dispatch(successSubjectFull(subjectFullData))
+    }    
+}
+
 export function fetchSubjectFull(filters) {
-    return async dispatch => {
-        dispatch(loadingStart())
-        try {
-            const url = '/api/student/repo'
-            const response = await axios.post(url, filters)
-            const data = response.data
-            if (data.succeeded) {
-                const subjectFullData = []
-                data.data.forEach(el => {
-                    el.open = false
-                    subjectFullData.push(el)
-                })
-                dispatch(successSubjectFull(subjectFullData))
-            } else {
-                const err = [...data.errorMessages]
-                err.unshift('Сообщение с сервера.')
-                dispatch(errorWindow(true, err))
+    return (dispatch, getState) => {
+        const state = getState().student
+        const repositoryData = state.repositoryData
+        repositoryData.forEach(async element => {
+            if (element.id === +filters[0].value && element.open) {
+                dispatch(loadingStart())
+                try {
+                    const url = '/api/student/repo'
+                    const response = await axios.post(url, filters)
+                    const data = response.data
+                    if (data.succeeded) {
+                        const subjectFullData = [...state.subjectFullData]
+                        data.data.forEach(el => {
+                            let index = null
+                            subjectFullData.forEach((element, num) => {
+                                if (el.id === element.id) index = num
+                            })
+                            if (index === null) {
+                                el.open = false
+                                subjectFullData.push(el)
+                            } 
+                        })
+                        dispatch(successSubjectFull(subjectFullData))
+                    } else {
+                        const err = [...data.errorMessages]
+                        err.unshift('Сообщение с сервера.')
+                        dispatch(errorWindow(true, err))
+                    }
+                } catch (e) {
+                    const err = [`Ошибка подключения: ${e.name}`]
+                    err.push(e.message)
+                    dispatch(errorWindow(true, err))
+                }
             }
-        } catch (e) {
-            const err = ['Ошибка подключения']
-            err.push(e.message)
-            dispatch(errorWindow(true, err))
-        }
+        })
     }
 }
 

@@ -38,7 +38,8 @@ class RepositoryComponent extends React.Component {
         })
     }
 
-    choiceRepo = (item, index) => {
+    onChoiceRepo = (item, index) => {
+        if (this.state.activeRepoIndex === index || (this.state.activeRepoIndex !== index && !item.open)) this.props.choiceRepo(index)
         const text = item.contentText
         const title = item.name
         this.setState({
@@ -114,16 +115,17 @@ class RepositoryComponent extends React.Component {
                         <Auxiliary key={index}>
                             <li 
                                 className={cls.join(' ')}
-                                onClick={this.choiceRepo.bind(this, item, index)}
+                                onClick={this.onChoiceRepo.bind(this, item, index)}
                             >
                                 <img src='images/folder-regular.svg' alt='' />
                                 {item.name}
                             </li>
-                            {/* {this.state.activeRepoIndex === index && item.files.length !== 0 ?  */}
+                            {item.open && item.files.length !== 0 ? 
                                 <ul className='small_list'>
                                     {this.renderFileList(item.files)}
-                                </ul>
-                            {/* } */}
+                                </ul> :
+                                null
+                            }
                         </Auxiliary>
 
                     )

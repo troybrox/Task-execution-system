@@ -10,5 +10,4 @@ class AfterCreate extends React.Component {
     }
 }
 
-
 export default AfterCreate
