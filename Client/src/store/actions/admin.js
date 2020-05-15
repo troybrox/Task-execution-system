@@ -6,6 +6,7 @@ import {
     ERROR_WINDOW, 
     CHANGE_CONDITION, 
     LOGOUT} from './actionTypes'
+import { logoutHandler } from './auth'
 
 export function changeCheckedHandler(index) {
     return (dispatch, getState) => {
@@ -55,7 +56,24 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response.status === 401 || e.response.status === 403) {
+                let n = 4
+                err.push(`Выход из системы через ${n}...`)
+                let timerId = setInterval(() => {
+                    dispatch(errorWindow(false, []))
+                    err.pop()
+                    n = n - 1
+                    err.push(`Выход из системы через ${n}...`)
+                    dispatch(errorWindow(true, err))
+                }, 1000)
+
+                setTimeout(() => {
+                    clearInterval(timerId)
+                    dispatch(logoutHandler())
+                }, 4000)
+            }
+            else 
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -103,7 +121,24 @@ export function loadingLists(url, roleActive) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response.status === 401 || e.response.status === 403) {
+                let n = 4
+                err.push(`Выход из системы через ${n}...`)
+                let timerId = setInterval(() => {
+                    dispatch(errorWindow(false, []))
+                    err.pop()
+                    n = n - 1
+                    err.push(`Выход из системы через ${n}...`)
+                    dispatch(errorWindow(true, err))
+                }, 1000)
+
+                setTimeout(() => {
+                    clearInterval(timerId)
+                    dispatch(logoutHandler())
+                }, 4000)
+            }
+            else 
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -135,7 +170,24 @@ export function actionUsersHandler(url) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response.status === 401 || e.response.status === 403) {
+                let n = 4
+                err.push(`Выход из системы через ${n}...`)
+                let timerId = setInterval(() => {
+                    dispatch(errorWindow(false, []))
+                    err.pop()
+                    n = n - 1
+                    err.push(`Выход из системы через ${n}...`)
+                    dispatch(errorWindow(true, err))
+                }, 1000)
+
+                setTimeout(() => {
+                    clearInterval(timerId)
+                    dispatch(logoutHandler())
+                }, 4000)
+            }
+            else 
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -157,7 +209,24 @@ export function deleteGroupHandler(url, groupId) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response.status === 401 || e.response.status === 403) {
+                let n = 4
+                err.push(`Выход из системы через ${n}...`)
+                let timerId = setInterval(() => {
+                    dispatch(errorWindow(false, []))
+                    err.pop()
+                    n = n - 1
+                    err.push(`Выход из системы через ${n}...`)
+                    dispatch(errorWindow(true, err))
+                }, 1000)
+
+                setTimeout(() => {
+                    clearInterval(timerId)
+                    dispatch(logoutHandler())
+                }, 4000)
+            }
+            else 
+                dispatch(errorWindow(true, err))
         }
     }
 }
