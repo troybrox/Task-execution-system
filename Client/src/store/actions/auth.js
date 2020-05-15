@@ -39,7 +39,6 @@ export function auth(data) {
             document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
             localStorage.setItem('token', respData.data.idToken)
             localStorage.setItem('role', respData.data.role)
-            document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
 
             if (respData.succeeded) {            
                 dispatch(authSuccess(respData.data.idToken, respData.data.role))
