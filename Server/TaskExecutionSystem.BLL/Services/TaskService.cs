@@ -17,6 +17,7 @@ using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.DAL.Entities.File;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Studies;
+using Microsoft.EntityFrameworkCore;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -28,7 +29,51 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
-        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string newUniquefileName = null)
+        public async Task<(bool Succeeded, string filePath, int fileId)> GetSolutionFileNameAsync(int solutionID)
+        {
+            bool succeeded = false;
+            string filePath = null;
+            int fileId = 0;
+
+            Solution solution;
+            if((solution = await _context.Solutions
+                .Include(s => s.File)
+                .FirstOrDefaultAsync(s => s.Id == solutionID)) != null)
+            {
+                if(solution.File != null)
+                {
+                    succeeded = true;
+                    filePath = solution.File.Path;
+                    fileId = solution.File.Id;
+                }
+            }
+
+            return (succeeded, filePath, fileId);
+        }
+
+        public async Task<(bool Succeeded, string filePath, int fileId)> GetTaskFileNameAsync(int taskId)
+        {
+            bool succeeded = false;
+            string filePath = null;
+            int fileId = 0;
+
+            TaskModel task;
+            if ((task = await _context.TaskModels
+                .Include(t => t.File)
+                .FirstOrDefaultAsync(t => t.Id == taskId)) != null)
+            {
+                if (task.File != null)
+                {
+                    succeeded = true;
+                    filePath = task.File.Path;
+                    fileId = task.File.Id;
+                }
+            }
+
+            return (succeeded, filePath, fileId);
+        }
+
+        public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string uniquefileName = null)
         {
             var detail = new OperationDetailDTO();
             try
@@ -37,14 +82,14 @@ namespace TaskExecutionSystem.BLL.Services
                 if (task != null)
                 {
                     TaskFile newFile;
-                    if(newUniquefileName != null)
+                    if(uniquefileName != null)
                     {
                         newFile = new TaskFile
                         {
                             TaskModel = task,
                             FileName = userFileName,
-                            Path = TaskFilePath + newUniquefileName,
-                            FileURI = TaskFileURI + newUniquefileName,
+                            Path = TaskFilePath + uniquefileName,
+                            FileURI = TaskFileURI + uniquefileName,
                         };
                     }
                     else
@@ -75,7 +120,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string userFileName, string newUniquefileName = null)
+        public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string userFileName, string uniquefileName = null)
         {
             var detail = new OperationDetailDTO();
             try
@@ -85,14 +130,14 @@ namespace TaskExecutionSystem.BLL.Services
                 if (solution != null)
                 {
                     SolutionFile newFile;
-                    if (newUniquefileName != null)
+                    if (uniquefileName != null)
                     {
                         newFile = new SolutionFile
                         {
                             Solution = solution,
                             FileName = userFileName,
-                            Path = SolutionFilePath + newUniquefileName,
-                            FileURI = SolutionFileURI + newUniquefileName,
+                            Path = SolutionFilePath + uniquefileName,
+                            FileURI = SolutionFileURI + uniquefileName,
                         };
                     }
                     else
@@ -121,6 +166,68 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add("Ошибка при добавлении файла к решению задачи. " + e.Message);
                 return detail;
             }
+        }
+
+        public async Task<OperationDetailDTO> UpdateTaskFileAsync(int fileID, string newUserFileName, string newUniqueFileName)
+        {
+            var detail = new OperationDetailDTO();
+
+            try
+            {
+                var file = await _context.TaskFiles.FindAsync(fileID);
+
+                if (file == null)
+                {
+                    detail.ErrorMessages.Add("Ошибка при обновлении файла задачи: файл не найден.");
+                }
+
+                file.FileName = newUserFileName;
+                file.Path = TaskFilePath + newUniqueFileName;
+                file.FileURI = TaskFileURI + newUniqueFileName;
+
+                _context.TaskFiles.Update(file);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add("Ошибка при обновлени файла задачи: " + e.Message);
+                return detail;
+            }
+
+        }
+
+        public async Task<OperationDetailDTO> UpdateSolutionFileAsync(int fileID, string newUserFileName, string newUniqueFileName)
+        {
+            var detail = new OperationDetailDTO();
+
+            try
+            {
+                var file = await _context.SolutionFiles.FindAsync(fileID);
+
+                if (file == null)
+                {
+                    detail.ErrorMessages.Add("Ошибка при обновлении файла решения задачи: файл не найден.");
+                }
+
+                file.FileName = newUserFileName;
+                file.Path = SolutionFilePath + newUniqueFileName;
+                file.FileURI = SolutionFileURI + newUniqueFileName;
+
+                _context.SolutionFiles.Update(file);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add("Ошибка при обновлени файла решения задачи: " + e.Message);
+                return detail;
+            }
+            
         }
 
         public void GetCurrentTimePercentage(ref TaskDTO dto)

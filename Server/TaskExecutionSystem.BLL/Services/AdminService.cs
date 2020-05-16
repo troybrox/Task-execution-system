@@ -414,10 +414,37 @@ namespace TaskExecutionSystem.BLL.Services
         {
             try
             {
+                if(entityIdList.Length < 1)
+                {
+                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _entityDeletingError + "Параметры удаления пользователей были равны null" } };
+                }
+
                 foreach (var id in entityIdList)
                 {
-                    var teacherEntity = await _context.Teachers.Include(t => t.User).FirstOrDefaultAsync(t => t.Id == id);
+                    var teacherEntity = await _context.Teachers
+                        .Include(t => t.User)
+                        .Include(t => t.Tasks)
+                        .FirstOrDefaultAsync(t => t.Id == id);
+
+                    foreach (var task in teacherEntity.Tasks)
+                    {
+                        var solutions = await _context.Solutions
+                            .Where(s => s.TaskId == task.Id)
+                            .ToListAsync();
+
+                        var taskStudItems = await _context.TaskStudentItems
+                            .Where(ts => ts.TaskId == task.Id)
+                            .FirstOrDefaultAsync();
+
+                        _context.Solutions.RemoveRange(solutions);
+                        _context.TaskStudentItems.RemoveRange(taskStudItems);
+                    }
+
+                    _context.TaskModels.RemoveRange(teacherEntity.Tasks);
+                    await _context.SaveChangesAsync();
+
                     await _userManager.DeleteAsync(teacherEntity.User);
+                    await _context.SaveChangesAsync();
                 }
                 return new OperationDetailDTO { Succeeded = true };
             }

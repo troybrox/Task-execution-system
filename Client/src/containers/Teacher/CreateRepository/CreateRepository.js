@@ -153,7 +153,9 @@ class CreateRepository extends React.Component {
                         </span><br />
                         <p>
                             <img src='/images/file-solid.svg' alt='' /><br />
-                            <span>{this.state.files.name}</span>  
+                            <span className='file_name'>
+                                {this.state.files.name}
+                            </span>  
                         </p><br />
                         <span 
                             className='delete_file'

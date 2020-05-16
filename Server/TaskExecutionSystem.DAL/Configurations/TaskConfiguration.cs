@@ -14,6 +14,16 @@ namespace TaskExecutionSystem.DAL.Configurations
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
+            builder.HasMany(t => t.TaskStudentItems)
+                .WithOne(ts => ts.Task)
+                .HasForeignKey(s => s.TaskId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
+
+            builder.HasOne(t => t.File)
+                .WithOne(s => s.TaskModel)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
 
             builder.Property(t => t.TypeId)
                 .IsRequired();

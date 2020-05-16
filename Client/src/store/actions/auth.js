@@ -2,8 +2,7 @@ import axios from '../../axios/axiosRole'
 import { 
     AUTH_SUCCESS, 
     LOGOUT, 
-    SUCCESS, 
-    // ERROR_MESSAGE_AUTH, 
+    SUCCESS,
     PUSH_FILTERS, 
     ERROR_WINDOW,
     LOADING_START } from './actionTypes'
@@ -12,7 +11,6 @@ export function registr(url, data) {
     return async dispatch => {
         dispatch(loadingStart())
         try {
-            console.log(data)
             const response = await axios.post(url, data)
             const respData = response.data
             
@@ -38,13 +36,12 @@ export function auth(data) {
             const url = 'api/account/login'
             const response = await axios.post(url, data)
             const respData = response.data
-            document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
-            localStorage.setItem('token', respData.data.idToken)
-            localStorage.setItem('role', respData.data.role)
-            document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
 
-            if (respData.succeeded) {            
-                dispatch(authSuccess(respData.data.idToken, respData.data.role))
+            if (respData.succeeded) {    
+                console.log(respData.data.idToken)
+                document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
+                localStorage.setItem('role', respData.data.role)        
+                dispatch(authSuccess(respData.data.role))
             } else {
                 const err = [...respData.errorMessages]
                 err.unshift('Сообщение с сервера')
@@ -97,8 +94,7 @@ export function loadingFilters() {
 
 function setCookie(name, value, options = {}) {
     options = {
-        path: '/',
-        // при необходимости добавьте другие значения по умолчанию
+        // path: '/',
         ...options
     }
   
@@ -106,21 +102,21 @@ function setCookie(name, value, options = {}) {
         options.expires = options.expires.toUTCString();
     }
   
-    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+    let updatedCookie = encodeURIComponent(name) + '=' + encodeURIComponent(value)
   
     for (let optionKey in options) {
-        updatedCookie += "; " + optionKey;
-        let optionValue = options[optionKey];
+        updatedCookie += ';' + optionKey
+        let optionValue = options[optionKey]
         if (optionValue !== true) {
-            updatedCookie += "=" + optionValue;
+            updatedCookie += '=' + optionValue
         }
     }
   
-    document.cookie = updatedCookie;
+    document.cookie = updatedCookie
   }
 
 function deleteCookie(name) {
-    setCookie(name, "", {
+    setCookie(name, '', {
         'max-age': -1
     })
   }
@@ -131,7 +127,6 @@ export function logoutHandler() {
             await axios.get('api/account/signout')
             
             deleteCookie('.AspNetCore.Application.Id')
-            localStorage.removeItem('token')
             localStorage.removeItem('role')
             dispatch(logout())
         } catch (e) {
@@ -156,10 +151,10 @@ export function success(successPage) {
     }
 }
 
-export function authSuccess(token, role) {
+export function authSuccess(role) {
     return {
         type: AUTH_SUCCESS,
-        token, role
+        role
     }
 }
 
@@ -181,11 +176,3 @@ export function loadingStart() {
         type: LOADING_START
     }
 }
-
-
-// export function errorMessageAuth(errorMessages) {
-//     return {
-//         type: ERROR_MESSAGE_AUTH,
-//         errorMessages
-//     }
-// }

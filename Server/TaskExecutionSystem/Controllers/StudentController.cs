@@ -98,6 +98,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // TODO: fileUpdate [!]
         [HttpPost("solution/update")]
         public async Task<IActionResult> UpdateSolution([FromBody]SolutionCreateModelDTO dto)
         {
@@ -105,12 +106,12 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+
         [HttpPost("solution/add/file")]
         public async Task<IActionResult> AddFile()
         {
             string solutionFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\";
             var detail = new OperationDetailDTO();
-
             try
             {
                 var allForms = Request.Form;
@@ -118,56 +119,61 @@ namespace TaskExecutionSystem.Controllers
                 StringValues solutionIdString;
                 var solIdRes = allForms.TryGetValue(allForms.Keys.First(), out solutionIdString);
                 var strId = solutionIdString.ToString();
-                var id = Convert.ToInt32(strId);
+                var solutionID = Convert.ToInt32(strId);
 
                 var file = Request.Form.Files[0];
                 if (file != null)
                 {
-                    var fileName = file.FileName;
-                    var fileRes = new OperationDetailDTO();
+                    string userFileName = file.FileName;
+                    string uniqueFileName = System.Guid.NewGuid() + userFileName;
+                    OperationDetailDTO fileRes = new OperationDetailDTO();
 
-                    var newFileName = System.Guid.NewGuid() + fileName;
-                    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + newFileName))
+                    var currentFileRes = await _taskService.GetSolutionFileNameAsync(solutionID);
+                    if(currentFileRes.Succeeded)
                     {
-                        file.CopyTo(fileStream);
-                    }
-                    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
 
-                    //if (System.IO.File.Exists(solutionFileLoadPath + fileName))
-                    //{
-                    //    var newFileName = System.Guid.NewGuid() + fileName;
-                    //    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName, newFileName);
-                    //}
-                    //else
-                    //{
-                    //    using (var fileStream = System.IO.File.Create(solutionFileLoadPath + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _taskService.AddFileToSolutionAsync(id, fileName);
-                    //}
+                        if (System.IO.File.Exists(_environment.WebRootPath + currentFileRes.filePath))
+                        {
+                            System.IO.File.Delete(_environment.WebRootPath + currentFileRes.filePath);
+                        }
+
+                        fileRes = await _taskService.UpdateSolutionFileAsync(currentFileRes.fileId, userFileName, uniqueFileName);
+                    }
+
+                    else 
+                    {
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        fileRes = await _taskService.AddFileToSolutionAsync(solutionID, userFileName, uniqueFileName);
+                    }
 
                     if (!fileRes.Succeeded)
                     {
+                        if (System.IO.File.Exists(solutionFileLoadPath + uniqueFileName))
+                        {
+                            System.IO.File.Delete(solutionFileLoadPath + uniqueFileName);
+                        }
+
                         detail.ErrorMessages.Add("Не удалось загрузить файл к решению задачи.");
                         detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                        return Ok(detail);
                     }
                     else
                     {
                         detail.Succeeded = true;
-                        return Ok(detail);
                     }
                 }
                 else
                 {
                     detail.ErrorMessages.Add("Файл равен null");
-                    return Ok(detail);
                 }
+                return Ok(detail);
             }
             catch (Exception e)
             {

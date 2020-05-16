@@ -38,7 +38,8 @@ class RepositoryComponent extends React.Component {
         })
     }
 
-    choiceRepo = (item, index) => {
+    onChoiceRepo = (item, index) => {
+        if (this.state.activeRepoIndex === index || (this.state.activeRepoIndex !== index && !item.open)) this.props.choiceRepo(index)
         const text = item.contentText
         const title = item.name
         this.setState({
@@ -95,7 +96,7 @@ class RepositoryComponent extends React.Component {
         return files.map(item => {
             return (
                 <li key={item.fileURI} className='download_small'>
-                    <a href={item.fileURI} download={item.fileName}>
+                    <a href={item.fileURI} target='_blank' rel='noopener noreferrer' download={item.fileName}>
                         <img src='/images/download-solid.svg' alt='' />
                         {item.fileName} 
                     </a>
@@ -114,16 +115,17 @@ class RepositoryComponent extends React.Component {
                         <Auxiliary key={index}>
                             <li 
                                 className={cls.join(' ')}
-                                onClick={this.choiceRepo.bind(this, item, index)}
+                                onClick={this.onChoiceRepo.bind(this, item, index)}
                             >
-                                <img src='images/folder-regular.svg' alt='' />
+                                <img src='/images/folder-regular.svg' alt='' />
                                 {item.name}
                             </li>
-                            {/* {this.state.activeRepoIndex === index && item.files.length !== 0 ?  */}
+                            {item.open && item.files.length !== 0 ? 
                                 <ul className='small_list'>
                                     {this.renderFileList(item.files)}
-                                </ul>
-                            {/* } */}
+                                </ul> :
+                                null
+                            }
                         </Auxiliary>
 
                     )
@@ -135,7 +137,7 @@ class RepositoryComponent extends React.Component {
 
     renderList() {
         const list = this.props.repositoryData.length === 0 ? 
-            localStorage.getItem('role') === 'teacher' ?
+            this.props.role === 'teacher' ?
                 <p className='empty_field'>
                     <Link to='/create_repository'>Создайте репозиторий</Link>,
                     чтобы видеть предметы по созданным репозиториям
@@ -145,9 +147,9 @@ class RepositoryComponent extends React.Component {
                 </p> :
             this.props.repositoryData.map((item, index) => {
                 const cls = ['big_items']
-                let src = 'images/angle-right-solid.svg'
+                let src = '/images/angle-right-solid.svg'
                 if (item.open) {
-                    src = 'images/angle-down-solid.svg'
+                    src = '/images/angle-down-solid.svg'
 
                 }
                 return (
@@ -175,7 +177,7 @@ class RepositoryComponent extends React.Component {
     }
 
     renderButtonsLook() {
-        if (localStorage.getItem('role') === 'teacher') {
+        if (this.props.role === 'teacher') {
             return (
                 <div className='buttons'>
                     <Button 
@@ -267,7 +269,7 @@ class RepositoryComponent extends React.Component {
                 { this.props.subjectFullData.length !== 0 && this.state.activeRepoIndex !== null && this.props.subjectFullData[this.state.activeRepoIndex] !== undefined ?
                     <div className='repo_title'>
                         <h2>{this.props.subjectFullData[this.state.activeRepoIndex].subject}. {name}</h2> 
-                        { localStorage.getItem('role') === 'student' ? 
+                        { this.props.role === 'student' ? 
                             <p className='author'>Автор: {this.props.subjectFullData[this.state.activeRepoIndex].teacherSurname} {this.props.subjectFullData[this.state.activeRepoIndex].teacherName} {this.props.subjectFullData[this.state.activeRepoIndex].teacherPatronymic}</p> : 
                             null
                         } 
@@ -283,7 +285,7 @@ class RepositoryComponent extends React.Component {
             <Frame active_index={3}>
                 <div className='main_subject'>
                     <aside className='aside_subject'>
-                        { this.props.repositoryData.length !== 0 && localStorage.getItem('role') === 'teacher' ?
+                        { this.props.repositoryData.length !== 0 && this.props.role === 'teacher' ?
                             <div className='create_repo_button'>
                                 <Link 
                                     to='/create_repository'

@@ -20,6 +20,7 @@
 }
 
 .header_task {
+
     .each_tasks {
         display: flex;
         align-items: flex-end;
@@ -46,7 +47,7 @@
         }
     }
 
-    button {
+    a {
         margin: 0 150px 10px auto;
     }
 }
@@ -70,6 +71,10 @@
                 display: inline-block;
                 margin-bottom: 10px;
                 width: 100px;
+            }
+
+            .simple_text {
+                margin-left: 15px;
             }
 
             select {

@@ -11,7 +11,8 @@ import {
     SUCCESS_CREATE_REPOSITORY,
     SUCCESS_REPOSITORY,
     SUCCESS_CREATE_REPOSITORY_END,
-    SUCCESS_SUBJECT_FULL} from "../actions/actionTypes"
+    SUCCESS_SUBJECT_FULL,
+    LOGOUT} from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -46,15 +47,15 @@ export default function teacherReducer(state = initialState, action) {
             }
         case SUCCESS_PROFILE:
             return {
-                ...state, profileData: action.profileData, loading: false
+                ...state, profileData: action.profileData, loading: false, taskAdditionData: {}
             }
         case SUCCESS_MAIN:
             return {
-                ...state, mainData: action.mainData, loading: false
+                ...state, mainData: action.mainData, loading: false, taskAdditionData: {}
             }
         case SUCCESS_TASK:
             return {
-                ...state, taskData: action.taskData, successId: null, loading: false
+                ...state, taskData: action.taskData, successId: null, loading: false, taskAdditionData: {}
             }
         case SUCCESS_TASKS:
             return {
@@ -70,15 +71,15 @@ export default function teacherReducer(state = initialState, action) {
             }
         case SUCCESS_TASK_ADDITION:
             return {
-                ...state, taskAdditionData: action.taskAdditionData, loading: false
+                ...state, taskAdditionData: action.taskAdditionData, loading: false, successId: null
             }
         case SUCCESS_CREATE_REPOSITORY:
             return {
-                ...state, createRepository: action.createRepository, loading: false
+                ...state, createRepository: action.createRepository, loading: false, taskAdditionData: {}
             }
         case SUCCESS_REPOSITORY:
             return {
-                ...state, repositoryData: action.repositoryData, repoActive: false, loading: false
+                ...state, repositoryData: action.repositoryData, repoActive: false, loading: false, taskAdditionData: {}
             }
         case SUCCESS_SUBJECT_FULL:
             return {
@@ -95,6 +96,33 @@ export default function teacherReducer(state = initialState, action) {
                 errorMessage: action.errorMessage,
                 loading: false
             }
+        case LOGOUT: {
+            return {
+                ...state,
+                profileData: [],
+                mainData: [],
+                taskData: {
+                    subjects: [],
+                    types: [],
+                },
+                tasks: [],
+                createData: {
+                    subjects:[],
+                    types: [],
+                    groups: []
+                },
+                taskAdditionData: {},
+                createRepository: [],
+                repositoryData: [],
+                subjectFullData: [],
+            
+                successId: null,
+                errorShow: false,
+                errorMessage: [],
+            
+                loading: false
+            }
+        }
         default:
             return state
     }

@@ -38,6 +38,7 @@ namespace TaskExecutionSystem.BLL.Services
         // авторизация пользователя в системе 
         public async Task<OperationDetailDTO<SignInUserDetailDTO>> SignInAsync(UserLoginDTO dto)
         {
+            var detail = new OperationDetailDTO<SignInUserDetailDTO>();
             List<string> errors = new List<string>();
 
             try
@@ -49,30 +50,35 @@ namespace TaskExecutionSystem.BLL.Services
                     {
                         var user = await _userManager.FindByNameAsync(dto.UserName);
                         var roleList = await _userManager.GetRolesAsync(user);
-                        return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = true, Data = new SignInUserDetailDTO { User = user, UserRoles = roleList } };
+                        detail.Data = new SignInUserDetailDTO { User = user, UserRoles = roleList };
+                        detail.Succeeded = true;
                     }
 
                     else
                     {
                         var user = await _userManager.FindByEmailAsync(dto.UserName);
-                        var emailRes = await _signInManager.PasswordSignInAsync(user, user.PasswordHash, true, true);
-                        if (emailRes.Succeeded)
+                        if(user != null)
                         {
-                            var roleList = await _userManager.GetRolesAsync(user);
-                            return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = true, Data = new SignInUserDetailDTO { User = user, UserRoles = roleList } };
+                            var emailRes = await _signInManager.PasswordSignInAsync(user.UserName, dto.Password, true, true);
+                            if (emailRes.Succeeded)
+                            {
+                                var roleList = await _userManager.GetRolesAsync(user);
+                                detail.Data = new SignInUserDetailDTO { User = user, UserRoles = roleList };
+                                detail.Succeeded = true;
+                            }
+                            else
+                            {
+                                detail.ErrorMessages.Add(_signInErrorMessage);
+                            }
                         }
-                        else
-                        {
-                            errors.Add(_signInErrorMessage);
-                            return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = false, ErrorMessages = errors };
-                        }
+                        
                     }
                 }
                 else
                 {
-                    errors.Add("Имя пользователя или почта не соответствует требованиям");
-                    return new OperationDetailDTO<SignInUserDetailDTO> { Succeeded = false, ErrorMessages = errors };
+                    detail.ErrorMessages.Add("Имя пользователя или почта введены некроректно");
                 }
+                return detail;
             }
 
             catch (Exception e)

@@ -3,7 +3,8 @@ import {
     PUSH_USERS, 
     PUSH_SELECTS, 
     ERROR_WINDOW, 
-    CHANGE_CONDITION } from "../actions/actionTypes"
+    CHANGE_CONDITION, 
+    LOGOUT} from "../actions/actionTypes"
 
 const initialState = {
     users: [],
@@ -57,6 +58,33 @@ export default function adminReducer(state = initialState, action) {
         case CHANGE_CONDITION:
             return {
                 ...state, actionCondition: action.actionCondition
+            }
+        case LOGOUT: 
+            return {
+                ...state, 
+                users: [],
+                selects: [
+                    {
+                        title: 'Факультет', 
+                        options: [{id: null, name: 'Все'}], 
+                        show: true
+                    },
+                    {
+                        title: 'Кафедра',  
+                        options: [{id: null, name: 'Все'}], 
+                        show: true
+                    },
+                    {
+                        title: 'Группа',  
+                        options: [{id: null, name: 'Все'}], 
+                        show: false
+                    }
+                ],
+                errorShow: false,
+                errorMessage: [],
+            
+                loading: false,
+                actionCondition: null
             }
         default:
             return state

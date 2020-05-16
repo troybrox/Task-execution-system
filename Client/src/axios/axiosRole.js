@@ -9,8 +9,9 @@ const api = axios.create({
 api.interceptors.request.use(request => requestInterceptor(request))
 
 const requestInterceptor = (request) => {
-   request.headers['Authorization'] = 'Bearer '.concat(cookie.load('.AspNetCore.Application.Id'))
-   return request
+    request.withCreadentials = true
+    request.headers['Authorization'] = 'Bearer '.concat(cookie.load('.AspNetCore.Application.Id'))
+    return request
 }
 
 export default api

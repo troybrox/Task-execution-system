@@ -201,19 +201,42 @@ namespace TaskExecutionSystem.Controllers
                 StringValues taskIdString;
                 var taskIdRes = allForms.TryGetValue(allForms.Keys.First(), out taskIdString);
                 var strId = taskIdString.ToString();
-                var id = Convert.ToInt32(strId);
+                var taskID = Convert.ToInt32(strId);
+
                 var file = Request.Form.Files[0];
                 if (file != null)
                 {
-                    var fileName = file.FileName;
-                    var fileRes = new OperationDetailDTO();
+                    string userFileName = file.FileName;
+                    string uniqueFileName = System.Guid.NewGuid() + userFileName;
+                    OperationDetailDTO fileRes = new OperationDetailDTO();
 
-                    var newFileName = System.Guid.NewGuid() + fileName;
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + newFileName))
+                    var currentFileRes = await _taskService.GetTaskFileNameAsync(taskID);
+                    if (currentFileRes.Succeeded)
                     {
-                        file.CopyTo(fileStream);
+                        using (var fileStream = System.IO.File.Create(taskFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        if(System.IO.File.Exists(_environment.WebRootPath + currentFileRes.filePath))
+                        {
+                            System.IO.File.Delete(_environment.WebRootPath + currentFileRes.filePath);
+                        }
+
+                        fileRes = await _taskService.UpdateTaskFileAsync(currentFileRes.fileId, userFileName, uniqueFileName);
                     }
-                    fileRes = await _taskService.AddFileToTaskAsync(id, fileName, newFileName);
+
+                    else
+                    {
+                        using (var fileStream = System.IO.File.Create(taskFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        fileRes = await _taskService.AddFileToTaskAsync(taskID, userFileName, uniqueFileName);
+                    }
+
+                    
 
                     //if (System.IO.File.Exists(taskFileLoadPath + fileName))
                     //{
@@ -232,25 +255,26 @@ namespace TaskExecutionSystem.Controllers
                     //    }
                     //}
 
-                    fileRes = await _taskService.AddFileToTaskAsync(id, fileName);
 
                     if (!fileRes.Succeeded)
                     {
+                        if (System.IO.File.Exists(taskFileLoadPath + uniqueFileName))
+                        {
+                            System.IO.File.Delete(taskFileLoadPath + uniqueFileName);
+                        }
                         detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
                         detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                        return Ok(detail);
                     }
                     else
                     {
                         detail.Succeeded = true;
-                        return Ok(detail);
                     }
                 }
                 else
                 {
                     detail.ErrorMessages.Add("Файл равен null");
-                    return Ok(detail);
                 }
+                return Ok(detail);
             }
             catch (Exception e)
             {

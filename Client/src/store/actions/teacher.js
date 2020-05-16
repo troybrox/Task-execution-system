@@ -1,5 +1,6 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END, SUCCESS_SUBJECT_FULL } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END, SUCCESS_SUBJECT_FULL, LOGOUT } from './actionTypes'
+import { logoutHandler } from './auth'
 
 export function fetchProfile() {
     return async dispatch => {
@@ -38,9 +39,32 @@ export function fetchProfile() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -69,9 +93,32 @@ export function updateData(data, path) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -131,9 +178,32 @@ export function fetchMain() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -224,9 +294,32 @@ export function fetchTaskFilters() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -273,18 +366,12 @@ export function fetchListTasks(filters) {
             const data = response.data
 
             if (data.succeeded) {
-                const tasks = []
-                if (data.data.length !== 0) {
-                    data.data.forEach(el => {
-                        const beginDate = new Date(el.beginDate) 
-                        const object = {id: el.id, type: el.type, name: el.name, dateOpen: parseDate(beginDate)}
-                    
-                        object.countAnswers = el.solutionsCount 
-                        object.countStudents = el.studentsCount
-    
-                        tasks.push(object)
-                    })
-                }
+                const tasks = [...data.data]
+                tasks.forEach(el => {
+                    el.beginDate = parseDate(new Date(el.beginDate))
+                    if (el.updateDate !== null) el.updateDate = parseDate(new Date(el.updateDate))
+                    el.finishDate = parseDate(new Date(el.finishDate))
+                })
 
                 dispatch(successTasks(tasks))
             } else {
@@ -293,9 +380,32 @@ export function fetchListTasks(filters) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -332,7 +442,9 @@ export function fetchTaskById(id) {
                 taskAdditionData.beginDate = parseDate(beginDate) 
                 taskAdditionData.finishDate = parseDate(finishDate) 
                 if (taskAdditionData.solutions.length !== 0) {
-                    taskAdditionData.solutions.creationDate = parseDate(new Date(data.data.solutions.creationDate))
+                    taskAdditionData.solutions.forEach(el => {
+                        el.creationDate = parseDate(new Date(el.creationDate))
+                    })
                 }
 
                 if (taskAdditionData.solution !== null) {
@@ -350,9 +462,32 @@ export function fetchTaskById(id) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -379,9 +514,32 @@ export function fetchTaskCreate() {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -403,25 +561,31 @@ export function changeChecked(groupIndex, studentIndex, val) {
     }
 }
 
-export function onSendCreate(task) {
+export function onSendCreate(task, path) {
     return async dispatch => {
         try {
-            const url = 'api/teacher/task/add'
+            const url = `api/teacher/task/${path}`
             const response = await axios.post(url, task.task)
             const data = response.data
 
             if (data.succeeded) {
+                let idTask = data.data
+                let titleId = 'taskId'
+                if (path === 'update') {
+                    idTask = task.task.id
+                    titleId = 'id'
+                }
                 if (task.file !== null)
                     try {
                         const url2 = 'api/teacher/task/add/file'
                         const file = new FormData()
-                        file.append('taskId', data.data)
+                        file.append(titleId, idTask)
                         file.append('file', task.file)
                         const response2 = await axios.post(url2, file)
                         const data2 = response2.data
 
                         if (data2.succeeded) {
-                            dispatch(successCreate(+data.data))
+                            dispatch(successCreate(+idTask))
                         } else {
                             const err = [...data2.errorMessages]
                             err.unshift('Сообщение с сервера.')
@@ -429,12 +593,35 @@ export function onSendCreate(task) {
                         }
 
                     } catch (error) {
-                        const err = ['Ошибка подключения']
+                        const err = [`Ошибка подключения: ${error.name}`]
                         err.push(error.message)
-                        dispatch(errorWindow(true, err))
+                        if (error.response !== undefined)
+                            if (error.response.status !== undefined)
+                                if (error.response.status === 401 || error.response.status === 403) {
+                                    let n = 4
+                                    err.push(`Выход из системы через ${n}...`)
+                                    let timerId = setInterval(() => {
+                                        dispatch(errorWindow(false, []))
+                                        err.pop()
+                                        n = n - 1
+                                        err.push(`Выход из системы через ${n}...`)
+                                        dispatch(errorWindow(true, err))
+                                    }, 1000)
+                    
+                                    setTimeout(() => {
+                                        clearInterval(timerId)
+                                        dispatch(logoutHandler())
+                                    }, 4000)
+                                }
+                                else 
+                                    dispatch(errorWindow(true, err))
+                            else 
+                                dispatch(errorWindow(true, err))
+                        else
+                            dispatch(errorWindow(true, err))
                     }
                 else 
-                    dispatch(successCreate(+data.data))
+                    dispatch(successCreate(+idTask))
             } else {
                 const err = [...data.errorMessages]
                 err.unshift('Сообщение с сервера.')
@@ -442,9 +629,32 @@ export function onSendCreate(task) {
             }
 
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -462,9 +672,32 @@ export function onCloseTask(id) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -479,9 +712,6 @@ export function fetchRepository() {
                 const repositoryData = []
                 data.data.forEach(el => {
                     const object = el
-                    // if (index === 0)
-                    //     object.open = true
-                    // else
                     object.open = false
 
                     repositoryData.push(object)
@@ -494,9 +724,32 @@ export function fetchRepository() {
             }
             
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -516,6 +769,16 @@ export function choiceSubjectHandler(index) {
     }
 }
 
+export function choiceRepoHandler(index) {
+    return (dispatch, getState) => {
+        const state = getState().teacher
+        const subjectFullData = [...state.subjectFullData]
+        subjectFullData[index].open = !subjectFullData[index].open
+
+        dispatch(successSubjectFull(subjectFullData))
+    }    
+}
+
 export function fetchSubjectFull(filters) {
     return (dispatch, getState) => {
         const state = getState().teacher
@@ -528,9 +791,7 @@ export function fetchSubjectFull(filters) {
                     const response = await axios.post(url, filters)
                     const data = response.data
                     if (data.succeeded) {
-                        
                         const subjectFullData = [...state.subjectFullData]
-                        
                         data.data.forEach(el => {
                             let index = null
                             subjectFullData.forEach((element, num) => {
@@ -548,9 +809,32 @@ export function fetchSubjectFull(filters) {
                         dispatch(errorWindow(true, err))
                     }
                 } catch (e) {
-                    const err = ['Ошибка подключения']
+                    const err = [`Ошибка подключения: ${e.name}`]
                     err.push(e.message)
-                    dispatch(errorWindow(true, err))
+                    if (e.response !== undefined)
+                        if (e.response.status !== undefined)
+                            if (e.response.status === 401 || e.response.status === 403) {
+                                let n = 4
+                                err.push(`Выход из системы через ${n}...`)
+                                let timerId = setInterval(() => {
+                                    dispatch(errorWindow(false, []))
+                                    err.pop()
+                                    n = n - 1
+                                    err.push(`Выход из системы через ${n}...`)
+                                    dispatch(errorWindow(true, err))
+                                }, 1000)
+                
+                                setTimeout(() => {
+                                    clearInterval(timerId)
+                                    dispatch(logoutHandler())
+                                }, 4000)
+                            }
+                            else 
+                                dispatch(errorWindow(true, err))
+                        else
+                            dispatch(errorWindow(true, err))
+                    else
+                        dispatch(errorWindow(true, err))
                 }
             }
         })
@@ -575,9 +859,32 @@ export function deleteRepo(index) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -600,9 +907,32 @@ export function editRepo(index, contentText, name) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -624,9 +954,32 @@ export function fetchCreateRepository() {
             }
             
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -651,9 +1004,32 @@ export function sendCreateRepository(filters) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -674,9 +1050,32 @@ export function sendCreateRepositoryFile(filters) {
                 }
         } catch (error) {
             dispatch(successCreateRepositoryEnd())
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${error.name}`]
             err.push(error.message)
-            dispatch(errorWindow(true, err))
+            if (error.response !== undefined)
+                if (error.response.status !== undefined)
+                    if (error.response.status === 401 || error.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -767,5 +1166,11 @@ export function errorWindow(errorShow, errorMessage) {
     return {
         type: ERROR_WINDOW,
         errorShow, errorMessage
+    }
+}
+
+export function logoutTeacher() {
+    return {
+        type: LOGOUT
     }
 }

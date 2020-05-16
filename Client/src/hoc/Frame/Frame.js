@@ -18,7 +18,7 @@ class Frame extends React.Component {
 
     renderHeader() {
         const headerItems = [...this.state.headerItems]
-        if (localStorage.getItem('role') === 'student')
+        if (this.props.role === 'student')
             headerItems.forEach(el => {
                 if (el.title === 'Главная') el.show = false
             })
@@ -52,10 +52,6 @@ class Frame extends React.Component {
                 }
                 <header className='frame_header'>
                     {this.renderHeader()}
-                    <div className='bell_side'>
-                        {/* <img src='images/bell-solid.svg' alt='' /> */}
-                        {/* <span>2</span> */}
-                    </div>
                     <Link className='frame_header_items exit_frame' to='/logout'>Выход</Link>
                 </header>
 
@@ -71,7 +67,8 @@ class Frame extends React.Component {
 function mapStateToProps(state) {
     return {
         errorShow: state.teacher.errorShow,
-        errorMessage: state.teacher.errorMessage
+        errorMessage: state.teacher.errorMessage,
+        role: state.auth.role
     }
 }
 
