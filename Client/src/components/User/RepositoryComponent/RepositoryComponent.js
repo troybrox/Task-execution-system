@@ -137,7 +137,7 @@ class RepositoryComponent extends React.Component {
 
     renderList() {
         const list = this.props.repositoryData.length === 0 ? 
-            localStorage.getItem('role') === 'teacher' ?
+            this.props.role === 'teacher' ?
                 <p className='empty_field'>
                     <Link to='/create_repository'>Создайте репозиторий</Link>,
                     чтобы видеть предметы по созданным репозиториям
@@ -177,7 +177,7 @@ class RepositoryComponent extends React.Component {
     }
 
     renderButtonsLook() {
-        if (localStorage.getItem('role') === 'teacher') {
+        if (this.props.role === 'teacher') {
             return (
                 <div className='buttons'>
                     <Button 
@@ -269,7 +269,7 @@ class RepositoryComponent extends React.Component {
                 { this.props.subjectFullData.length !== 0 && this.state.activeRepoIndex !== null && this.props.subjectFullData[this.state.activeRepoIndex] !== undefined ?
                     <div className='repo_title'>
                         <h2>{this.props.subjectFullData[this.state.activeRepoIndex].subject}. {name}</h2> 
-                        { localStorage.getItem('role') === 'student' ? 
+                        { this.props.role === 'student' ? 
                             <p className='author'>Автор: {this.props.subjectFullData[this.state.activeRepoIndex].teacherSurname} {this.props.subjectFullData[this.state.activeRepoIndex].teacherName} {this.props.subjectFullData[this.state.activeRepoIndex].teacherPatronymic}</p> : 
                             null
                         } 
@@ -285,7 +285,7 @@ class RepositoryComponent extends React.Component {
             <Frame active_index={3}>
                 <div className='main_subject'>
                     <aside className='aside_subject'>
-                        { this.props.repositoryData.length !== 0 && localStorage.getItem('role') === 'teacher' ?
+                        { this.props.repositoryData.length !== 0 && this.props.role === 'teacher' ?
                             <div className='create_repo_button'>
                                 <Link 
                                     to='/create_repository'
