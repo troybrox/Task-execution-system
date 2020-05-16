@@ -57,7 +57,7 @@ namespace TaskExecutionSystem.Identity.JWT.Extensions
                         IssuerSigningKey = tokenOptions.SigningKey,
                         ValidateIssuerSigningKey = true,
                         RequireExpirationTime = true,
-                        ValidateLifetime = false
+                        ValidateLifetime = true
                     };
                 });
 

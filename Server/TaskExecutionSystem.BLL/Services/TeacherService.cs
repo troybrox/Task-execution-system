@@ -37,14 +37,16 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
         private readonly ITaskService _taskService;
+        private readonly IUserValidator<User> _userValidator;
 
         public TeacherService(DataContext context, IHttpContextAccessor httpContextAccessor, 
-            UserManager<User> userManager, ITaskService taskService)
+            UserManager<User> userManager, ITaskService taskService, IUserValidator<User> userValidator)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _taskService = taskService;
+            _userValidator = userValidator;
         }
 
         // получение данных профиля преподавателя
@@ -108,7 +110,9 @@ namespace TaskExecutionSystem.BLL.Services
 
                 if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
                     || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
-                    || ((findSameUser = await _userManager.FindByNameAsync(newTeacherDTO.UserName)) != null && findSameUser != teacherUser))
+                    || newTeacherDTO.UserName != teacherUser.UserName  && await _userManager.FindByNameAsync(newTeacherDTO.UserName) != null)
+                    //|| (await _context.Users.Where(u => (u.Id != teacherUser.Id && u.UserName == newTeacherDTO.UserName)).FirstOrDefaultAsync() != null))
+                    //|| ((findSameUser = await _userManager.FindByNameAsync(newTeacherDTO.UserName)) != null && findSameUser.Id != teacherUser.Id))
                 {
                     detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
@@ -119,31 +123,29 @@ namespace TaskExecutionSystem.BLL.Services
                 {
                     teacherUser.Email = newTeacherDTO.Email;
                     teacherUser.UserName = newTeacherDTO.UserName;
-                    teacherUser.Teacher = null;
 
-                    // delete dependent
-                    teacherEntity.User = null;
-                    _context.Teachers.Update(teacherEntity);
-                    await _context.SaveChangesAsync();
+                    var validateRes = _userValidator.ValidateAsync(_userManager, teacherUser);
+                    if (validateRes.Result.Succeeded)
+                    {
+                        await _userManager.UpdateNormalizedEmailAsync(teacherUser);
+                        await _userManager.UpdateNormalizedUserNameAsync(teacherUser);
 
-                    var userUpdateResult = await _userManager.UpdateAsync(teacherUser);
-
-                    // update dependent
-                    teacherEntity.User = teacherUser;
-                    _context.Teachers.Update(teacherEntity);
-                    await _context.SaveChangesAsync();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Данные пользователя не прошли валидацию. Подробнее: " + validateRes.Result.Errors.ToList());
+                        return detail;
+                    }
 
                     if (teacherEntity != null)
                     {
                         teacherEntity.Position = newTeacherDTO.Position;
-                        //
-                        teacherEntity.User = teacherUser;
-                        //
                         _context.Teachers.Update(teacherEntity);
                         await _context.SaveChangesAsync();
                     }
 
-                    detail.Succeeded = true;
+
                 }
 
                 return detail;
