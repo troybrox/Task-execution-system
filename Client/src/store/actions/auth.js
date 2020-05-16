@@ -38,7 +38,8 @@ export function auth(data) {
             const respData = response.data
 
             if (respData.succeeded) {    
-                document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken};secure`
+                console.log(respData.data.idToken)
+                document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
                 localStorage.setItem('role', respData.data.role)        
                 dispatch(authSuccess(respData.data.role))
             } else {
@@ -110,8 +111,6 @@ function setCookie(name, value, options = {}) {
             updatedCookie += '=' + optionValue
         }
     }
-
-    updatedCookie += ';secure'
   
     document.cookie = updatedCookie
   }
