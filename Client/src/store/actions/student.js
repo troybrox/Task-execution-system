@@ -40,7 +40,7 @@ export function fetchProfile() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -87,7 +87,7 @@ export function updateData(data, path) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -157,7 +157,7 @@ export function fetchTaskFilters() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -238,7 +238,7 @@ export function fetchListTasks(filters) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -290,7 +290,7 @@ export function fetchTaskById(id) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -341,7 +341,7 @@ export function onSendSolution(createSolution, id, path) {
                         dispatch(fetchTaskById(id))
                         const err = [`Ошибка подключения: ${error.name}`]
                         err.push(error.message)
-                        if (error.response.status === 401 || error.response.status === 403) {
+                        if ('response' in error && (error.response.status === 401 || error.response.status === 403)) {
                             let n = 4
                             err.push(`Выход из системы через ${n}...`)
                             let timerId = setInterval(() => {
@@ -370,7 +370,7 @@ export function onSendSolution(createSolution, id, path) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -416,7 +416,7 @@ export function fetchRepository() {
         } catch (e) {   
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -495,7 +495,7 @@ export function fetchSubjectFull(filters) {
                 } catch (e) {
                     const err = [`Ошибка подключения: ${e.name}`]
                     err.push(e.message)
-                    if (e.response.status === 401 || e.response.status === 403) {
+                    if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                         let n = 4
                         err.push(`Выход из системы через ${n}...`)
                         let timerId = setInterval(() => {
