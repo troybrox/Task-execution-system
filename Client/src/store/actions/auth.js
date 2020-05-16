@@ -37,8 +37,7 @@ export function auth(data) {
             const response = await axios.post(url, data)
             const respData = response.data
 
-            if (respData.succeeded) {    
-                console.log(respData.data.idToken)
+            if (respData.succeeded) {
                 document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
                 localStorage.setItem('role', respData.data.role)        
                 dispatch(authSuccess(respData.data.role))
