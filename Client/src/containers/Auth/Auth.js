@@ -77,18 +77,12 @@ class Auth extends React.Component {
 				hTitle='Авторизация'
                 link='Нужен аккаунт? Зарегистрируйтесь!'
                 to='/registration'
-                img='images/user.svg'
+                img='/images/user.svg'
                 fields={this.state.fields}
                 onChange={this.onChangeHandler}
                 onSubmit={this.onSubmitHandler}
-			>
-                {/* {!!this.props.errorMessages ? <p className='errorMessages'>{this.props.errorMessages}</p> : null} */}
-                
+			>                
                 {this.props.loading ? <Loader />: null}
-
-                {/* <input type='checkbox' id='checkbox' />
-                <label className='label check_label' htmlFor='checkbox'>Запомнить меня</label><br /> */}
-                
                 <Button 
                     typeButton='auth'
                     onClickButton={event => this.onSubmitHandler(event)}
@@ -101,7 +95,6 @@ class Auth extends React.Component {
 
 function mapStateToProps(state) {
     return {
-        // errorMessages: state.auth.errorMessages,
         loading: state.auth.loading
     }
 }

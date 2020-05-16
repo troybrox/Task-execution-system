@@ -335,7 +335,7 @@ class Admin extends React.Component {
 
                 <header>
                     <span className='header_items admin'>
-                        <img src='images/login.svg' alt='login' />
+                        <img src='/images/login.svg' alt='login' />
                         <h3>Администратор</h3>
                     </span>
 

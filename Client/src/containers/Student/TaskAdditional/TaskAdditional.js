@@ -18,6 +18,7 @@ class TasksComponent extends React.Component {
                 descriptionTextarea={Object.keys(this.props.taskAdditionData).length !== 0 && this.props.taskAdditionData.solution !== null ? this.props.taskAdditionData.solution.contentText : ''}
                 loading={this.props.loading}
                 onSendSolution={this.props.onSendSolution}
+                role={this.props.role}
             >
                 {this.props.errorShow ? 
                     <Error 
@@ -36,7 +37,8 @@ function mapStateToProps(state) {
         taskAdditionData: state.student.taskAdditionData,
         errorShow: state.student.errorShow,
         errorMessage: state.student.errorMessage,
-        loading: state.student.loading
+        loading: state.student.loading,
+        role: state.auth.role
     }
 }
 

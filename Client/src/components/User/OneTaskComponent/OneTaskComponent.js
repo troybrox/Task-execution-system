@@ -350,7 +350,7 @@ class OneTaskComponent extends React.Component {
                     null}
 
                     {this.props.taskAdditionData.isOpen ?
-                        localStorage.getItem('role') === 'teacher' ?
+                        this.props.role === 'teacher' ?
                             <Button 
                                 typeButton='close'
                                 onClickButton={this.props.onCloseTask}
@@ -598,7 +598,7 @@ class OneTaskComponent extends React.Component {
     }
 
     renderContainTask() {
-        const all = localStorage.getItem('role') === 'student' ? 
+        const all = this.props.role === 'student' ? 
             'solution' in this.props.taskAdditionData && this.props.taskAdditionData.solution !== null ?
                 !this.state.editAnswer ?
                     <Answer 
@@ -653,7 +653,7 @@ class OneTaskComponent extends React.Component {
                         {students}
                     </ul>
                     {all}
-                    {localStorage.getItem('role') === 'student' && this.props.taskAdditionData.isOpen ? 
+                    {this.props.role === 'student' && this.props.taskAdditionData.isOpen ? 
                         this.props.taskAdditionData.solution === null ? 
                             this.renderAnswerField() : 
                             <Auxiliary>
@@ -680,7 +680,7 @@ class OneTaskComponent extends React.Component {
                     onChange={event => this.onChangeDescription(event, 'textarea')}
                 />
                 {this.renderFileAnswer()}
-                {localStorage.getItem('role') === 'student' && !this.state.editAnswer ? 
+                {this.props.role === 'student' && !this.state.editAnswer ? 
                     <Button 
                         typeButton={cls}
                         value='Отправить решение'
@@ -827,7 +827,7 @@ class OneTaskComponent extends React.Component {
                             </p>
                         </div>
                 
-                        {localStorage.getItem('role') === 'teacher' && this.props.taskAdditionData.isOpen ?
+                        {this.props.role === 'teacher' && this.props.taskAdditionData.isOpen ?
                             <Link to='/create_task'>
                                 <Button
                                     typeButton='blue_big'

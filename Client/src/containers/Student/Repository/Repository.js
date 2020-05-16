@@ -16,6 +16,7 @@ class Repository extends React.Component {
                 loading={this.props.loading}
                 choiceSubject={this.props.choiceSubjectHandler}
                 choiceRepo={this.props.choiceRepoHandler}
+                role={this.props.role}
             />
         )
     }
@@ -25,7 +26,8 @@ function mapStateToProps(state) {
     return {
         repositoryData: state.student.repositoryData,
         subjectFullData: state.student.subjectFullData,
-        loading: state.teacher.loading
+        loading: state.student.loading,
+        role: state.auth.role
     }
 }
 

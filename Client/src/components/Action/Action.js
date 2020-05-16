@@ -29,7 +29,7 @@ class Action extends React.Component {
                         className='user_list_admin check_list_label'
                         onClick={this.changeCheckedHandler.bind(this, index)}
                     >
-                        <img src='images/card.svg' alt='' />
+                        <img src='/images/card.svg' alt='' />
                         <p className='name'>
                             {item.name}
                             <span className='additional'>{item.additional}</span>
