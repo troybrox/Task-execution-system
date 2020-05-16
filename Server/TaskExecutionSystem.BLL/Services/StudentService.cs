@@ -355,20 +355,23 @@ namespace TaskExecutionSystem.BLL.Services
                 resultTaskDTO = TaskDTO.Map(taskEntity);
                 _taskService.GetCurrentTimePercentage(ref resultTaskDTO);
 
-                var studentSolutionForCurTask = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
+                //var studentSolutionForCurTask = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
 
-                if (studentSolutionForCurTask != null)
-                {
-                    solutionEntity = await _context.Solutions
+                solutionEntity = await _context.Solutions
                     .Include(s => s.Student)
                     .Include(s => s.File)
-                    //.where()
-                    .FirstOrDefaultAsync(s => s.Id == studentSolutionForCurTask.Id);
+                    .Where(s => s.TaskId == id)
+                    .Where(s => s.StudentId == studentEntity.Id)
+                    .FirstOrDefaultAsync();
 
-                    resSolutionDTO = SolutionDTO.Map(solutionEntity);
-                    resultTaskDTO.Solution = resSolutionDTO;
-                    resultTaskDTO.Solutions.Add(resSolutionDTO);
-                }
+                resSolutionDTO = SolutionDTO.Map(solutionEntity);
+                resultTaskDTO.Solution = resSolutionDTO;
+                resultTaskDTO.Solutions.Add(resSolutionDTO);
+
+                //if (studentSolutionForCurTask != null)
+                //{
+
+                //}
 
                 detail.Data = resultTaskDTO;
                 detail.Succeeded = true;
