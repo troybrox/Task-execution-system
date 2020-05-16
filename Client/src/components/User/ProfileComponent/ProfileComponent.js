@@ -173,7 +173,7 @@ class ProfileComponent extends React.Component {
             <Frame active_index={0}>
                 <div className='profile'>
                     <div className='photo_side'>
-                        <img src='images/profile_user.svg' alt='' />
+                        <img src='/images/profile_user.svg' alt='' />
                     </div>
                     <div className='info_side'>
                         <h3>Общая информация</h3>

@@ -183,7 +183,7 @@ class Registration extends React.Component {
 					hTitle='Регистрация'
 					link='Уже есть аккаунт? Авторизируйтесь!'
 					to='/auth'
-					img='images/reg.svg'
+					img='/images/reg.svg'
 					fields={this.state.fields}
 					roles={this.state.roles}
 					faculties={this.props.faculties}				

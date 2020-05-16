@@ -21,7 +21,7 @@ const Input = props => {
                 props.classUser ? 
                 <img 
                     className='pen' 
-                    src='images/pen-square-solid.svg' 
+                    src='/images/pen-square-solid.svg' 
                     alt='' 
                 /> :
                 null
