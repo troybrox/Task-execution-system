@@ -36,12 +36,11 @@ export function auth(data) {
             const url = 'api/account/login'
             const response = await axios.post(url, data)
             const respData = response.data
-            document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}`
-            localStorage.setItem('token', respData.data.idToken)
-            localStorage.setItem('role', respData.data.role)
 
-            if (respData.succeeded) {            
-                dispatch(authSuccess(respData.data.idToken, respData.data.role))
+            if (respData.succeeded) {    
+                document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken};secure`
+                localStorage.setItem('role', respData.data.role)        
+                dispatch(authSuccess(respData.data.role))
             } else {
                 const err = [...respData.errorMessages]
                 err.unshift('Сообщение с сервера')
@@ -102,21 +101,23 @@ function setCookie(name, value, options = {}) {
         options.expires = options.expires.toUTCString();
     }
   
-    let updatedCookie = encodeURIComponent(name) + "=" + encodeURIComponent(value);
+    let updatedCookie = encodeURIComponent(name) + '=' + encodeURIComponent(value)
   
     for (let optionKey in options) {
-        updatedCookie += "; " + optionKey;
-        let optionValue = options[optionKey];
+        updatedCookie += ';' + optionKey
+        let optionValue = options[optionKey]
         if (optionValue !== true) {
-            updatedCookie += "=" + optionValue;
+            updatedCookie += '=' + optionValue
         }
     }
+
+    updatedCookie += ';secure'
   
-    document.cookie = updatedCookie;
+    document.cookie = updatedCookie
   }
 
 function deleteCookie(name) {
-    setCookie(name, "", {
+    setCookie(name, '', {
         'max-age': -1
     })
   }
@@ -127,7 +128,6 @@ export function logoutHandler() {
             await axios.get('api/account/signout')
             
             deleteCookie('.AspNetCore.Application.Id')
-            localStorage.removeItem('token')
             localStorage.removeItem('role')
             dispatch(logout())
         } catch (e) {
@@ -152,10 +152,10 @@ export function success(successPage) {
     }
 }
 
-export function authSuccess(token, role) {
+export function authSuccess(role) {
     return {
         type: AUTH_SUCCESS,
-        token, role
+        role
     }
 }
 

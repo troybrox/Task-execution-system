@@ -14,6 +14,7 @@ class Tasks extends React.Component {
                 choiceSubjectTask={this.props.choiceSubjectTask}
                 fetchTaskFilters={this.props.fetchTaskFilters}
                 fetchListTasks={this.props.fetchListTasks}
+                role={this.props.role}
             />
         )
     }
@@ -23,7 +24,8 @@ function mapStateToProps(state) {
     return {
         taskData: state.student.taskData,
         tasks: state.student.tasks,
-        loading: state.student.loading
+        loading: state.student.loading,
+        role: state.auth.role
     }
 }
 

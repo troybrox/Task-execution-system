@@ -35,7 +35,7 @@ class TasksComponent extends React.Component {
             filters = [
                 {name: 'subjectId', value: String(activeSubjectIndex)},
             ]
-            if (localStorage.getItem('role') === 'teacher') {
+            if (this.props.role === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
                     activeGroupIndex = this.props.subjects[0].groups[0].id
                     title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
@@ -97,7 +97,7 @@ class TasksComponent extends React.Component {
     renderList() {
         if (this.props.loading && this.props.subjects.length === 0) 
             return <Loader />
-        if (localStorage.getItem('role') === 'teacher') {
+        if (this.props.role === 'teacher') {
             return this.renderListTeacher()
         } else {
             return this.renderListStudent()
@@ -212,7 +212,7 @@ class TasksComponent extends React.Component {
                                     }
                                 </p>
                             </div>
-                            { localStorage.getItem('role') === 'teacher' ?
+                            { this.props.role === 'teacher' ?
                                 <div className='tasks_right'>
                                     <img src='images/check-circle-solid.svg' alt='' />
                                     <span>{item.solutionsCount}/{item.studentsCount}</span>
@@ -251,7 +251,7 @@ class TasksComponent extends React.Component {
         if (typeId !== null) filters.push({name: 'typeId', value: typeId})
         if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
 
-        if (localStorage.getItem('role') === 'student') 
+        if (this.props.role === 'student') 
             filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
 
         this.props.fetchListTasks(filters)
@@ -277,7 +277,7 @@ class TasksComponent extends React.Component {
             if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
             if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
             
-            if (localStorage.getItem('role') === 'student') 
+            if (this.props.role === 'student') 
                 filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
             
 
@@ -324,7 +324,7 @@ class TasksComponent extends React.Component {
     render() {
         const main = (
             <div className='tasks_group'>   
-                {localStorage.getItem('role') === 'student' ?
+                {this.props.role === 'student' ?
                     <div className='nav'>
                         {this.renderTab()}
                     </div> :
@@ -353,7 +353,7 @@ class TasksComponent extends React.Component {
                             {this.renderOptions()}
                         </Select>
                     </div>
-                    {localStorage.getItem('role') === 'teacher' ?
+                    {this.props.role === 'teacher' ?
                         <div className='new_task'>
                             <Link
                                 to={'/create_task'}

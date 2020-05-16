@@ -17,6 +17,7 @@ class TasksComponent extends React.Component {
                 taskAdditionData={this.props.taskAdditionData}
                 loading={this.props.loading}
                 onCloseTask={() => this.props.onCloseTask(this.props.match.params.id)}
+                role={this.props.role}
             >
                 {this.props.errorShow ? 
                     <Error 
@@ -35,7 +36,8 @@ function mapStateToProps(state) {
         taskAdditionData: state.teacher.taskAdditionData,
         errorShow: state.teacher.errorShow,
         errorMessage: state.teacher.errorMessage,
-        loading: state.teacher.loading
+        loading: state.teacher.loading,
+        role: state.auth.role
     }
 }
 

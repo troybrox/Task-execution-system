@@ -19,6 +19,7 @@ class Repository extends React.Component {
                 deleteRepo={this.props.deleteRepo}
                 editRepo={this.props.editRepo}
                 sendCreateRepositoryFile={this.props.sendCreateRepositoryFile}
+                role={this.props.role}
             />
         )
     }
@@ -28,7 +29,8 @@ function mapStateToProps(state) {
     return {
         repositoryData: state.teacher.repositoryData,
         subjectFullData: state.teacher.subjectFullData,
-        loading: state.teacher.loading
+        loading: state.teacher.loading,
+        role: state.auth.role
     }
 }
 
