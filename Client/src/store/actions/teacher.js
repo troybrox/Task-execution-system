@@ -41,23 +41,29 @@ export function fetchProfile() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -89,23 +95,29 @@ export function updateData(data, path) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -168,23 +180,29 @@ export function fetchMain() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -278,23 +296,29 @@ export function fetchTaskFilters() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -358,23 +382,29 @@ export function fetchListTasks(filters) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -434,23 +464,29 @@ export function fetchTaskById(id) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -480,23 +516,29 @@ export function fetchTaskCreate() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -553,23 +595,29 @@ export function onSendCreate(task, path) {
                     } catch (error) {
                         const err = [`Ошибка подключения: ${error.name}`]
                         err.push(error.message)
-                        if (error.response.status === 401 || error.response.status === 403) {
-                            let n = 4
-                            err.push(`Выход из системы через ${n}...`)
-                            let timerId = setInterval(() => {
-                                dispatch(errorWindow(false, []))
-                                err.pop()
-                                n = n - 1
-                                err.push(`Выход из системы через ${n}...`)
+                        if (error.response !== undefined)
+                            if (error.response.status !== undefined)
+                                if (error.response.status === 401 || error.response.status === 403) {
+                                    let n = 4
+                                    err.push(`Выход из системы через ${n}...`)
+                                    let timerId = setInterval(() => {
+                                        dispatch(errorWindow(false, []))
+                                        err.pop()
+                                        n = n - 1
+                                        err.push(`Выход из системы через ${n}...`)
+                                        dispatch(errorWindow(true, err))
+                                    }, 1000)
+                    
+                                    setTimeout(() => {
+                                        clearInterval(timerId)
+                                        dispatch(logoutHandler())
+                                    }, 4000)
+                                }
+                                else 
+                                    dispatch(errorWindow(true, err))
+                            else 
                                 dispatch(errorWindow(true, err))
-                            }, 1000)
-            
-                            setTimeout(() => {
-                                clearInterval(timerId)
-                                dispatch(logoutHandler())
-                            }, 4000)
-                        }
-                        else 
+                        else
                             dispatch(errorWindow(true, err))
                     }
                 else 
@@ -583,23 +631,29 @@ export function onSendCreate(task, path) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -620,23 +674,29 @@ export function onCloseTask(id) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -666,23 +726,29 @@ export function fetchRepository() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -745,23 +811,29 @@ export function fetchSubjectFull(filters) {
                 } catch (e) {
                     const err = [`Ошибка подключения: ${e.name}`]
                     err.push(e.message)
-                    if (e.response.status === 401 || e.response.status === 403) {
-                        let n = 4
-                        err.push(`Выход из системы через ${n}...`)
-                        let timerId = setInterval(() => {
-                            dispatch(errorWindow(false, []))
-                            err.pop()
-                            n = n - 1
-                            err.push(`Выход из системы через ${n}...`)
+                    if (e.response !== undefined)
+                        if (e.response.status !== undefined)
+                            if (e.response.status === 401 || e.response.status === 403) {
+                                let n = 4
+                                err.push(`Выход из системы через ${n}...`)
+                                let timerId = setInterval(() => {
+                                    dispatch(errorWindow(false, []))
+                                    err.pop()
+                                    n = n - 1
+                                    err.push(`Выход из системы через ${n}...`)
+                                    dispatch(errorWindow(true, err))
+                                }, 1000)
+                
+                                setTimeout(() => {
+                                    clearInterval(timerId)
+                                    dispatch(logoutHandler())
+                                }, 4000)
+                            }
+                            else 
+                                dispatch(errorWindow(true, err))
+                        else
                             dispatch(errorWindow(true, err))
-                        }, 1000)
-        
-                        setTimeout(() => {
-                            clearInterval(timerId)
-                            dispatch(logoutHandler())
-                        }, 4000)
-                    }
-                    else 
+                    else
                         dispatch(errorWindow(true, err))
                 }
             }
@@ -789,23 +861,29 @@ export function deleteRepo(index) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -831,23 +909,29 @@ export function editRepo(index, contentText, name) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -872,23 +956,29 @@ export function fetchCreateRepository() {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -916,23 +1006,29 @@ export function sendCreateRepository(filters) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }
@@ -956,23 +1052,29 @@ export function sendCreateRepositoryFile(filters) {
             dispatch(successCreateRepositoryEnd())
             const err = [`Ошибка подключения: ${error.name}`]
             err.push(error.message)
-            if (error.response.status === 401 || error.response.status === 403) {
-                let n = 4
-                err.push(`Выход из системы через ${n}...`)
-                let timerId = setInterval(() => {
-                    dispatch(errorWindow(false, []))
-                    err.pop()
-                    n = n - 1
-                    err.push(`Выход из системы через ${n}...`)
-                    dispatch(errorWindow(true, err))
-                }, 1000)
+            if (error.response !== undefined)
+                if (error.response.status !== undefined)
+                    if (error.response.status === 401 || error.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
 
-                setTimeout(() => {
-                    clearInterval(timerId)
-                    dispatch(logoutHandler())
-                }, 4000)
-            }
-            else 
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else
+                    dispatch(errorWindow(true, err))
+            else
                 dispatch(errorWindow(true, err))
         }
     }

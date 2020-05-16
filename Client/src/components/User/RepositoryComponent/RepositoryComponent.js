@@ -96,7 +96,7 @@ class RepositoryComponent extends React.Component {
         return files.map(item => {
             return (
                 <li key={item.fileURI} className='download_small'>
-                    <a href={item.fileURI} download={item.fileName}>
+                    <a href={item.fileURI} target='_blank' rel='noopener noreferrer' download={item.fileName}>
                         <img src='/images/download-solid.svg' alt='' />
                         {item.fileName} 
                     </a>

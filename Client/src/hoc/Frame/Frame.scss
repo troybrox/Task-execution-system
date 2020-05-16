@@ -116,6 +116,14 @@
             transition: 200ms color;
         }
 
+        .file_name {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 40%;
+        }
+
         &:hover {
             border: 2px dashed rgb(66, 150, 189);
         }
