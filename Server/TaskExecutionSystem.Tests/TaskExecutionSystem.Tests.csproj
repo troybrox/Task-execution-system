@@ -9,4 +9,9 @@
     <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TaskExecutionSystem.BLL\TaskExecutionSystem.BLL.csproj" />
+    <ProjectReference Include="..\TaskExecutionSystem\TaskExecutionSystem.csproj" />
+  </ItemGroup>
+
 </Project>
