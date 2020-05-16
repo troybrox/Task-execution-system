@@ -56,7 +56,7 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -121,7 +121,7 @@ export function loadingLists(url, roleActive) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -170,7 +170,7 @@ export function actionUsersHandler(url) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
@@ -209,7 +209,7 @@ export function deleteGroupHandler(url, groupId) {
         } catch (e) {
             const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            if (e.response.status === 401 || e.response.status === 403) {
+            if ('response' in e && (e.response.status === 401 || e.response.status === 403)) {
                 let n = 4
                 err.push(`Выход из системы через ${n}...`)
                 let timerId = setInterval(() => {
