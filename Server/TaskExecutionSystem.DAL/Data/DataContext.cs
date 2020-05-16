@@ -42,7 +42,7 @@ namespace TaskExecutionSystem.DAL.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
-                .HasAlternateKey(u => u.UserName);
+                .HasKey(u => u.Id);
 
             modelBuilder.Entity<IdentityUserRole<long>>()
                 .HasKey(r => new { r.UserId, r.RoleId });

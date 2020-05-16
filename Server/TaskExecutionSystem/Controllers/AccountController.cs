@@ -57,6 +57,7 @@ namespace TaskExecutionSystem.Controllers
         {
             OperationDetailDTO<SignInDetailDTO> detailResult;
             var serviceResult = await _accountService.SignInAsync(dto);
+
             if (!serviceResult.Succeeded)
             {
                 detailResult = new OperationDetailDTO<SignInDetailDTO> { Succeeded = false, ErrorMessages = serviceResult.ErrorMessages };
@@ -68,8 +69,10 @@ namespace TaskExecutionSystem.Controllers
                 var userRoles = serviceResult.Data.UserRoles;
                 var tokenResult = _jwtTokenGenerator.Generate(serviceResult.Data.User, userRoles);
 
-                HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id",
-                    tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) }); ;
+                //HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id",
+                    //tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
+                HttpContext.Response.Cookies.Append(".token",
+                    tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(5) });
 
                 detailResult = new OperationDetailDTO<SignInDetailDTO>
                 {
@@ -82,6 +85,7 @@ namespace TaskExecutionSystem.Controllers
                 };
 
                 return Ok(detailResult);
+                
             }
         }
 

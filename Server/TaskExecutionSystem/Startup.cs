@@ -13,6 +13,8 @@ using TaskExecutionSystem.BLL.Services;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.Identity.JWT.Extensions;
 using TaskExecutionSystem.Identity.JWT.Options;
+using Microsoft.AspNetCore.Identity;
+using TaskExecutionSystem.DAL.Entities.Identity;
 
 namespace TaskExecutionSystem
 {
@@ -65,7 +67,8 @@ namespace TaskExecutionSystem
                 .AddTransient<ITeacherService, TeacherService>()
                 .AddTransient<IStudentService, StudentService>()
                 .AddTransient<IRepoService, RepoService>()
-                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddScoped<IUserValidator<User>, UserValidator<User>>();
         }
 
 
@@ -87,6 +90,7 @@ namespace TaskExecutionSystem
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
+                // set always
                 HttpOnly = HttpOnlyPolicy.Always,
                 Secure = CookieSecurePolicy.Always
             });
