@@ -15,7 +15,7 @@ namespace TaskExecutionSystem.Identity.JWT.Middleware
             //string token;
             //context.Request.Cookies.TryGetValue(".token", out token);
 
-            var token = context.Request.Cookies[".token"];
+            var token = context.Request.Cookies["token"];
 
             //if (!string.IsNullOrEmpty(token))
             //    context.Request.Headers.Add("Authorization", "Bearer " + token);

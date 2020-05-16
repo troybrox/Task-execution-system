@@ -33,14 +33,16 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
         private readonly ITaskService _taskService;
+        private readonly IUserValidator<User> _userValidator;
 
         public StudentService(DataContext context, IHttpContextAccessor httpContextAccessor,
-            UserManager<User> userManager, ITaskService taskService)
+            UserManager<User> userManager, ITaskService taskService, IUserValidator<User> userValidator)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _taskService = taskService;
+            _userValidator = userValidator;
         }
 
         public async Task<OperationDetailDTO<StudentDTO>> GetProfileDataAsync()
@@ -72,7 +74,7 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
         // fix
-        public async Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO dto)
+        public async Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO newStudentDTO)
         {
             var detail = new OperationDetailDTO<TeacherDTO>();
             try
@@ -85,34 +87,44 @@ namespace TaskExecutionSystem.BLL.Services
                     .Where(u => u.Id == currentUserEntity.Id)
                     .FirstOrDefaultAsync();
 
-                var teacherEntity = await _context.Students
-                    .Include(t => t.User)
-                    .Where(t => t.UserId == currentUserEntity.Id)
-                    .FirstOrDefaultAsync();
-
-
-                if (!UserValidator.Validate(dto, out errorMessages))
+                if (!UserValidator.Validate(newStudentDTO, out errorMessages))
                 {
-                    detail.Succeeded = false;
+                    //detail.Succeeded = false;
                     detail.ErrorMessages = errorMessages;
                     return detail;
                 }
 
-                if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
-                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
-                    || await _userManager.FindByNameAsync(dto.UserName) != null)
+                //if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                //    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                //    || await _userManager.FindByNameAsync(dto.UserName) != null)
+                if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newStudentDTO.UserName)
+                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newStudentDTO.UserName)
+                    || newStudentDTO.UserName != studentUser.UserName && await _userManager.FindByNameAsync(newStudentDTO.UserName) != null)
                 {
-                    detail.Succeeded = false;
+                    //detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
                     return detail;
                 }
 
                 if (studentUser != null)
                 {
-                    studentUser.Email = dto.Email;
-                    studentUser.UserName = dto.UserName;
-                    var userUpdateResult = await _userManager.UpdateAsync(studentUser);
-                    detail.Succeeded = true;
+                    studentUser.Email = newStudentDTO.Email;
+                    studentUser.UserName = newStudentDTO.UserName;
+
+                    var validateRes = _userValidator.ValidateAsync(_userManager, studentUser);
+                    if (validateRes.Result.Succeeded)
+                    {
+                        await _userManager.UpdateNormalizedEmailAsync(studentUser);
+                        await _userManager.UpdateNormalizedUserNameAsync(studentUser);
+
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Данные пользователя не прошли валидацию. Подробнее: " + validateRes.Result.Errors.ToList());
+                        return detail;
+                    }
+                    await _context.SaveChangesAsync();
                 }
 
                 return detail;
@@ -434,8 +446,7 @@ namespace TaskExecutionSystem.BLL.Services
                 return detail;
             }
         }
-
-        // done: fileUpdate [!] -> test
+        
         public async Task<OperationDetailDTO> UpdateSolutionAsync(SolutionCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
@@ -482,22 +493,30 @@ namespace TaskExecutionSystem.BLL.Services
         {
             var detail = new OperationDetailDTO<List<SubjectDTO>>();
 
-            var resultSubjectDTOList = new List<SubjectDTO>();
-
-            var subjects = await _context.Subjects
-                .Where(s => s.Repositories.Count > 0)
-                .ToListAsync();
-
-            foreach (var subject in subjects)
+            try
             {
-                SubjectDTO subjectDTO = SubjectDTO.Map(subject);
-                resultSubjectDTOList.Add(subjectDTO);
+                var resultSubjectDTOList = new List<SubjectDTO>();
+
+                var subjects = await _context.Subjects
+                    .Where(s => s.Repositories.Count > 0)
+                    .ToListAsync();
+
+                foreach (var subject in subjects)
+                {
+                    SubjectDTO subjectDTO = SubjectDTO.Map(subject);
+                    resultSubjectDTOList.Add(subjectDTO);
+                }
+
+                resultSubjectDTOList.OrderBy(s => s.Name);
+
+                detail.Data = resultSubjectDTOList;
+                detail.Succeeded = true;
             }
-
-            resultSubjectDTOList.OrderBy(s => s.Name);
-
-            detail.Data = resultSubjectDTOList;
-            detail.Succeeded = true;
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+            }
+            
             return detail;
         }
 
@@ -505,44 +524,52 @@ namespace TaskExecutionSystem.BLL.Services
         {
             var detail = new OperationDetailDTO<List<RepositoryDTO>>();
 
-            var resultList = new List<RepositoryDTO>();
-
-            var repos = from r in _context.RepositoryModels
-                        .Include(r => r.Subject)
-                        .Include(r => r.Files)
-                        .Include(r => r.Teacher)
-
-                        select r;
-
-            repos.OrderBy(r => r.Teacher.Name);
-
-            if (filters != null)
+            try
             {
-                foreach (var filter in filters)
+                var resultList = new List<RepositoryDTO>();
+
+                var repos = from r in _context.RepositoryModels
+                            .Include(r => r.Subject)
+                            .Include(r => r.Files)
+                            .Include(r => r.Teacher)
+
+                            select r;
+
+                repos.OrderBy(r => r.Teacher.Name);
+
+                if (filters != null)
                 {
-                    switch (filter.Name)
+                    foreach (var filter in filters)
                     {
-                        case "subjectId":
-                            {
-                                var value = Convert.ToInt32(filter.Value);
-                                if (value > 0)
+                        switch (filter.Name)
+                        {
+                            case "subjectId":
                                 {
-                                    repos = repos.Where(r => r.SubjectId == value);
+                                    var value = Convert.ToInt32(filter.Value);
+                                    if (value > 0)
+                                    {
+                                        repos = repos.Where(r => r.SubjectId == value);
+                                    }
+                                    break;
                                 }
-                                break;
-                            }
+                        }
                     }
                 }
-            }
 
-            foreach (var entity in repos)
+                foreach (var entity in repos)
+                {
+                    var repoDTO = RepositoryDTO.Map(entity);
+                    resultList.Add(repoDTO);
+                }
+
+                detail.Data = resultList;
+                detail.Succeeded = true;
+            }
+            catch (Exception e)
             {
-                var repoDTO = RepositoryDTO.Map(entity);
-                resultList.Add(repoDTO);
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
             }
 
-            detail.Data = resultList;
-            detail.Succeeded = true;
             return detail;
         }
 
@@ -583,7 +610,5 @@ namespace TaskExecutionSystem.BLL.Services
             var user = await _userManager.FindByIdAsync(stringID);
             return user;
         }
-
-
     }
 }

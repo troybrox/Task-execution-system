@@ -144,8 +144,6 @@ namespace TaskExecutionSystem.BLL.Services
                         _context.Teachers.Update(teacherEntity);
                         await _context.SaveChangesAsync();
                     }
-
-
                 }
 
                 return detail;
