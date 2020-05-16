@@ -352,7 +352,7 @@ export function onSendSolution(createSolution, id, path) {
             if (data.succeeded) {               
                 if (createSolution.file !== null)
                     try {
-                        const idSol = path === 'update' ? id : data.data
+                        const idSol = path === 'update' ? createSolution.task.id : data.data
                         const url2 = 'api/student/solution/add/file'
                         const file = new FormData()
                         file.append('id', idSol)
