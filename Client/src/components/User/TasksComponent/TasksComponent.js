@@ -112,9 +112,9 @@ class TasksComponent extends React.Component {
             </p> : 
             this.props.subjects.map((item, index) => {
                 const cls = ['big_items']
-                let src = 'images/angle-right-solid.svg'
+                let src = '/images/angle-right-solid.svg'
                 if (item.open) {
-                    src = 'images/angle-down-solid.svg'
+                    src = '/images/angle-down-solid.svg'
                 }
                 return (
                     <Auxiliary key={index}>
@@ -150,7 +150,7 @@ class TasksComponent extends React.Component {
                     className={cls.join(' ')}
                     onClick={this.choiceGroup.bind(this, indexSubject, index)}
                 >
-                    <img src='images/folder-regular.svg' alt='' />
+                    <img src='/images/folder-regular.svg' alt='' />
                     {item.name}
                 </li>
             )
@@ -164,7 +164,7 @@ class TasksComponent extends React.Component {
             </p> :
             this.props.subjects.map((item) => {
                 const cls = ['big_items']
-                let src = 'images/folder-regular.svg'
+                let src = '/images/folder-regular.svg'
                 if (item.open) {
                     cls.push('active_big')
                 }
@@ -214,7 +214,7 @@ class TasksComponent extends React.Component {
                             </div>
                             { this.props.role === 'teacher' ?
                                 <div className='tasks_right'>
-                                    <img src='images/check-circle-solid.svg' alt='' />
+                                    <img src='/images/check-circle-solid.svg' alt='' />
                                     <span>{item.solutionsCount}/{item.studentsCount}</span>
                                 </div> :
                                 <div className='tasks_right'>

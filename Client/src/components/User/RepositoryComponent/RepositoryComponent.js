@@ -117,7 +117,7 @@ class RepositoryComponent extends React.Component {
                                 className={cls.join(' ')}
                                 onClick={this.onChoiceRepo.bind(this, item, index)}
                             >
-                                <img src='images/folder-regular.svg' alt='' />
+                                <img src='/images/folder-regular.svg' alt='' />
                                 {item.name}
                             </li>
                             {item.open && item.files.length !== 0 ? 
@@ -147,9 +147,9 @@ class RepositoryComponent extends React.Component {
                 </p> :
             this.props.repositoryData.map((item, index) => {
                 const cls = ['big_items']
-                let src = 'images/angle-right-solid.svg'
+                let src = '/images/angle-right-solid.svg'
                 if (item.open) {
-                    src = 'images/angle-down-solid.svg'
+                    src = '/images/angle-down-solid.svg'
 
                 }
                 return (
