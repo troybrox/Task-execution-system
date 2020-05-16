@@ -93,7 +93,7 @@ export function loadingFilters() {
 
 function setCookie(name, value, options = {}) {
     options = {
-        path: '/',
+        // path: '/',
         ...options
     }
   
