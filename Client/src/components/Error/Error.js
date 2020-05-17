@@ -11,18 +11,22 @@ class Error extends React.Component {
     }
 
     render() {
+        const cls = this.props.goodNews ? 'good' : 'bad'
         return (
             <div className='error_field'>
                 <div className='error_window'>
-                    <h2>Ошибка</h2>
+                    <h2 className={cls}>{!this.props.goodNews ? 'Ошибка' : 'Пароль успешно изменен!'}</h2>
                     <div>
                         {this.renderMessage()}
                     </div>
-                    <Button 
-                        typeButton='grey'
-                        onClickButton={this.props.errorWindow}
-                        value='Закрыть'
-                    />
+                    {!this.props.goodNews ? 
+                        <Button 
+                            typeButton='grey'
+                            onClickButton={this.props.errorWindow}
+                            value='Закрыть'
+                        /> : 
+                        null
+                    }
                 </div>
             </div>
         )
