@@ -1,4 +1,4 @@
-import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY, SUCCESS_SUBJECT_FULL, LOGOUT } from "../actions/actionTypes"
+import { ERROR_WINDOW, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_TASK_ADDITION, LOADING_START, SUCCESS_REPOSITORY, SUCCESS_SUBJECT_FULL, LOGOUT, GOOD_NEWS } from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -13,6 +13,7 @@ const initialState = {
 
     errorShow: false,
     errorMessage: [],
+    goodNews: false,
     loading: false
 }
 
@@ -52,6 +53,10 @@ export default function studentReducer(state = initialState, action) {
                 errorShow: action.errorShow,
                 errorMessage: action.errorMessage
             }
+        case GOOD_NEWS:
+            return {
+                ...state, goodNews: true
+            }
         case LOGOUT:
             return {
                 ...state,
@@ -67,6 +72,7 @@ export default function studentReducer(state = initialState, action) {
             
                 errorShow: false,
                 errorMessage: [],
+                goodNews: false,
                 loading: false
             }
         default:

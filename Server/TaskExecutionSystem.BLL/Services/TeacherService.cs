@@ -29,8 +29,6 @@ using TaskExecutionSystem.DAL.Entities.File;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    // TODO: CLOSE TASK
-    // TODO: Repository - create, get, update, delete
     public class TeacherService : ITeacherService
     {
         private readonly DataContext _context;
@@ -111,8 +109,6 @@ namespace TaskExecutionSystem.BLL.Services
                 if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
                     || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
                     || newTeacherDTO.UserName != teacherUser.UserName  && await _userManager.FindByNameAsync(newTeacherDTO.UserName) != null)
-                    //|| (await _context.Users.Where(u => (u.Id != teacherUser.Id && u.UserName == newTeacherDTO.UserName)).FirstOrDefaultAsync() != null))
-                    //|| ((findSameUser = await _userManager.FindByNameAsync(newTeacherDTO.UserName)) != null && findSameUser.Id != teacherUser.Id))
                 {
                     detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");

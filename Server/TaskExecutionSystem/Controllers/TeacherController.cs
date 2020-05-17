@@ -19,11 +19,10 @@ using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
 using System.Diagnostics;
+using TaskExecutionSystem.BLL.DTO.Auth;
 
 namespace TaskExecutionSystem.Controllers
 {
-    // TODO: Repository - create, get, update, delete
-
     // api/teacher/profile
     // api/teacher/profile/update [POST]
     // api/teacher/profile/updatepassword
@@ -49,20 +48,19 @@ namespace TaskExecutionSystem.Controllers
         private readonly IRepoService _repoService;
         private readonly ITeacherService _teacherService;
         public static IWebHostEnvironment _environment;
+        private readonly IAccountService _accountService;
 
-        public TeacherController(ITaskService taskService, IRepoService repoService, IWebHostEnvironment environment, 
-            ITeacherService teacherService)
+        public TeacherController(ITaskService taskService, IRepoService repoService, 
+            IWebHostEnvironment environment, ITeacherService teacherService, IAccountService accountService)
         {
             _taskService = taskService;
             _repoService = repoService;
             _environment = environment;
             _teacherService = teacherService;
+            _accountService = accountService;
         }
 
-        //private readonly string repoFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\RepoFiles\\";
-        //private readonly string taskFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\";
-
-
+        // отправить данные профиля
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfileDataAsync()
         {
@@ -70,6 +68,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // изменить данные профиля, отправить результат
         [HttpPost("profile/update")]
         public async Task<IActionResult> UpdateProfileAsync([FromBody]TeacherDTO dto)
         {
@@ -77,9 +76,15 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        // todo: update Password
 
+        [HttpPost("profile/updatepassword")]
+        public async Task<IActionResult> UpdatePasswordAsync([FromBody]PasswordUpdateDTO dto)
+        {
+            var res = await _accountService.UpdatePasswordAsync(dto);
+            return Ok(res);
+        }
 
+        // отправить данные главной страницы
         [HttpGet("main")]
         public async Task<IActionResult> GetMainPageDataAsync()
         {
@@ -87,7 +92,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-
+        // отправить списки объектов, используемых далее для фильтрации получения списка задач 
         [HttpGet("task/filters")]
         public async Task<IActionResult> GetTaskFiltersAsync()
         {
@@ -95,6 +100,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить офильтрованный список задач
         [HttpPost("task")]
         public async Task<IActionResult> GetFilteredTasksAsync([FromBody]FilterDTO[] filters)
         {
@@ -102,7 +108,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-
+        // отправить задачу, полученную по её id
         [HttpGet("task/{id}")]
         public async Task<IActionResult> GetTasksByIDAsync(int id)
         {
@@ -110,6 +116,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить фильтры, нужные при создании задачи
         [HttpGet("task/add/filters")]
         public async Task<IActionResult> GetTaskAddingListFiltersAsync()
         {
@@ -117,57 +124,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        [HttpPost("_task/add")]
-        public async Task<IActionResult> AddTaskAsync_([FromBody]TaskFileModelDTO dto = null)
-        {
-            var detail = new OperationDetailDTO();
-            var res = await _teacherService.CreateNewTaskAsync(dto.Task);
-            if (res.Succeeded)
-            {
-                try
-                {
-                    var file = Request.Form.Files[0];
-                    if(file != null)
-                    {
-                        var fileName = file.FileName;
-                        using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\TaskFiles\\" + fileName))
-                        {
-                            file.CopyTo(fileStream);
-                        }
-                        var fileRes = await _taskService.AddFileToTaskAsync(int.Parse(res.Data), file.FileName);
-
-                        if (!fileRes.Succeeded)
-                        {
-                            detail.ErrorMessages.Add("Не удалось загрузить файл к задаче.");
-                            detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                            return Ok(detail);
-                        }
-                        else
-                        {
-                            detail.Succeeded = true;
-                            return Ok(detail);
-                        }
-                    }
-                    else
-                    {
-                        return Ok(res);
-                    }
-                    
-                }
-                catch (Exception e)
-                {
-                    detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
-                    return Ok(detail);
-                }
-            }
-
-            else
-            {
-                return Ok(res);
-            }
-        }
-
-
+        //  добавление задачи, возвращается результат: id добавленной задачи в случае успеха
         [HttpPost("task/add")]
         public async Task<IActionResult> AddTaskAsync([FromBody]TaskCreateModelDTO task = null)
         {
@@ -175,6 +132,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        //  обновление задачи, возвращается результат
         [HttpPost("task/update")]
         public async Task<IActionResult> UpdateTaskAsync([FromBody]TaskCreateModelDTO task = null)
         {
@@ -182,6 +140,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        //  закрытие задачи, возвращается результат
         [HttpGet("task/{id}/close")]
         public async Task<IActionResult> CloseTaskAsync(int id)
         {
@@ -189,6 +148,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        //  добавления/изменение файла к задаче, возвращается результат
         [HttpPost("task/add/file")]
         public async Task<IActionResult> AddFileForTaskAsync()
         {
@@ -236,25 +196,6 @@ namespace TaskExecutionSystem.Controllers
                         fileRes = await _taskService.AddFileToTaskAsync(taskID, userFileName, uniqueFileName);
                     }
 
-                    
-
-                    //if (System.IO.File.Exists(taskFileLoadPath + fileName))
-                    //{
-                    //    var newFileName = System.Guid.NewGuid() + fileName;
-                    //    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + newFileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _taskService.AddFileToTaskAsync(id, fileName, newFileName);
-                    //}
-                    //else
-                    //{
-                    //    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //}
-
 
                     if (!fileRes.Succeeded)
                     {
@@ -284,6 +225,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        // отправить фильтры, нужные при создании репозитория 
         [HttpGet("repo/add/filters")]
         public async Task<IActionResult> GetRepoAddingFilters()
         {
@@ -291,6 +233,8 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+
+        //  добавление репозитория, возвращается результат: id добавленного репозитория в случае успеха
         [HttpPost("repo/add")]
         public async Task<IActionResult> AddRepoAsync([FromBody]RepositoryCreateModelDTO dto = null)
         {
@@ -298,6 +242,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить списки предметов, используемых далее для фильтрации получения списка репозиториев 
         [HttpGet("repo/subjects")]
         public async Task<IActionResult> GetRepoFiltersAsync()
         {
@@ -305,6 +250,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить отфильтрованный список репозиториев
         [HttpPost("repo")]
         public async Task<IActionResult> GetReposAsync([FromBody]FilterDTO[] filters)
         {
@@ -312,6 +258,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // удаление репозитория, возвращается результат
         [HttpPost("repo/delete")]
         public async Task<IActionResult> DeleteRepoAsync([FromBody]int[] id)
         {
@@ -344,6 +291,7 @@ namespace TaskExecutionSystem.Controllers
             
         }
 
+        // редактирование репозитория, возвращается результат
         [HttpPost("repo/update")]
         public async Task<IActionResult> UpdateRepoAsync([FromBody]RepositoryCreateModelDTO dto)
         {
@@ -352,7 +300,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
-        // edit for repo
+        //  добавление файла к репозиторию, возвращается результат
         [HttpPost("repo/add/file")]
         public async Task<IActionResult> AddFileForRepositoryaAsync()
         {
@@ -425,6 +373,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        // отправить объект репозитория, полученный по id
         [HttpGet("repo/{id}")]
         public async Task<IActionResult> GetRepoByIdAsync(int id)
         {
@@ -432,7 +381,9 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        // test method
+
+
+        // test method-------------
         [HttpPost("upload")]
         public async Task<IActionResult> Upload()
         {

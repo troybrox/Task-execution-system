@@ -29,6 +29,7 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
+        // узнать о текущем файле решения
         public async Task<(bool Succeeded, string filePath, int fileId)> GetSolutionFileNameAsync(int solutionID)
         {
             bool succeeded = false;
@@ -51,6 +52,7 @@ namespace TaskExecutionSystem.BLL.Services
             return (succeeded, filePath, fileId);
         }
 
+        // узнать о текущем файле задачи
         public async Task<(bool Succeeded, string filePath, int fileId)> GetTaskFileNameAsync(int taskId)
         {
             bool succeeded = false;
@@ -73,6 +75,8 @@ namespace TaskExecutionSystem.BLL.Services
             return (succeeded, filePath, fileId);
         }
 
+
+        // добавить файл к задаче
         public async Task<OperationDetailDTO> AddFileToTaskAsync(int taskID, string userFileName, string uniquefileName = null)
         {
             var detail = new OperationDetailDTO();
@@ -120,6 +124,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // добавить файл к решению
         public async Task<OperationDetailDTO> AddFileToSolutionAsync(int solutionID, string userFileName, string uniquefileName = null)
         {
             var detail = new OperationDetailDTO();
@@ -168,6 +173,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // обновить файл задачи
         public async Task<OperationDetailDTO> UpdateTaskFileAsync(int fileID, string newUserFileName, string newUniqueFileName)
         {
             var detail = new OperationDetailDTO();
@@ -199,6 +205,7 @@ namespace TaskExecutionSystem.BLL.Services
 
         }
 
+        // обновить файл решения
         public async Task<OperationDetailDTO> UpdateSolutionFileAsync(int fileID, string newUserFileName, string newUniqueFileName)
         {
             var detail = new OperationDetailDTO();
@@ -230,6 +237,8 @@ namespace TaskExecutionSystem.BLL.Services
             
         }
 
+
+        // присвоить полю объекта задачи процентное количество времени
         public void GetCurrentTimePercentage(ref TaskDTO dto)
         {
             int timeProgressPercentage = 100;
@@ -265,6 +274,8 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+
+        // не используется:
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
         {
             throw new NotImplementedException();
