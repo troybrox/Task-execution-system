@@ -20,6 +20,7 @@
 }
 
 .header_task {
+
     .each_tasks {
         display: flex;
         align-items: flex-end;
@@ -46,7 +47,7 @@
         }
     }
 
-    button {
+    a {
         margin: 0 150px 10px auto;
     }
 }
@@ -54,11 +55,6 @@
 .main_one_task {
     display: flex;
     min-width: 805px;
-
-    .need_field {
-        color: red;
-        margin: 0 2px 0 1px;
-    }
     
     .task_options {
         width: 100%;
@@ -75,6 +71,10 @@
                 display: inline-block;
                 margin-bottom: 10px;
                 width: 100px;
+            }
+
+            .simple_text {
+                margin-left: 15px;
             }
 
             select {
@@ -107,56 +107,6 @@
                 resize: none;
                 border-radius: 10px;
                 border: 2px solid rgb(143, 143, 143);
-            }
-
-            .label_file {
-                width: 90%;
-                border: 2px dashed grey;
-                border-radius: 5px;
-                display: block;
-                margin: 20px 0;
-                padding: 20px 10px;
-                transition: border 300ms ease;
-                cursor: pointer;
-                text-align: center;
-
-                .title_file {
-                    color: grey;
-                    transition: 200ms color;
-                }
-
-                &:hover {
-                    border: 2px dashed rgb(66, 150, 189);
-                }
-
-                input[type=file] {
-                    outline: 0;
-                    opacity: 0;
-                    pointer-events: none;
-                    user-select: none;
-                }
-
-                img {
-                    margin-top: 10px;
-                    width: 50px;
-                    height: 50px;
-                }
-            }
-
-            .ready_file {
-                border: 2px solid rgb(66, 150, 189);
-                cursor: auto;
-
-                &:hover {
-                    border: 2px solid rgb(66, 150, 189);;
-                }
-            }
-
-            .delete_file {
-                color: rgb(151, 1, 1);
-                width: max-content;
-                margin: 0 auto;
-                cursor: pointer;
             }
         }
 
@@ -250,7 +200,7 @@
                     align-items: flex-end;
                     margin-bottom: 5px;
 
-                    img {
+                    .card_img {
                         width: 32px;
                         border: 1px solid grey;
                     }

@@ -14,6 +14,7 @@ namespace TaskExecutionSystem.DAL.Configurations
         {
             builder.Property(f => f.SolutionId)
                 .IsRequired();
+
         }
     }
 }

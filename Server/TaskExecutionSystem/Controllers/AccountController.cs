@@ -57,31 +57,41 @@ namespace TaskExecutionSystem.Controllers
         {
             OperationDetailDTO<SignInDetailDTO> detailResult;
             var serviceResult = await _accountService.SignInAsync(dto);
-            if (!serviceResult.Succeeded)
-            {
-                detailResult = new OperationDetailDTO<SignInDetailDTO> { Succeeded = false, ErrorMessages = serviceResult.ErrorMessages };
-                return Unauthorized(detailResult);
-            }
-                
-            else
-            {
-                var userRoles = serviceResult.Data.UserRoles;
-                var tokenResult = _jwtTokenGenerator.Generate(serviceResult.Data.User, userRoles);
 
-                HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id",
-                    tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) }); ;
-
-                detailResult = new OperationDetailDTO<SignInDetailDTO>
+            try
+            {
+                if (!serviceResult.Succeeded)
                 {
-                    Succeeded = true,
-                    Data = new SignInDetailDTO
-                    {
-                        Role = serviceResult.Data.UserRoles.FirstOrDefault().ToLowerInvariant(),
-                        IdToken = tokenResult.AccessToken
-                    },
-                };
+                    detailResult = new OperationDetailDTO<SignInDetailDTO> { Succeeded = false, ErrorMessages = serviceResult.ErrorMessages };
+                    return Unauthorized(detailResult);
+                }
 
-                return Ok(detailResult);
+                else
+                {
+                    var userRoles = serviceResult.Data.UserRoles;
+                    var tokenResult = _jwtTokenGenerator.Generate(serviceResult.Data.User, userRoles);
+
+                    //HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id",
+                    //tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
+                    HttpContext.Response.Cookies.Append("token",
+                        tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
+
+                    detailResult = new OperationDetailDTO<SignInDetailDTO>
+                    {
+                        Succeeded = true,
+                        Data = new SignInDetailDTO
+                        {
+                            Role = serviceResult.Data.UserRoles.FirstOrDefault().ToLowerInvariant(),
+                            IdToken = tokenResult.AccessToken
+                        },
+                    };
+
+                    return Ok(detailResult);
+                }
+            }
+            catch(Exception e)
+            {
+                return Unauthorized(e.Message);
             }
         }
 

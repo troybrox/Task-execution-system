@@ -8,19 +8,21 @@ import { Link } from 'react-router-dom'
 import Answer from '../../UI/Answer/Answer'
 import Loader from '../../UI/Loader/Loader'
 
-// Компонент отображения отдельного окна задач(создание задачи и открытая задача) для препода и студента
+// Компонент отображения отдельного окна задач(создание и редактирование задачи для преподавателя + открытая задача для студента)
 class OneTaskComponent extends React.Component {
     state = {
         subjectId: null,
         groupId: null,
         typeId: null,
         studentIds: [],
-        titleInput: '',
-        descriptionInput: '',
+        titleInput: Object.keys(this.props.taskAdditionData).length !== 0 ? this.props.taskAdditionData.name : '',
+        descriptionInput: Object.keys(this.props.taskAdditionData).length !== 0 ? this.props.taskAdditionData.contentText : '',
+        descriptionTextarea: '',
         files: null,
-        beginDate: null,
-        finishDate: null,
-        checkAll: false
+        beginDate: '',
+        finishDate: '',
+        checkAll: false,
+        editAnswer: false
     }
 
     choiceSubject = event => {
@@ -62,12 +64,18 @@ class OneTaskComponent extends React.Component {
         })
     }
 
-    onChangeDescription = event => {
-        const descriptionInput = event.target.value
-
-        this.setState({
-            descriptionInput
-        })
+    onChangeDescription = (event, type) => {
+        if (type === 'textarea') {
+            const descriptionTextarea = event.target.value
+            this.setState({
+                descriptionTextarea
+            })
+        } else {
+            const descriptionInput = event.target.value
+            this.setState({
+                descriptionInput
+            })
+        }
     }
 
     onLoadFile = event => {
@@ -78,13 +86,13 @@ class OneTaskComponent extends React.Component {
 
     changeDate = (event, type) => {
         if (type === 'begin') {
-            let beginDate = null
-            if (event.target.value !== '')
+            let beginDate = ''
+            if (event.target.value !== ''  && event.target.validity.valid)
                 beginDate = event.target.value
             this.setState({beginDate})
         } else {
-            let finishDate = null
-            if (event.target.value !== '')
+            let finishDate = ''
+            if (event.target.value !== ''  && event.target.validity.valid)
                 finishDate = event.target.value
             this.setState({finishDate})
         }
@@ -126,14 +134,37 @@ class OneTaskComponent extends React.Component {
         })
     }
 
-    sendSolution = () => {
+    sendSolution = async(path) => {
         const createSolution = {
             task: {}
         }
-        createSolution.task.contentText = this.state.descriptionInput
-        createSolution.task.taskId = +this.props.idTask
+        createSolution.task.contentText = this.state.descriptionTextarea
+        if (path === 'update') 
+            createSolution.task.id = +this.props.taskAdditionData.solution.id
+        else 
+            createSolution.task.taskId = +this.props.idTask
         createSolution.file = this.state.files
-        this.props.onSendSolution(createSolution, this.props.idTask)
+        await this.props.onSendSolution(createSolution, this.props.idTask, path)
+
+        this.setState({
+            files: null
+        })
+    }
+
+    onEditAnswer = () => {
+        if (this.state.editAnswer)
+            this.sendSolution('update')
+
+        this.setState({
+            editAnswer: !this.state.editAnswer,
+            descriptionTextarea: this.props.descriptionTextarea
+        })
+    }
+
+    onEditAnswerFalse = () => {
+        this.setState({
+            editAnswer: false
+        })
     }
 
     renderMemberCreate() {
@@ -195,7 +226,7 @@ class OneTaskComponent extends React.Component {
                             htmlFor={`student_${item.id}`}
                             onClick={() => this.changeCheckedHandler(groupIndex, '', index, item.id)}
                         >
-                            <img src='/images/card.svg' alt='' />
+                            <img src='/images/card.svg' className='card_img' alt='' />
                             <span>{item.surname} {item.name}</span>
                         </label>
                     </li>
@@ -226,17 +257,19 @@ class OneTaskComponent extends React.Component {
     }
 
     renderMemberTask() {
-        const users = this.props.taskAdditionData.students.map((item, index)=>{
+        const users = 'students' in this.props.taskAdditionData ?
+            this.props.taskAdditionData.students.map((item, index)=>{
                 return (
                     <li
                         key={index}
                         className='student_li'
                     >
-                        <img src='/images/card.svg' alt='' />
+                        <img src='/images/card.svg' className='card_img' alt='' />
                         <span>{item.surname} {item.name}</span>
                     </li>
                 )
-            })
+            }) : 
+            null
 
         return ( this.props.loading ? <Loader /> :
             <Auxiliary>
@@ -251,7 +284,7 @@ class OneTaskComponent extends React.Component {
     }
     
     renderMembers() {
-        if (this.props.typeTask === 'create') {
+        if (this.props.typeTask === 'create' && Object.keys(this.props.taskAdditionData).length === 0 ) {
             return this.renderMemberCreate()
         } else {
             return this.renderMemberTask()
@@ -263,7 +296,7 @@ class OneTaskComponent extends React.Component {
             <Auxiliary>
                 <h4>
                     Срок выполнения
-                    <span className='need_field'>*</span>
+                    {Object.keys(this.props.taskAdditionData).length === 0 ? <span className='need_field'>*</span> : null}
                 </h4>
                 <p className='date_p_create'>Дата начала:</p>
                 <input 
@@ -271,6 +304,8 @@ class OneTaskComponent extends React.Component {
                     min={(new Date()).toJSON().substr(0, 16)}
                     max={this.state.finishDate}
                     required
+                    value={this.state.beginDate}
+                    readOnly={Object.keys(this.props.taskAdditionData).length !== 0}
                     className='date_input_create' 
                     onChange={(event) => this.changeDate(event, 'begin')}
                 />
@@ -279,6 +314,7 @@ class OneTaskComponent extends React.Component {
                     type='datetime-local'
                     min={this.state.beginDate || (new Date()).toJSON().substr(0, 16)}
                     required
+                    value={this.state.finishDate}
                     className='date_input_create' 
                     onChange={(event) => this.changeDate(event, 'end')}
                 />
@@ -300,21 +336,28 @@ class OneTaskComponent extends React.Component {
                     </p>
                     <p className='date_p_create'>
                         Дата сдачи:
-                        <span>{this.props.taskAdditionData.finishDate}</span>
-                    </p>
-                    <p className='date_p_create'>
-                        Осталось времени: 
-                        <span className='time_bar' style={{background: `linear-gradient(90deg, rgb(81, 163, 201) ${timeBar}%, white ${timeBar}%)`}}>
-                            {timeBar} %
+                        <span>
+                            {this.props.taskAdditionData.finishDate}
                         </span>
                     </p>
-                    {localStorage.getItem('role') === 'teacher' ?
-                        <Button 
-                            typeButton='close'
-                            onClickButton={this.props.onCloseTask}
-                            value='Закрыть задачу'
-                        /> :
-                        null
+                    {this.props.taskAdditionData.isOpen ?
+                        <p className='date_p_create'>
+                            Осталось времени: 
+                            <span className='time_bar' style={{background: `linear-gradient(90deg, rgb(81, 163, 201) ${timeBar}%, white ${timeBar}%)`}}>
+                                {timeBar} %
+                            </span>
+                        </p> : 
+                    null}
+
+                    {this.props.taskAdditionData.isOpen ?
+                        this.props.role === 'teacher' ?
+                            <Button 
+                                typeButton='close'
+                                onClickButton={this.props.onCloseTask}
+                                value='Закрыть задачу'
+                            /> :
+                            null :
+                        <p className='close_task'>Задача закрыта</p>       
                     }
                 </div>
             </Auxiliary>
@@ -353,72 +396,137 @@ class OneTaskComponent extends React.Component {
             )
         })
 
-        const clsForFile = ['label_file']
-        if (this.state.files !== null) clsForFile.push('ready_file')
-
         return (
             <div className='contain_create'>
-                <h4>Предмет<span className='need_field'>*</span></h4>
-                <Select
-                    onChangeSelect={event => this.choiceSubject(event)}
-                >
-                    {selectSubject}
-                </Select><br />
-                <h4>Тип задачи<span className='need_field'>*</span></h4>
-                <Select
-                    onChangeSelect={event => this.choiceType(event)}
-                >
-                    {selectType}
-                </Select><br />
-                <h4>Заголовок<span className='need_field'>*</span></h4>
+                <h4>Предмет{Object.keys(this.props.taskAdditionData).length === 0 ? <span className='need_field'>*</span> : null}</h4>
+                {Object.keys(this.props.taskAdditionData).length !== 0 ? 
+                    <span className='simple_text'>
+                        {this.props.taskAdditionData.subject}
+                    </span> : 
+                    <Select
+                        onChangeSelect={event => this.choiceSubject(event)}
+                    >
+                        {selectSubject}
+                    </Select>
+                }
+                <br />
+                <h4>Тип задачи{Object.keys(this.props.taskAdditionData).length === 0 ? <span className='need_field'>*</span> : null}</h4>
+                {Object.keys(this.props.taskAdditionData).length !== 0 ? 
+                    <span className='simple_text'>
+                        {this.props.taskAdditionData.type}
+                    </span> : 
+                    <Select
+                        onChangeSelect={event => this.choiceType(event)}
+                    >
+                        {selectType}
+                    </Select>
+                }
+                <br />
+                <h4>Заголовок{Object.keys(this.props.taskAdditionData).length === 0 ? <span className='need_field'>*</span> : null}</h4>
                 <input 
                     type='text' 
                     className='title_input' 
                     value={this.state.titleInput}
                     onChange={event => this.onChangeTitle(event)}
                 /><br />
-                <h4>Описание:<span className='need_field'>*</span></h4>
+                <h4>Описание:{Object.keys(this.props.taskAdditionData).length === 0 ? <span className='need_field'>*</span> : null}</h4>
                 <textarea
                     type='text' 
                     className='description_textarea' 
                     placeholder='Добавьте описание задачи...'
                     defaultValue={this.state.descriptionInput}
-                    onChange={event => this.onChangeDescription(event)}
+                    onChange={event => this.onChangeDescription(event, 'input')}
                 />
+                {this.renderFile()}
+            </div>
+        )
+    }   
+
+    renderFile() {
+        const clsForFile = ['label_file']
+        if (this.state.files !== null) {
+            clsForFile.push('ready_file')
+            return (
                 <label 
                     className={clsForFile.join(' ')}
                 >
-                    {this.state.files === null ?
-                        <Auxiliary>
+                    <span className='title_file'>
+                        Файл успешно загружен
+                    </span><br />
+                    <p>
+                        <img src='/images/file-solid.svg' alt='' /><br />
+                        <span className='file_name'>{this.state.files.name}</span>  
+                    </p><br />
+                    <span 
+                        className='delete_file'
+                        onClick={this.removeFile}
+                    >
+                        Удалить файл
+                    </span>
+                </label>
+            )
+        } else {
+            if (Object.keys(this.props.taskAdditionData).length !== 0) {
+                if (this.props.taskAdditionData.fileName !== null) {
+                    clsForFile.push('ready_file')
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
                             <span className='title_file'>
-                                Перетащите файл в это поле или кликните сюда для загрузки
-                            </span><br />
-                            <input 
-                                type='file' 
-                                accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
-                                onChange={event => this.onLoadFile(event)}
-                            />
-                        </Auxiliary> :
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Файл успешно загружен
+                                Ваш файл
                             </span><br />
                             <p>
                                 <img src='/images/file-solid.svg' alt='' /><br />
-                                <span>{this.state.files.name}</span>  
+                                <span className='file_name'>{this.props.taskAdditionData.fileName}</span>  
                             </p><br />
                             <span 
                                 className='delete_file'
                                 onClick={this.removeFile}
                             >
-                                Удалить файл
+                                Заменить файл
+                                <input 
+                                    type='file' 
+                                    accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                    onChange={event => this.onLoadFile(event)}
+                                />
                             </span>
-                        </Auxiliary>
-                    }
-                </label>
-            </div>
-        )
-    }   
+                        </label>
+                    )
+                } else {
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
+                            <span className='title_file'>
+                                Перетащите файл в это поле или кликните сюда для загрузки
+                            </span><br />
+                            <input 
+                                type='file' 
+                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                onChange={event => this.onLoadFile(event)}
+                            />
+                        </label>
+                    )
+                }
+            } else {
+                return (
+                    <label 
+                        className={clsForFile.join(' ')}
+                    >
+                        <span className='title_file'>
+                            Перетащите файл в это поле или кликните сюда для загрузки
+                        </span><br />
+                        <input 
+                            type='file' 
+                            accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                            onChange={event => this.onLoadFile(event)}
+                        />
+                    </label>
+                )
+            }
+        }
+    }
 
     renderButtonCreate() {
         const cls = []
@@ -426,70 +534,111 @@ class OneTaskComponent extends React.Component {
             task: {}
         }
 
-        if (
-            this.state.subjectId !== null && 
-            this.state.typeId !== null && 
-            this.state.groupId !== null &&
-            this.state.studentIds.length !== 0 &&
-            this.state.titleInput.trim() !== '' &&
-            this.state.descriptionInput.trim() !== '' &&
-            this.state.beginDate !== null &&
-            this.state.finishDate !== null      
-            ) {
-                createTask.task.subjectId = +this.state.subjectId 
-                createTask.task.typeId = +this.state.typeId 
-                createTask.task.groupId = +this.state.groupId
-                createTask.task.name = this.state.titleInput 
-                createTask.task.contentText = this.state.descriptionInput
-                createTask.task.studentIds = this.state.studentIds
-                createTask.task.beginDate = this.state.beginDate
-                createTask.task.finishDate = this.state.finishDate
+        if (Object.keys(this.props.taskAdditionData).length !== 0) {
+            if (
+                this.state.titleInput.trim() !== '' &&
+                this.state.descriptionInput.trim() !== '' &&
+                this.state.finishDate !== ''      
+                ) {
+                    createTask.task.id = +this.props.taskAdditionData.id
+                    createTask.task.subjectId = 0 
+                    createTask.task.typeId = 0 
+                    createTask.task.groupId = 0 
+                    createTask.task.name = this.state.titleInput 
+                    createTask.task.contentText = this.state.descriptionInput
+                    createTask.task.studentIds = null
+                    createTask.task.beginDate = this.state.beginDate
+                    createTask.task.finishDate = this.state.finishDate
+    
+                    createTask.file = this.state.files
+                    cls.push('blue_big')
+            } else 
+                cls.push('disactive_big')
 
-                createTask.file = this.state.files
-                cls.push('blue_big')
-        } else 
-            cls.push('disactive_big')
-
-        return (
-            <Button 
-                typeButton={cls.join(' ')}
-                onClickButton={() => this.props.onSendCreate(createTask)}
-                value='Добавить задачу'
-            />
-        )
+            return (
+                <Button 
+                    typeButton={cls.join(' ')}
+                    onClickButton={() => this.props.onSendCreate(createTask, 'update')}
+                    value='Изменить задачу'
+                />
+            )
+        } else {
+            if (
+                this.state.subjectId !== null && 
+                this.state.typeId !== null && 
+                this.state.groupId !== null &&
+                this.state.studentIds.length !== 0 &&
+                this.state.titleInput.trim() !== '' &&
+                this.state.descriptionInput.trim() !== '' &&
+                this.state.beginDate !== '' &&
+                this.state.finishDate !== ''      
+                ) {
+                    createTask.task.subjectId = +this.state.subjectId 
+                    createTask.task.typeId = +this.state.typeId 
+                    createTask.task.groupId = +this.state.groupId
+                    createTask.task.name = this.state.titleInput 
+                    createTask.task.contentText = this.state.descriptionInput
+                    createTask.task.studentIds = this.state.studentIds
+                    createTask.task.beginDate = this.state.beginDate
+                    createTask.task.finishDate = this.state.finishDate
+    
+                    createTask.file = this.state.files
+                    cls.push('blue_big')
+            } else 
+                cls.push('disactive_big')
+            
+            return (
+                <Button 
+                    typeButton={cls.join(' ')}
+                    onClickButton={() => this.props.onSendCreate(createTask, 'add')}
+                    value='Добавить задачу'
+                />
+            )
+        }
     }
 
     renderContainTask() {
-        const all = this.props.taskAdditionData.solutions.map((item, index) => {
-            return (
-                <Answer 
-                    key={index}
-                    source='user.svg'
-                    data={item}
-                    role='student'
-                />
-            )
-        })
+        const all = this.props.role === 'student' ? 
+            'solution' in this.props.taskAdditionData && this.props.taskAdditionData.solution !== null ?
+                !this.state.editAnswer ?
+                    <Answer 
+                        source='user.svg'
+                        data={this.props.taskAdditionData.solution}
+                        role='student'
+                    /> : 
+                    this.renderAnswerField() :
+                null :
+            'solutions' in this.props.taskAdditionData ?
+                this.props.taskAdditionData.solutions.map((item, index) => {
+                    return (
+                        <Answer 
+                            key={index}
+                            source='user.svg'
+                            data={item}
+                            role='student'
+                        />
+                    )
+                }) :
+                null
 
         const teacherObject = {
             contentText: this.props.taskAdditionData.contentText,
             creationDate: this.props.taskAdditionData.beginDate,
             fileURI: this.props.taskAdditionData.fileURI,
-            // isExpired: false,
-            student: {
-                id: 1,
-                name: this.props.taskAdditionData.teacherName,
-                surname: this.props.taskAdditionData.teacherSurname
-            }    
+            fileName: this.props.taskAdditionData.fileName,
+            studentName: this.props.taskAdditionData.teacherName,
+            studentSurname: this.props.taskAdditionData.teacherSurname  
         }                
         
-        const students = this.props.taskAdditionData.students.map((item) => {
-            return (
-                <li key={item.id}>
-                    Добавлен {item.surname} {item.name}
-                </li>
-            )
-        })
+        const students = 'students' in this.props.taskAdditionData ? 
+            this.props.taskAdditionData.students.map((item) => {
+                return (
+                    <li key={item.id}>
+                        Добавлен {item.surname} {item.name}
+                    </li>
+                )
+            }) : 
+            null
 
         return ( 
             this.props.loading ? 
@@ -503,17 +652,22 @@ class OneTaskComponent extends React.Component {
                     <ul>
                         {students}
                     </ul>
-                    {localStorage.getItem('role') === 'teacher' ? all : null}
-                    {localStorage.getItem('role') === 'student' && this.props.taskAdditionData.isOpen ? this.renderAnswerField() : null}
+                    {all}
+                    {this.props.role === 'student' && this.props.taskAdditionData.isOpen ? 
+                        this.props.taskAdditionData.solution === null ? 
+                            this.renderAnswerField() : 
+                            <Auxiliary>
+                                <Button typeButton='blue' value='Изменить' onClickButton={this.onEditAnswer} /> 
+                                {this.state.editAnswer ? <Button typeButton='grey' value='Отмена' onClickButton={this.onEditAnswerFalse} /> : null}
+                            </Auxiliary> : 
+                        null}
                 </div>
         )
     }
 
     renderAnswerField() {
-        const clsForFile = ['label_file']
-        if (this.state.files !== null) clsForFile.push('ready_file')
         let cls = 'blue_big'
-        if (this.state.descriptionInput.trim() === '')
+        if (this.state.descriptionTextarea.trim() === '')
             cls = 'disactive_big'
 
         return (
@@ -522,50 +676,106 @@ class OneTaskComponent extends React.Component {
                     type='text' 
                     className='description_textarea text_block' 
                     placeholder='Добавьте описание решения...'
-                    defaultValue={this.state.descriptionInput}
-                    onChange={event => this.onChangeDescription(event)}
+                    defaultValue={this.state.descriptionTextarea}
+                    onChange={event => this.onChangeDescription(event, 'textarea')}
                 />
-                <label 
-                    className={clsForFile.join(' ')}
-                >
-                    {this.state.files === null ?
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Перетащите файл в это поле или кликните сюда для загрузки
-                            </span><br />
-                            <input 
-                                type='file' 
-                                accept='application/msword,text/plain,application/pdf,image/jpeg,image/pjpeg' 
-                                onChange={event => this.onLoadFile(event)}
-                            />
-                        </Auxiliary> :
-                        <Auxiliary>
-                            <span className='title_file'>
-                                Файл успешно загружен
-                            </span><br />
-                            <p>
-                                <img src='/images/file-solid.svg' alt='' /><br />
-                                <span>{this.state.files.name}</span>  
-                            </p><br />
-                            <span 
-                                className='delete_file'
-                                onClick={this.removeFile}
-                            >
-                                Удалить файл
-                            </span>
-                        </Auxiliary>
-                    }
-                </label>
-                {localStorage.getItem('role') === 'student' ? 
+                {this.renderFileAnswer()}
+                {this.props.role === 'student' && !this.state.editAnswer ? 
                     <Button 
                         typeButton={cls}
                         value='Отправить решение'
-                        onClickButton={this.sendSolution}
+                        onClickButton={() => this.sendSolution('add')}
                     /> : 
                     null
                 }
             </div>
         )
+    }
+
+    renderFileAnswer() {
+        const clsForFile = ['label_file']
+        if (this.state.files !== null) {
+            clsForFile.push('ready_file')
+            return (
+                <label 
+                    className={clsForFile.join(' ')}
+                >
+                    <span className='title_file'>
+                        Файл успешно загружен
+                    </span><br />
+                    <p>
+                        <img src='/images/file-solid.svg' alt='' /><br />
+                        <span className='file_name'>{this.state.files.name}</span>  
+                    </p><br />
+                    <span 
+                        className='delete_file'
+                        onClick={this.removeFile}
+                    >
+                        Удалить файл
+                    </span>
+                </label>
+            )
+        } else {
+            if (Object.keys(this.props.taskAdditionData).length !== 0 && this.props.taskAdditionData.solution !== null) {
+                if (this.props.taskAdditionData.solution.fileName !== null) {
+                    clsForFile.push('ready_file')
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
+                            <span className='title_file'>
+                                Ваш файл
+                            </span><br />
+                            <p>
+                                <img src='/images/file-solid.svg' alt='' /><br />
+                                <span className='file_name'>{this.props.taskAdditionData.solution.fileName}</span>  
+                            </p><br />
+                            <span 
+                                className='delete_file'
+                                onClick={this.removeFile}
+                            >
+                                Заменить файл
+                                <input 
+                                    type='file' 
+                                    accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                    onChange={event => this.onLoadFile(event)}
+                                />
+                            </span>
+                        </label>
+                    )
+                } else {
+                    return (
+                        <label 
+                            className={clsForFile.join(' ')}
+                        >
+                            <span className='title_file'>
+                                Перетащите файл в это поле или кликните сюда для загрузки
+                            </span><br />
+                            <input 
+                                type='file' 
+                                accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                                onChange={event => this.onLoadFile(event)}
+                            />
+                        </label>
+                    )
+                }
+            } else {
+                return (
+                    <label 
+                        className={clsForFile.join(' ')}
+                    >
+                        <span className='title_file'>
+                            Перетащите файл в это поле или кликните сюда для загрузки
+                        </span><br />
+                        <input 
+                            type='file' 
+                            accept='application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/pdf,image/jpeg,image/pjpeg' 
+                            onChange={event => this.onLoadFile(event)}
+                        />
+                    </label>
+                )
+            }
+        }
     }
    
     renderContain() {        
@@ -584,7 +794,7 @@ class OneTaskComponent extends React.Component {
     renderTitle() {
         if (this.props.typeTask === 'create') {
             return (
-                <h2>Создание задачи</h2>
+                <h2>{Object.keys(this.props.taskAdditionData).length !== 0 ? 'Изменение задачи' : 'Создание задачи' }</h2>
             )
         } else {
             return(
@@ -606,7 +816,10 @@ class OneTaskComponent extends React.Component {
                             <span>{this.props.taskAdditionData.type} </span>
                             <span>{this.props.taskAdditionData.name}</span>
                             <p className='small_text'>
-                                Открыта {this.props.taskAdditionData.beginDate}
+                                {this.props.taskAdditionData.updateDate !== null && this.props.taskAdditionData.isOpen ?
+                                    `Обновлено ${this.props.taskAdditionData.updateDate}` :
+                                    null    
+                                }
                                 <span className='small_text'>
                                     Кол-во ответов:
                                     {' ' + this.props.taskAdditionData.solutionsCount}
@@ -614,11 +827,13 @@ class OneTaskComponent extends React.Component {
                             </p>
                         </div>
                 
-                        {localStorage.getItem('role') === 'teacher' ?
-                            <Button 
-                                typeButton='blue_big'
-                                value='Изменить'
-                            /> :
+                        {this.props.role === 'teacher' && this.props.taskAdditionData.isOpen ?
+                            <Link to='/create_task'>
+                                <Button
+                                    typeButton='blue_big'
+                                    value='Изменить'
+                                />
+                            </Link> : 
                             null
                         }
                     </Auxiliary>
@@ -627,16 +842,55 @@ class OneTaskComponent extends React.Component {
         )
     }
 
+    renderLinkBack() {
+        if (Object.keys(this.props.taskAdditionData).length !== 0 && this.props.typeTask === 'create') {
+            return (
+                <Link
+                    className='back_task'
+                    to={`/tasks/${this.props.taskAdditionData.id}`}
+                >
+                    Назад к задаче
+                </Link>
+            )
+        } else {
+            return (
+                <Link
+                    className='back_task'
+                    to='/tasks'
+                >
+                    Ко всем задачам
+                </Link>
+            )
+        }
+    }
+
+    componentDidMount() {
+        if (Object.keys(this.props.taskAdditionData).length !== 0) {
+            let t
+            const parseBegin = this.props.taskAdditionData.beginDate.split('.')
+            t = parseBegin[1]
+            parseBegin[1] = parseBegin[0]
+            parseBegin[0] = t
+            const beginDate = new Date(parseBegin.join('.')).toJSON().substr(0, 16)
+
+            const parseFinish = this.props.taskAdditionData.finishDate.split('.')
+            t = parseFinish[1]
+            parseFinish[1] = parseFinish[0]
+            parseFinish[0] = t
+            const finishDate = new Date(parseFinish.join('.')).toJSON().substr(0, 16)
+
+            this.setState({
+                beginDate,
+                finishDate
+            })
+        }
+    }
+
     render() {
         return (
             <Frame>
                 <div className='big_title_task'>
-                    <Link
-                        className='back_task'
-                        to='/tasks'
-                    >
-                        Ко всем задачам
-                    </Link>
+                    { this.renderLinkBack()}
                     { this.renderTitle() }
                 </div>
                 <div className='header_task'>

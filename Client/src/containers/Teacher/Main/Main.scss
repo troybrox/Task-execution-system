@@ -19,6 +19,12 @@
         overflow-y: auto;
         width: max-content;
         min-width: 250px;
+        max-width: 350px;
+
+        .create_repo_button {
+            width: min-content;
+            margin: 10px auto;
+        }
 
         .big_list {
             list-style: none;
@@ -48,6 +54,16 @@
                     width: max-content;
                     cursor: pointer;
                     width: calc(100% - 40px);
+                }
+
+                .download_small {
+                    padding: 5px 0 5px 60px;
+                    display: flex; 
+                    background: rgb(241, 255, 241);
+
+                    a {
+                        width: 100%;
+                    }
                 }
 
                 .active_small {

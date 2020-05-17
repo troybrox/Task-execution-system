@@ -1,7 +1,7 @@
 import React from 'react'
 import './Button.scss'
 
-// Компонент отображения кнопки
+// Компонент отображения кнопок разных видов
 const Button = props => {
     const cls = ['button']
     let disable = false
@@ -30,6 +30,9 @@ const Button = props => {
         case 'close':
             cls.push('close_button')
             break;
+        case 'download':
+            cls.push('download')
+            break;
         default:
             break;
     }
@@ -41,6 +44,8 @@ const Button = props => {
             onClick={props.onClickButton}
         >
             {props.value}
+            {props.typeButton === 'download' ? <img src='/images/download-solid.svg' alt='' /> : null}
+            {props.children}
         </button>
     )
 }

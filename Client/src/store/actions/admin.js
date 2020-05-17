@@ -4,7 +4,9 @@ import {
     PUSH_USERS, 
     PUSH_SELECTS, 
     ERROR_WINDOW, 
-    CHANGE_CONDITION } from './actionTypes'
+    CHANGE_CONDITION, 
+    LOGOUT} from './actionTypes'
+import { logoutHandler } from './auth'
 
 export function changeCheckedHandler(index) {
     return (dispatch, getState) => {
@@ -52,9 +54,32 @@ export function loadingUsers(url, facultyId, groupId, departmentId, searchString
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else 
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -100,9 +125,32 @@ export function loadingLists(url, roleActive) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else 
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -132,9 +180,32 @@ export function actionUsersHandler(url) {
                 dispatch(errorWindow(true, err)) 
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else 
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -154,9 +225,32 @@ export function deleteGroupHandler(url, groupId) {
                 dispatch(errorWindow(true, err))
             }
         } catch (e) {
-            const err = ['Ошибка подключения']
+            const err = [`Ошибка подключения: ${e.name}`]
             err.push(e.message)
-            dispatch(errorWindow(true, err))
+            if (e.response !== undefined)
+                if (e.response.status !== undefined)
+                    if (e.response.status === 401 || e.response.status === 403) {
+                        let n = 4
+                        err.push(`Выход из системы через ${n}...`)
+                        let timerId = setInterval(() => {
+                            dispatch(errorWindow(false, []))
+                            err.pop()
+                            n = n - 1
+                            err.push(`Выход из системы через ${n}...`)
+                            dispatch(errorWindow(true, err))
+                        }, 1000)
+
+                        setTimeout(() => {
+                            clearInterval(timerId)
+                            dispatch(logoutHandler())
+                        }, 4000)
+                    }
+                    else 
+                        dispatch(errorWindow(true, err))
+                else 
+                    dispatch(errorWindow(true, err))
+            else
+                dispatch(errorWindow(true, err))
         }
     }
 }
@@ -192,5 +286,11 @@ export function changeCondition(actionCondition) {
     return {
         type: CHANGE_CONDITION,
         actionCondition
+    }
+}
+
+export function logoutAdmin() {
+    return {
+        type: LOGOUT
     }
 }

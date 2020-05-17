@@ -20,25 +20,27 @@ using TaskExecutionSystem.DAL.Entities.Studies;
 using TaskExecutionSystem.DAL.Entities.Task;
 using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Entities.Relations;
+using TaskExecutionSystem.BLL.DTO.Repository;
+using TaskExecutionSystem.DAL.Entities.Repository;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    // TODO: Repository - get
-
     public class StudentService : IStudentService
     {
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
         private readonly ITaskService _taskService;
+        private readonly IUserValidator<User> _userValidator;
 
         public StudentService(DataContext context, IHttpContextAccessor httpContextAccessor,
-            UserManager<User> userManager, ITaskService taskService)
+            UserManager<User> userManager, ITaskService taskService, IUserValidator<User> userValidator)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _taskService = taskService;
+            _userValidator = userValidator;
         }
 
         public async Task<OperationDetailDTO<StudentDTO>> GetProfileDataAsync()
@@ -69,8 +71,8 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // TODO [!]
-        public async Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO dto)
+
+        public async Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO newStudentDTO)
         {
             var detail = new OperationDetailDTO<TeacherDTO>();
             try
@@ -83,34 +85,44 @@ namespace TaskExecutionSystem.BLL.Services
                     .Where(u => u.Id == currentUserEntity.Id)
                     .FirstOrDefaultAsync();
 
-                var teacherEntity = await _context.Students
-                    .Include(t => t.User)
-                    .Where(t => t.UserId == currentUserEntity.Id)
-                    .FirstOrDefaultAsync();
-
-
-                if (!UserValidator.Validate(dto, out errorMessages))
+                if (!UserValidator.Validate(newStudentDTO, out errorMessages))
                 {
-                    detail.Succeeded = false;
+                    //detail.Succeeded = false;
                     detail.ErrorMessages = errorMessages;
                     return detail;
                 }
 
-                if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
-                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
-                    || await _userManager.FindByNameAsync(dto.UserName) != null)
+                //if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                //    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
+                //    || await _userManager.FindByNameAsync(dto.UserName) != null)
+                if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newStudentDTO.UserName)
+                    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newStudentDTO.UserName)
+                    || newStudentDTO.UserName != studentUser.UserName && await _userManager.FindByNameAsync(newStudentDTO.UserName) != null)
                 {
-                    detail.Succeeded = false;
+                    //detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
                     return detail;
                 }
 
                 if (studentUser != null)
                 {
-                    studentUser.Email = dto.Email;
-                    studentUser.UserName = dto.UserName;
-                    var userUpdateResult = await _userManager.UpdateAsync(studentUser);
-                    detail.Succeeded = true;
+                    studentUser.Email = newStudentDTO.Email;
+                    studentUser.UserName = newStudentDTO.UserName;
+
+                    var validateRes = _userValidator.ValidateAsync(_userManager, studentUser);
+                    if (validateRes.Result.Succeeded)
+                    {
+                        await _userManager.UpdateNormalizedEmailAsync(studentUser);
+                        await _userManager.UpdateNormalizedUserNameAsync(studentUser);
+
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Данные пользователя не прошли валидацию. Подробнее: " + validateRes.Result.Errors.ToList());
+                        return detail;
+                    }
+                    await _context.SaveChangesAsync();
                 }
 
                 return detail;
@@ -131,7 +143,7 @@ namespace TaskExecutionSystem.BLL.Services
             try
             {
                 var currentUserEntity = await GetUserFromClaimsAsync();
-
+                 
                 var studentEntity = await _context.Students
                     .Include(s => s.User)
                     .Where(s => s.UserId == currentUserEntity.Id)
@@ -142,6 +154,7 @@ namespace TaskExecutionSystem.BLL.Services
                                      .Include(t => t.Teacher)
                                      .Include(t => t.Subject)
                                      .Include(t => t.Type)
+                                     .Include(t => t.Solutions)
                                      .Where(t => (t.TaskStudentItems.FirstOrDefault(x => x.StudentId == studentEntity.Id) != null))
                                                              select t;
 
@@ -183,13 +196,43 @@ namespace TaskExecutionSystem.BLL.Services
                                     }
                                     break;
                                 }
+
+
+                            case "isOpen":
+                                {
+                                    var value = filter.Value;
+                                    if (!String.IsNullOrEmpty(value))
+                                    {
+                                        if(value == "true")
+                                        {
+                                            tasks = tasks
+                                            .Where(t => t.IsOpen);
+                                        }
+                                        if(value == "false")
+                                        {
+                                            tasks = tasks
+                                            .Where(t => !t.IsOpen);
+                                        }
+                                    }
+                                    break;
+                                }
                         }
                     }
                 }
 
                 foreach (var entity in tasks)
                 {
+                    var solution = new Solution();
                     var taskDTO = TaskDTO.Map(entity);
+                    var currentSolution = new SolutionDTO();
+                    if (entity.Solutions.Count > 0)
+                    {
+                        if((solution = entity.Solutions.FirstOrDefault(s => s.StudentId == studentEntity.Id)) != null)
+                        {
+                            currentSolution.IsInTime = solution.InTime;
+                            taskDTO.Solution = currentSolution;
+                        }
+                    }
                     resultList.Add(taskDTO);
                 }
 
@@ -279,6 +322,7 @@ namespace TaskExecutionSystem.BLL.Services
             var detail = new OperationDetailDTO<TaskDTO>();
             var resultTaskDTO = new TaskDTO();
             var resSolutionDTO = new SolutionDTO();
+            Solution solutionEntity;
 
             try
             {
@@ -300,8 +344,6 @@ namespace TaskExecutionSystem.BLL.Services
                     .Include(t => t.TaskStudentItems)
                     .FirstOrDefaultAsync(t => t.Id == id);
 
-                var solutionEntity = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
-
                 if (taskEntity == null)
                 {
                     detail.ErrorMessages.Add("Задача не найдена.");
@@ -309,13 +351,19 @@ namespace TaskExecutionSystem.BLL.Services
                 }
 
                 resultTaskDTO = TaskDTO.Map(taskEntity);
-                resSolutionDTO = SolutionDTO.Map(solutionEntity);
-
-                if (resSolutionDTO != null)
-                {
-                    resultTaskDTO.Solutions.Add(resSolutionDTO);
-                }
                 _taskService.GetCurrentTimePercentage(ref resultTaskDTO);
+
+                solutionEntity = await _context.Solutions
+                    .Include(s => s.Student)
+                    .Include(s => s.File)
+                    .Where(s => s.TaskId == id)
+                    .Where(s => s.StudentId == studentEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                resSolutionDTO = SolutionDTO.Map(solutionEntity);
+                resultTaskDTO.Solution = resSolutionDTO;
+                resultTaskDTO.Solutions.Add(resSolutionDTO);
+
                 detail.Data = resultTaskDTO;
                 detail.Succeeded = true;
                 return detail;
@@ -327,62 +375,223 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // test
-        // TODO: try - catch
+
         public async Task<OperationDetailDTO<string>> CreateSolutionAsync(SolutionCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO<string>();
-
-            var currentUserEntity = await GetUserFromClaimsAsync();
-
-            var studentEntity = await _context.Students
-                .Include(s => s.User)
-                .Where(s => s.UserId == currentUserEntity.Id)
-                .FirstOrDefaultAsync();
-
-            if (dto != null)
+            try
             {
-                var taskEntity = await _context.TaskModels.FindAsync(dto.TaskId);
+                var currentUserEntity = await GetUserFromClaimsAsync();
 
-                if (taskEntity == null)
+                var studentEntity = await _context.Students
+                    .Include(s => s.User)
+                    .Where(s => s.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                if (dto != null)
                 {
-                    detail.ErrorMessages.Add("Задача не найдена.");
+                    var taskEntity = await _context.TaskModels.FindAsync(dto.TaskId);
+
+                    if (taskEntity == null)
+                    {
+                        detail.ErrorMessages.Add("Задача не найдена.");
+                        return detail;
+                    }
+
+                    Solution solutionEntity = new Solution
+                    {
+                        ContentText = dto.ContentText,
+                        Student = studentEntity,
+                        TaskModel = taskEntity,
+                        CreationDate = DateTime.Now
+                    };
+
+                    if (taskEntity.FinishDate > solutionEntity.CreationDate)
+                    {
+                        solutionEntity.InTime = true;
+                    }
+
+                    await _context.Solutions.AddAsync(solutionEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdSolution = await _context.Solutions.FirstOrDefaultAsync(t => t == solutionEntity);
+
+                    if (createdSolution != null)
+                    {
+                        detail.Succeeded = true;
+                        detail.Data = createdSolution.Id.ToString();
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add(_serverErrorMessage + "При создании решения задачи что-то пошло не так.");
+                    }
                     return detail;
                 }
 
-                Solution solutionEntity = new Solution
+                else
                 {
-                    ContentText = dto.ContentText,
-                    Student = studentEntity,
-                    TaskModel = taskEntity,
-                    CreationDate = DateTime.Now
-                };
-
-                if (taskEntity.FinishDate > solutionEntity.CreationDate)
+                    detail.ErrorMessages.Add("Параметр модели создаваемого решения был равен NULL.");
+                    return detail;
+                }
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+        }
+        
+        public async Task<OperationDetailDTO> UpdateSolutionAsync(SolutionCreateModelDTO dto)
+        {
+            var detail = new OperationDetailDTO<TaskDTO>();
+            try
+            {
+                if (dto == null)
                 {
-                    solutionEntity.InTime = false;
+                    detail.ErrorMessages.Add("Объект входного параметра был равен NULL.");
+                    return detail;
                 }
 
-                await _context.Solutions.AddAsync(solutionEntity);
+                var entity = await _context.Solutions.FindAsync(dto.Id);
+
+                if (entity == null)
+                {
+                    detail.ErrorMessages.Add("Решение задачи не найдено.");
+                    return detail;
+                }
+
+                entity.ContentText = dto.ContentText;
+                entity.CreationDate = DateTime.Now;
+
+                if (String.IsNullOrEmpty(entity.ContentText))
+                {
+                    detail.ErrorMessages.Add("Данные решения задачи введены некорректно. Поробуйте снова.");
+                    return detail;
+                }
+
+                _context.Solutions.Update(entity);
                 await _context.SaveChangesAsync();
 
-                var createdSolution = await _context.Solutions.FirstOrDefaultAsync(t => t == solutionEntity);
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+        }
 
-                if (createdSolution != null)
+
+        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoFiltersAsync()
+        {
+            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+
+            try
+            {
+                var resultSubjectDTOList = new List<SubjectDTO>();
+
+                var subjects = await _context.Subjects
+                    .Where(s => s.Repositories.Count > 0)
+                    .ToListAsync();
+
+                foreach (var subject in subjects)
                 {
+                    SubjectDTO subjectDTO = SubjectDTO.Map(subject);
+                    resultSubjectDTOList.Add(subjectDTO);
+                }
+
+                resultSubjectDTOList.OrderBy(s => s.Name);
+
+                detail.Data = resultSubjectDTOList;
+                detail.Succeeded = true;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+            }
+            
+            return detail;
+        }
+
+        public async Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters)
+        {
+            var detail = new OperationDetailDTO<List<RepositoryDTO>>();
+
+            try
+            {
+                var resultList = new List<RepositoryDTO>();
+
+                var repos = from r in _context.RepositoryModels
+                            .Include(r => r.Subject)
+                            .Include(r => r.Files)
+                            .Include(r => r.Teacher)
+
+                            select r;
+
+                repos.OrderBy(r => r.Teacher.Name);
+
+                if (filters != null)
+                {
+                    foreach (var filter in filters)
+                    {
+                        switch (filter.Name)
+                        {
+                            case "subjectId":
+                                {
+                                    var value = Convert.ToInt32(filter.Value);
+                                    if (value > 0)
+                                    {
+                                        repos = repos.Where(r => r.SubjectId == value);
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                }
+
+                foreach (var entity in repos)
+                {
+                    var repoDTO = RepositoryDTO.Map(entity);
+                    resultList.Add(repoDTO);
+                }
+
+                detail.Data = resultList;
+                detail.Succeeded = true;
+            }
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+            }
+
+            return detail;
+        }
+
+        public async Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id)
+        {
+            var detail = new OperationDetailDTO<RepositoryDTO>();
+            try
+            {
+                var repoEntity = await _context.RepositoryModels
+                     .Include(r => r.Files)
+                     .FirstOrDefaultAsync(r => r.Id == id);
+
+                if (repoEntity != null)
+                {
+                    var dto = RepositoryDTO.Map(repoEntity);
+                    detail.Data = dto;
                     detail.Succeeded = true;
-                    detail.Data = createdSolution.Id.ToString();
                 }
                 else
                 {
-                    detail.ErrorMessages.Add(_serverErrorMessage + "При создании решения задачи что-то пошло не так.");
+                    detail.ErrorMessages.Add("Репозиторий не найден");
                 }
                 return detail;
             }
 
-            else
+            catch (Exception e)
             {
-                detail.ErrorMessages.Add("Параметр модели создаваемого решения был равен NULL.");
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
                 return detail;
             }
         }

@@ -2,11 +2,17 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
 import { logoutHandler } from '../../store/actions/auth'
+import { logoutTeacher } from '../../store/actions/teacher'
+import { logoutStudent } from '../../store/actions/student'
+import { logoutAdmin } from '../../store/actions/admin'
 
-// Компонент переадресации на выход
+// Компонент переадресации на выход, с очисткой данных о пользователе
 class Logout extends React.Component {
     componentDidMount() {
         this.props.logoutHandler()
+        this.props.logoutTeacher()
+        this.props.logoutStudent()
+        this.props.logoutAdmin()
     }
     
     render() {
@@ -18,7 +24,10 @@ class Logout extends React.Component {
 
 function mapDispatchToProps(dispatch) {
     return {
-        logoutHandler: () => dispatch(logoutHandler())
+        logoutHandler: () => dispatch(logoutHandler()),
+        logoutTeacher: () => dispatch(logoutTeacher()),
+        logoutStudent: () => dispatch(logoutStudent()),
+        logoutAdmin: () => dispatch(logoutAdmin())
     }
 }
 

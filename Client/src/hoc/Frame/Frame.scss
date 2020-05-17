@@ -34,28 +34,8 @@
             }
         }
 
-        .bell_side {
-            display: flex;
-            margin: auto 20px auto auto;
-            cursor: pointer;
-            
-            img {
-                width: 20px;
-                height: 20px;
-            }
-
-            span {
-                display: inline-block;
-                text-align: center;
-                line-height: 20px;
-                width: 20px;
-                height: 20px;
-                border-radius: 50%;
-                border: 2px solid rgb(68, 68, 68);
-            }
-        }
-
         .exit_frame {
+            margin: auto 20px auto auto;
             font-weight: bold;
             color: rgb(209, 28, 28);
             margin-right: 20px;
@@ -91,5 +71,82 @@
         a {
             color: blue;
         }
+    }
+
+    .close_task {
+        color: red;
+        font-weight: bold;
+        margin-top: 10px;
+        font-size: 18px;
+    }
+
+    .label_file {
+        width: 90%;
+        border: 2px dashed grey;
+        border-radius: 5px;
+        display: block;
+        margin: 20px 0;
+        padding: 20px 10px;
+        transition: border 300ms ease;
+        cursor: pointer;
+        text-align: center;
+
+        .title_file {
+            color: grey;
+            transition: 200ms color;
+        }
+
+        .file_name {
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 40%;
+        }
+
+        &:hover {
+            border: 2px dashed rgb(66, 150, 189);
+        }
+
+        input[type=file] {
+            outline: 0;
+            opacity: 0;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        img {
+            margin-top: 10px;
+            width: 50px;
+            height: 50px;
+        }
+    }
+
+    .ready_file {
+        border: 2px solid rgb(66, 150, 189);
+        cursor: auto;
+
+        &:hover {
+            border: 2px solid rgb(66, 150, 189);;
+        }
+    }
+
+    .delete_file {
+        color: rgb(151, 1, 1);
+        width: max-content;
+        margin: 0 auto;
+        cursor: pointer;
+        position: relative;
+
+        input {
+            position: absolute;
+            left: 0;
+            width: 110px;
+        }
+    }
+
+    .need_field {
+        color: red;
+        margin: 0 2px 0 1px;
     }
 }

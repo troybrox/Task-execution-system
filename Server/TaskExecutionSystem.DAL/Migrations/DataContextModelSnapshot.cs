@@ -87,31 +87,15 @@ namespace TaskExecutionSystem.DAL.Migrations
                     b.Property<string>("FileURI")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ParagraphId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Path")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RepositoryItemId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ThemeId")
+                    b.Property<int>("RepositoryModelId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParagraphId")
-                        .IsUnique()
-                        .HasFilter("[ParagraphId] IS NOT NULL");
-
-                    b.HasIndex("RepositoryItemId")
-                        .IsUnique()
-                        .HasFilter("[RepositoryItemId] IS NOT NULL");
-
-                    b.HasIndex("ThemeId")
-                        .IsUnique()
-                        .HasFilter("[ThemeId] IS NOT NULL");
+                    b.HasIndex("RepositoryModelId");
 
                     b.ToTable("RepoFiles");
                 });
@@ -226,9 +210,10 @@ namespace TaskExecutionSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("UserId");
-
                     b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Students");
                 });
@@ -272,9 +257,10 @@ namespace TaskExecutionSystem.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasAlternateKey("UserId");
-
                     b.HasIndex("DepartmentId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Teachers");
                 });
@@ -334,8 +320,6 @@ namespace TaskExecutionSystem.DAL.Migrations
                         .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
-
-                    b.HasAlternateKey("UserName");
 
                     b.ToTable("Users");
                 });
@@ -475,7 +459,7 @@ namespace TaskExecutionSystem.DAL.Migrations
                     b.ToTable("TaskStudentItems");
                 });
 
-            modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Repository.Paragraph", b =>
+            modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Repository.RepositoryModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -485,24 +469,7 @@ namespace TaskExecutionSystem.DAL.Migrations
                     b.Property<string>("ContentText")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ThemeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ThemeId");
-
-                    b.ToTable("Paragraphs");
-                });
-
-            modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Repository.RepositoryModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ContentText")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SubjectId")
@@ -518,29 +485,6 @@ namespace TaskExecutionSystem.DAL.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("RepositoryModels");
-                });
-
-            modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Repository.Theme", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("ContentText")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RepositoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RepositoryId");
-
-                    b.ToTable("Themes");
                 });
 
             modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Studies.Department", b =>
@@ -733,17 +677,11 @@ namespace TaskExecutionSystem.DAL.Migrations
 
             modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.File.RepoFile", b =>
                 {
-                    b.HasOne("TaskExecutionSystem.DAL.Entities.Repository.Paragraph", "Paragraph")
-                        .WithOne("FileItem")
-                        .HasForeignKey("TaskExecutionSystem.DAL.Entities.File.RepoFile", "ParagraphId");
-
-                    b.HasOne("TaskExecutionSystem.DAL.Entities.Repository.RepositoryModel", "RepositoryItem")
-                        .WithOne("File")
-                        .HasForeignKey("TaskExecutionSystem.DAL.Entities.File.RepoFile", "RepositoryItemId");
-
-                    b.HasOne("TaskExecutionSystem.DAL.Entities.Repository.Theme", "Theme")
-                        .WithOne("File")
-                        .HasForeignKey("TaskExecutionSystem.DAL.Entities.File.RepoFile", "ThemeId");
+                    b.HasOne("TaskExecutionSystem.DAL.Entities.Repository.RepositoryModel", "RepositoryModel")
+                        .WithMany("Files")
+                        .HasForeignKey("RepositoryModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.File.SolutionFile", b =>
@@ -838,7 +776,7 @@ namespace TaskExecutionSystem.DAL.Migrations
                     b.HasOne("TaskExecutionSystem.DAL.Entities.Identity.Student", "Student")
                         .WithMany("TaskStudentItems")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TaskExecutionSystem.DAL.Entities.Task.TaskModel", "Task")
@@ -848,35 +786,17 @@ namespace TaskExecutionSystem.DAL.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Repository.Paragraph", b =>
-                {
-                    b.HasOne("TaskExecutionSystem.DAL.Entities.Repository.Theme", "Theme")
-                        .WithMany("Paragraphs")
-                        .HasForeignKey("ThemeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Repository.RepositoryModel", b =>
                 {
                     b.HasOne("TaskExecutionSystem.DAL.Entities.Studies.Subject", "Subject")
-                        .WithMany()
+                        .WithMany("Repositories")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("TaskExecutionSystem.DAL.Entities.Identity.Teacher", "Teacher")
-                        .WithMany()
+                        .WithMany("Repositories")
                         .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("TaskExecutionSystem.DAL.Entities.Repository.Theme", b =>
-                {
-                    b.HasOne("TaskExecutionSystem.DAL.Entities.Repository.RepositoryModel", "Repository")
-                        .WithMany("Themes")
-                        .HasForeignKey("RepositoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

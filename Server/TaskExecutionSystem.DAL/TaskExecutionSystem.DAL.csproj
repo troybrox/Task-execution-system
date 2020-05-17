@@ -43,6 +43,40 @@
     <Compile Remove="Migrations\20200428225635_Task_Solution.Designer.cs" />
     <Compile Remove="Migrations\20200428225912_Task_Solution.cs" />
     <Compile Remove="Migrations\20200428225912_Task_Solution.Designer.cs" />
+    <Compile Remove="Migrations\20200512185744_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512185744_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512190305_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512190305_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512191029_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512191029_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512191604_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512191604_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512191750_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512191750_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512192525_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512192525_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512193737_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512193737_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512194018_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512194018_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512194513_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512194513_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512195006_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512195006_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512195332_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512195332_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512200032_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512200032_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512201618_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512201618_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512204011_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512204011_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512213857_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512213857_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512214208_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512214208_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200512214415_Teacher_Repo.cs" />
+    <Compile Remove="Migrations\20200512214415_Teacher_Repo.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

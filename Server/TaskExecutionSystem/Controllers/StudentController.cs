@@ -25,8 +25,6 @@ namespace TaskExecutionSystem.Controllers
     [Route("api/[controller]")]
     public class StudentController : ControllerBase
     {
-        // TODO: Repository - get
-
         // api/student/profile
         // api/student/profile/update [POST]
         // api/student/profile/updatepassword
@@ -50,8 +48,7 @@ namespace TaskExecutionSystem.Controllers
             _taskService = taskService;
         }
 
-        // todo: update Password
-
+        // отправить данные профиля
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfileDataAsync()
         {
@@ -59,6 +56,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        //отправить данные профиля
         [HttpPost("profile/update")]
         public async Task<IActionResult> UpdateProfileAsync([FromBody]StudentDTO dto)
         {
@@ -67,6 +65,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        // отправить списки объектов, используемых далее для фильтрации получения списка задач 
         [HttpGet("task/filters")]
         public async Task<IActionResult> GetTaskFiltersAsync()
         {
@@ -74,6 +73,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить офильтрованный список задач
         [HttpPost("tasks")]
         public async Task<IActionResult> GetFilteredTasksAsync([FromBody]FilterDTO[] filters)
         {
@@ -81,6 +81,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить задачу, полученную по её id
         [HttpGet("task/{id}")]
         public async Task<IActionResult> GetTasksByIDAsync(int id)
         {
@@ -89,16 +90,28 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        //  добавление решения, возвращается результат: id добавленного решения в случае успеха
         [HttpPost("solution/add")]
-        public async Task<IActionResult> GetFilteredTasksAsync([FromBody]SolutionCreateModelDTO dto)
+        public async Task<IActionResult> AddSolution([FromBody]SolutionCreateModelDTO dto)
         {
             var res = await _studentService.CreateSolutionAsync(dto);
             return Ok(res);
         }
 
+        //  обновление решения, возвращается результат
+        [HttpPost("solution/update")]
+        public async Task<IActionResult> UpdateSolution([FromBody]SolutionCreateModelDTO dto)
+        {
+            var res = await _studentService.UpdateSolutionAsync(dto);
+            return Ok(res);
+        }
+
+
+        //  добавления/изменение файла к решению, возвращается результат
         [HttpPost("solution/add/file")]
         public async Task<IActionResult> AddFile()
         {
+            string solutionFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\";
             var detail = new OperationDetailDTO();
             try
             {
@@ -107,41 +120,92 @@ namespace TaskExecutionSystem.Controllers
                 StringValues solutionIdString;
                 var solIdRes = allForms.TryGetValue(allForms.Keys.First(), out solutionIdString);
                 var strId = solutionIdString.ToString();
-                var id = Convert.ToInt32(strId);
+                var solutionID = Convert.ToInt32(strId);
 
                 var file = Request.Form.Files[0];
                 if (file != null)
                 {
-                    var fileName = file.FileName;
-                    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\" + fileName))
+                    string userFileName = file.FileName;
+                    string uniqueFileName = System.Guid.NewGuid() + userFileName;
+                    OperationDetailDTO fileRes = new OperationDetailDTO();
+
+                    var currentFileRes = await _taskService.GetSolutionFileNameAsync(solutionID);
+                    if(currentFileRes.Succeeded)
                     {
-                        file.CopyTo(fileStream);
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        if (System.IO.File.Exists(_environment.WebRootPath + currentFileRes.filePath))
+                        {
+                            System.IO.File.Delete(_environment.WebRootPath + currentFileRes.filePath);
+                        }
+
+                        fileRes = await _taskService.UpdateSolutionFileAsync(currentFileRes.fileId, userFileName, uniqueFileName);
                     }
-                    var fileRes = await _taskService.AddFileToSolutionAsync(id, file.FileName);
+
+                    else 
+                    {
+                        using (var fileStream = System.IO.File.Create(solutionFileLoadPath + uniqueFileName))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        fileRes = await _taskService.AddFileToSolutionAsync(solutionID, userFileName, uniqueFileName);
+                    }
 
                     if (!fileRes.Succeeded)
                     {
+                        if (System.IO.File.Exists(solutionFileLoadPath + uniqueFileName))
+                        {
+                            System.IO.File.Delete(solutionFileLoadPath + uniqueFileName);
+                        }
+
                         detail.ErrorMessages.Add("Не удалось загрузить файл к решению задачи.");
                         detail.ErrorMessages.AddRange(fileRes.ErrorMessages);
-                        return Ok(detail);
                     }
                     else
                     {
                         detail.Succeeded = true;
-                        return Ok(detail);
                     }
                 }
                 else
                 {
                     detail.ErrorMessages.Add("Файл равен null");
-                    return Ok(detail);
                 }
+                return Ok(detail);
             }
             catch (Exception e)
             {
                 detail.ErrorMessages.Add("Ошибка на сервере при загрузке файлов: " + e.Message);
                 return Ok(detail);
             }
+        }
+
+
+        // отправить списки предметов, используемых далее для фильтрации получения списка репозиториев 
+        [HttpGet("repo/subjects")]
+        public async Task<IActionResult> GetRepoFiltersAsync()
+        {
+            var res = await _studentService.GetRepoFiltersAsync();
+            return Ok(res);
+        }
+
+        // отправить отфильтрованный список репозиториев
+        [HttpPost("repo")]
+        public async Task<IActionResult> GetReposAsync([FromBody]FilterDTO[] filters)
+        {
+            var res = await _studentService.GetRepositoriesFromDBAsync(filters);
+            return Ok(res);
+        }
+
+        // отправить объект репозитория, полученный по id
+        [HttpGet("repo/{id}")]
+        public async Task<IActionResult> GetRepoByIdAsync(int id)
+        {
+            var res = await _studentService.GetRepositoryByID(id);
+            return Ok(res);
         }
     }
 }

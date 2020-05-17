@@ -30,7 +30,7 @@ namespace TaskExecutionSystem.Identity.JWT.Options
         public JWTOptions(string issuer,
             string audience,
             string rawSigningKey,
-            int tokenExpiryInMinutes = 3600)
+            int tokenExpiryInMinutes = 60)
             : this(issuer, audience, new SymmetricSecurityKey(
                     Encoding.ASCII.GetBytes(rawSigningKey)), tokenExpiryInMinutes)
         { }

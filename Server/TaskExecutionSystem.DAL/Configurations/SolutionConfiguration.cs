@@ -14,6 +14,10 @@ namespace TaskExecutionSystem.DAL.Configurations
             builder.Property(s => s.StudentId)
                 .IsRequired();
 
+            builder.HasOne(sol => sol.File)
+                .WithOne(f => f.Solution)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
 
             builder.Property(s => s.ContentText)
                 .HasMaxLength(2000);

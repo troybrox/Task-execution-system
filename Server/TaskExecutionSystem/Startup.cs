@@ -13,6 +13,8 @@ using TaskExecutionSystem.BLL.Services;
 using TaskExecutionSystem.DAL.Data;
 using TaskExecutionSystem.Identity.JWT.Extensions;
 using TaskExecutionSystem.Identity.JWT.Options;
+using Microsoft.AspNetCore.Identity;
+using TaskExecutionSystem.DAL.Entities.Identity;
 
 namespace TaskExecutionSystem
 {
@@ -50,6 +52,7 @@ namespace TaskExecutionSystem
                 builder =>
                 {
                     builder.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://localhost:44303")
+                   //builder.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -63,7 +66,9 @@ namespace TaskExecutionSystem
                 .AddTransient<ITaskService, TaskService>()
                 .AddTransient<ITeacherService, TeacherService>()
                 .AddTransient<IStudentService, StudentService>()
-                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+                .AddTransient<IRepoService, RepoService>()
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+                .AddScoped<IUserValidator<User>, UserValidator<User>>();
         }
 
 
@@ -85,14 +90,17 @@ namespace TaskExecutionSystem
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
+                // set always
                 HttpOnly = HttpOnlyPolicy.Always,
                 Secure = CookieSecurePolicy.Always
             });
 
             app.UseCors(MyAllowSpecificOrigins);
+
             app.UseSecureJwt();
+
             app.UseAuthentication();
-            
+
             app.UseRouting();
 
             app.UseAuthorization();

@@ -10,8 +10,14 @@ import Select from '../../UI/Select/Select'
 // Компонент отображения страницы задач для препода и студента
 class TasksComponent extends React.Component {
     state = {
+        tabTitles: [
+            {title: 'Открытые', active: true}, 
+            {title: 'Закрытые', active: false}
+        ],
+
         activeSubjectIndex: null,
         activeGroupIndex: null,
+        typeId: null,
         title: '',
         search: ''
     }
@@ -25,18 +31,19 @@ class TasksComponent extends React.Component {
         await this.props.fetchTaskFilters()  
 
         if (this.props.subjects.length !== 0) {
-            activeSubjectIndex = 0
+            activeSubjectIndex = this.props.subjects[0].id
             filters = [
-                {name: 'subjectId', value: String(this.props.subjects[activeSubjectIndex].id)},
+                {name: 'subjectId', value: String(activeSubjectIndex)},
             ]
-            if (localStorage.getItem('role') === 'teacher') {
+            if (this.props.role === 'teacher') {
                 if ('groups' in this.props.subjects[0]) {
-                    activeGroupIndex = 0
+                    activeGroupIndex = this.props.subjects[0].groups[0].id
                     title = this.props.subjects[0].name + '. Группа ' + this.props.subjects[0].groups[0].name
-                    filters.push({name: 'groupId', value: String(this.props.subjects[activeSubjectIndex].groups[activeGroupIndex].id)})
+                    filters.push({name: 'groupId', value: String(this.props.subjects[0].groups[0].id)})
                 }
             } else {
                 title = this.props.subjects[0].name
+                filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
             }
             this.props.fetchListTasks(filters)
         }
@@ -54,7 +61,17 @@ class TasksComponent extends React.Component {
     }
 
     choiceSubjectStudent = (indexSubject, title) => {
-        this.props.choiceSubjectTask(indexSubject)
+        const filters = [
+            {
+                name: 'subjectId',
+                value: String(indexSubject)
+            },
+            {
+                name: 'isOpen',
+                value: String(this.state.tabTitles[0].active)
+            }
+        ]
+        this.props.choiceSubjectTask(filters)
 
         this.setState({
             activeSubjectIndex: indexSubject,
@@ -80,7 +97,7 @@ class TasksComponent extends React.Component {
     renderList() {
         if (this.props.loading && this.props.subjects.length === 0) 
             return <Loader />
-        if (localStorage.getItem('role') === 'teacher') {
+        if (this.props.role === 'teacher') {
             return this.renderListTeacher()
         } else {
             return this.renderListStudent()
@@ -95,9 +112,9 @@ class TasksComponent extends React.Component {
             </p> : 
             this.props.subjects.map((item, index) => {
                 const cls = ['big_items']
-                let src = 'images/angle-right-solid.svg'
+                let src = '/images/angle-right-solid.svg'
                 if (item.open) {
-                    src = 'images/angle-down-solid.svg'
+                    src = '/images/angle-down-solid.svg'
                 }
                 return (
                     <Auxiliary key={index}>
@@ -133,7 +150,7 @@ class TasksComponent extends React.Component {
                     className={cls.join(' ')}
                     onClick={this.choiceGroup.bind(this, indexSubject, index)}
                 >
-                    <img src='images/folder-regular.svg' alt='' />
+                    <img src='/images/folder-regular.svg' alt='' />
                     {item.name}
                 </li>
             )
@@ -147,7 +164,7 @@ class TasksComponent extends React.Component {
             </p> :
             this.props.subjects.map((item) => {
                 const cls = ['big_items']
-                let src = 'images/folder-regular.svg'
+                let src = '/images/folder-regular.svg'
                 if (item.open) {
                     cls.push('active_big')
                 }
@@ -183,15 +200,26 @@ class TasksComponent extends React.Component {
                         >
                             <div className='tasks_left'>
                                 <span className='subject_for_lab'>{subject[0]}</span>
-                                <span>{item.type} {item.name}</span><br />
-                                <span className='small_text'>Открыта {item.dateOpen}</span>
+                                <span>{item.type}. {item.name}</span><br />
+                                <p className='small_text'>
+                                    <span>Открыта: {item.beginDate}</span>
+                                    <span> Крайний срок: {item.finishDate}</span>
+                                    {item.updateDate !== null ? 
+                                            <span>
+                                                {item.isOpen ? ' Обновлена:' :' Закрыта:'} {item.updateDate}
+                                            </span> :
+                                        null 
+                                    }
+                                </p>
                             </div>
-                            { localStorage.getItem('role') === 'teacher' ?
+                            { this.props.role === 'teacher' ?
                                 <div className='tasks_right'>
-                                    <img src='images/check-circle-solid.svg' alt='' />
-                                    <span>{item.countAnswers}/{item.countStudents}</span>
+                                    <img src='/images/check-circle-solid.svg' alt='' />
+                                    <span>{item.solutionsCount}/{item.studentsCount}</span>
                                 </div> :
-                                null
+                                <div className='tasks_right'>
+                                    <span className={item.isOpen ? 'grey_status' : item.solution === null || !item.solution.isInTime ? 'red_status' : 'green_status'}>{item.solution === null ? 'Не сдано' : item.solution.isInTime ? 'Сдано вовремя' : 'Просрочено'}</span>
+                                </div>
                             }
                         </Link>
                 )
@@ -205,6 +233,7 @@ class TasksComponent extends React.Component {
             return (
                 <option
                     key={item.id}
+                    index={item.id}
                 >
                     {item.name}
                 </option>
@@ -217,11 +246,19 @@ class TasksComponent extends React.Component {
         const typeId = event.target.options[index].getAttribute('index')
         const filters = [
             {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-            {name: 'groupId', value: String(this.state.activeGroupIndex)},
-            {name: 'typeId', value: typeId}
         ]
+        if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
+        if (typeId !== null) filters.push({name: 'typeId', value: typeId})
+        if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+
+        if (this.props.role === 'student') 
+            filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
 
         this.props.fetchListTasks(filters)
+
+        this.setState({
+            typeId
+        })
     }
 
     onChangeSearch = event => {
@@ -233,19 +270,66 @@ class TasksComponent extends React.Component {
     }
 
     onSearchHandler = () => {
-        if (this.state.search.trim() !== '') {
+            const filters = [
+                {name: 'subjectId', value: String(this.state.activeSubjectIndex)}
+            ]
+            if (this.state.activeGroupIndex !== null) filters.push({name: 'groupId', value: String(this.state.activeGroupIndex)})
+            if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
+            if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+            
+            if (this.props.role === 'student') 
+                filters.push({name: 'isOpen', value: String(this.state.tabTitles[0].active)})
+            
+
+            this.props.fetchListTasks(filters)
+    }
+
+    changeTab = index => {
+        const tabTitles = [...this.state.tabTitles]
+        tabTitles.forEach(el => {
+            el.active = false
+        })
+        tabTitles[index].active = true
+
+        this.setState({
+            tabTitles
+        }, () => {
             const filters = [
                 {name: 'subjectId', value: String(this.state.activeSubjectIndex)},
-                {name: 'groupId', value: String(this.state.activeGroupIndex)},
-                {name: 'searchString', value: this.state.search}
+                {name: 'isOpen', value: String(this.state.tabTitles[0].active)}
             ]
+
+            if (this.state.search.trim() !== '') filters.push({name: 'searchString', value: this.state.search})
+            if (this.state.typeId !== null) filters.push({name: 'typeId', value: this.state.typeId})
             this.props.fetchListTasks(filters)
-        }
+        })
+    }
+
+    renderTab() {
+        return this.state.tabTitles.map((item, index) => {
+            const cls = ['tab']
+            if (item.active) cls.push('active_tab')
+            return (
+                <h4
+                    key={index}
+                    className={cls.join(' ')}
+                    onClick={this.changeTab.bind(this, index)}
+                >
+                    {item.title}
+                </h4>
+            )
+        })    
     }
     
     render() {
         const main = (
-            <div className='tasks_group'>               
+            <div className='tasks_group'>   
+                {this.props.role === 'student' ?
+                    <div className='nav'>
+                        {this.renderTab()}
+                    </div> :
+                    null
+                }            
                 <div className='search'>
                     <input 
                         type='search' 
@@ -269,7 +353,7 @@ class TasksComponent extends React.Component {
                             {this.renderOptions()}
                         </Select>
                     </div>
-                    {localStorage.getItem('role') === 'teacher' ?
+                    {this.props.role === 'teacher' ?
                         <div className='new_task'>
                             <Link
                                 to={'/create_task'}

@@ -34,11 +34,13 @@ namespace TaskExecutionSystem.BLL.Interfaces
 
         // данные для [репозитория]
         public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoCreateSubjectFiltersAsync();
-        public Task<OperationDetailDTO> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto); 
-        public Task<OperationDetailDTO> CreateNewThemeAsync(ThemeCreateModelDTO dto);
-        public Task<OperationDetailDTO> CreateNewParagraphAsync(ParagraphCreateModelDTO dto);
+        public Task<OperationDetailDTO<string>> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto); 
+
         public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters();
-        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync();
+        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters);
+        public Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id);
+        public Task<OperationDetailDTO<List<string>>> DeleteRepositoryAsync(int id);
+        public Task<OperationDetailDTO> UpdateRepositoryAsync(RepositoryCreateModelDTO dto);
 
         public Task<User> GetUserFromClaimsAsync();
     }

@@ -12,6 +12,7 @@ using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Studies;
 using TaskExecutionSystem.BLL.DTO.Task;
+using static TaskExecutionSystem.BLL.Infrastructure.Contracts.DirectoryContract;
 using static TaskExecutionSystem.BLL.Infrastructure.Contracts.ErrorMessageContract;
 using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Data;
@@ -23,25 +24,27 @@ using TaskExecutionSystem.DAL.Entities.Task;
 using TaskExecutionSystem.BLL.Validation;
 using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.BLL.DTO.Repository;
+using TaskExecutionSystem.DAL.Entities.Repository;
+using TaskExecutionSystem.DAL.Entities.File;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    // TODO: CLOSE TASK
-    // TODO: Repository - create, get, update, delete
     public class TeacherService : ITeacherService
     {
         private readonly DataContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<User> _userManager;
         private readonly ITaskService _taskService;
+        private readonly IUserValidator<User> _userValidator;
 
         public TeacherService(DataContext context, IHttpContextAccessor httpContextAccessor, 
-            UserManager<User> userManager, ITaskService taskService)
+            UserManager<User> userManager, ITaskService taskService, IUserValidator<User> userValidator)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _taskService = taskService;
+            _userValidator = userValidator;
         }
 
         // получение данных профиля преподавателя
@@ -105,7 +108,9 @@ namespace TaskExecutionSystem.BLL.Services
 
                 if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
                     || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newTeacherDTO.UserName)
-                    || ((findSameUser = await _userManager.FindByNameAsync(newTeacherDTO.UserName)) != null && findSameUser != teacherUser))
+                    || newTeacherDTO.UserName != teacherUser.UserName  && await _userManager.FindByNameAsync(newTeacherDTO.UserName) != null)
+                    //|| (await _context.Users.Where(u => (u.Id != teacherUser.Id && u.UserName == newTeacherDTO.UserName)).FirstOrDefaultAsync() != null))
+                    //|| ((findSameUser = await _userManager.FindByNameAsync(newTeacherDTO.UserName)) != null && findSameUser.Id != teacherUser.Id))
                 {
                     detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
@@ -116,31 +121,27 @@ namespace TaskExecutionSystem.BLL.Services
                 {
                     teacherUser.Email = newTeacherDTO.Email;
                     teacherUser.UserName = newTeacherDTO.UserName;
-                    teacherUser.Teacher = null;
 
-                    // delete dependent
-                    teacherEntity.User = null;
-                    _context.Teachers.Update(teacherEntity);
-                    await _context.SaveChangesAsync();
+                    var validateRes = _userValidator.ValidateAsync(_userManager, teacherUser);
+                    if (validateRes.Result.Succeeded)
+                    {
+                        await _userManager.UpdateNormalizedEmailAsync(teacherUser);
+                        await _userManager.UpdateNormalizedUserNameAsync(teacherUser);
 
-                    var userUpdateResult = await _userManager.UpdateAsync(teacherUser);
-
-                    // update dependent
-                    teacherEntity.User = teacherUser;
-                    _context.Teachers.Update(teacherEntity);
-                    await _context.SaveChangesAsync();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Данные пользователя не прошли валидацию. Подробнее: " + validateRes.Result.Errors.ToList());
+                        return detail;
+                    }
 
                     if (teacherEntity != null)
                     {
                         teacherEntity.Position = newTeacherDTO.Position;
-                        //
-                        teacherEntity.User = teacherUser;
-                        //
                         _context.Teachers.Update(teacherEntity);
                         await _context.SaveChangesAsync();
                     }
-
-                    detail.Succeeded = true;
                 }
 
                 return detail;
@@ -243,8 +244,8 @@ namespace TaskExecutionSystem.BLL.Services
 
                     if(createdTask != null)
                     {
-                        detail.Succeeded = true;
                         detail.Data = createdTask.Id.ToString();
+                        detail.Succeeded = true;
                     }
                     else
                     {
@@ -266,6 +267,8 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+                
+        // test
         // сразу формировать DTO
         public async Task<OperationDetailDTO<List<SubjectDTO>>> GetMainDataAsync()
         {
@@ -289,9 +292,10 @@ namespace TaskExecutionSystem.BLL.Services
                                      .Include(t => t.Group)
                                      .ThenInclude(g => g.Tasks)
                                      .Include(t => t.Group)
-                                     .ThenInclude(g => g.Students) 
+                                     .ThenInclude(g => g.Students)
                                      .Include(t => t.Subject)
                                      .Include(t => t.Type)
+                                     .Include(t => t.Solutions)
                                      .Include(t => t.TaskStudentItems)
                                      .Where(t => t.TeacherId == currentTeacher.Id)
                                                              select t;
@@ -308,38 +312,62 @@ namespace TaskExecutionSystem.BLL.Services
 
                 var resGroupEntityList = new List<Group>();
 
-
                 // из всех задач препода получить список предметов по которым у препода есть задачи
                 foreach (var task in teacherTaskQueryList)
                 {
-                    var currentSubjectDTO = new SubjectDTO();
-                    var currentGroupDTO = GroupDTO.Map(task.Group);
+                    SubjectDTO currentSubjectDTO;
+                    GroupDTO currentGroupDTO;
                     var newStudentDTO = new StudentDTO();
 
                     if ((currentSubjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
                     {
-                        if ((currentGroupDTO = currentSubjectDTO.Groups.FirstOrDefault(g => g.Id == currentGroupDTO.Id)) != null)
+                        if ((currentGroupDTO = currentSubjectDTO.Groups.FirstOrDefault(g => g.Id == task.GroupId)) != null)
                         {
-                            foreach (var student in currentGroupDTO.Students)
+                            if (currentGroupDTO.Students != null)
                             {
-                                var ts = new TaskStudentItem();
-                                if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                                foreach (var student in currentGroupDTO.Students)
                                 {
-                                    student.Tasks.Add(TaskDTO.Map(task));
-                                    student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                                    // get every student solution for current task
+                                    var ts = new TaskStudentItem();
+                                    var solution = new Solution();
+                                    if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                                    {
+                                        var taskDTO = TaskDTO.Map(task);
+
+                                        var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                        if (solEnt != null)
+                                        {
+                                            taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                        }
+
+                                        student.Tasks.Add(taskDTO);
+                                    }
                                 }
                             }
+
                         }
                         else
                         {
+                            currentGroupDTO = GroupDTO.Map(task.Group); //
                             currentSubjectDTO.Groups.Add(currentGroupDTO);
-                            foreach (var student in currentGroupDTO.Students)
+                            if (currentGroupDTO.Students != null)
                             {
-                                var ts = new TaskStudentItem();
-                                if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                                foreach (var student in currentGroupDTO.Students)
                                 {
-                                    student.Tasks.Add(TaskDTO.Map(task));
-                                    student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                                    var ts = new TaskStudentItem();
+                                    var solution = new Solution();
+                                    if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                                    {
+                                        var taskDTO = TaskDTO.Map(task);
+
+                                        var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                        if (solEnt != null)
+                                        {
+                                            taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                        }
+
+                                        student.Tasks.Add(taskDTO);
+                                    }
                                 }
                             }
                         }
@@ -347,6 +375,7 @@ namespace TaskExecutionSystem.BLL.Services
 
                     else
                     {
+                        currentGroupDTO = GroupDTO.Map(task.Group);
                         currentSubjectDTO = SubjectDTO.Map(task.Subject);
                         // наполняем студентов группы заданиями и решениями 
                         foreach (var student in currentGroupDTO.Students)
@@ -354,8 +383,13 @@ namespace TaskExecutionSystem.BLL.Services
                             var ts = new TaskStudentItem();
                             if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                             {
-                                student.Tasks.Add(TaskDTO.Map(task));
-                                student.Solution = student.Solutions.FirstOrDefault(s => s.TaskId == task.Id);
+                                var taskDTO = TaskDTO.Map(task);
+                                var solEnt = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                if (solEnt != null)
+                                {
+                                    taskDTO.Solution = SolutionDTO.Map(solEnt);
+                                }
+                                student.Tasks.Add(taskDTO);
                             }
                         }
                         currentSubjectDTO.Groups.Add(currentGroupDTO);
@@ -559,6 +593,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // TEST: files for solutions
         // done
         public async Task<OperationDetailDTO<TaskDTO>> GetTaskByIDAsync(int id)
         {
@@ -569,6 +604,7 @@ namespace TaskExecutionSystem.BLL.Services
             try
             {
                 var entity = await _context.TaskModels
+                    .Include(t => t.Group)
                     .Include(t => t.TaskStudentItems)
                     .Include(t => t.Solutions)
                     .Include(t => t.Subject)
@@ -589,9 +625,14 @@ namespace TaskExecutionSystem.BLL.Services
                     resStudentDTOList.Add(StudentDTO.Map(studentEntuty));
                 }
 
-                foreach (var s in entity.Solutions)
+                // [files]
+                foreach (var solution in entity.Solutions)
                 {
-                    resSolutionDTOList.Add(SolutionDTO.Map(s));
+                    var solutionEntity = await _context.Solutions
+                        .Include(s => s.File)
+                        .Where(s => s == solution)
+                        .FirstOrDefaultAsync();
+                    resSolutionDTOList.Add(SolutionDTO.Map(solutionEntity));
                 }
 
                 resultTaskDTO = TaskDTO.Map(entity);
@@ -610,13 +651,18 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-
         // done 
         public async Task<OperationDetailDTO> UpdateTaskAsync(TaskCreateModelDTO dto)
         {
             var detail = new OperationDetailDTO<TaskDTO>();
             try
             {
+                if(dto == null)
+                {
+                    detail.ErrorMessages.Add("Объект входного параметра был равен NULL.");
+                    return detail;
+                }
+
                 var entity = await _context.TaskModels.FindAsync(dto.Id);
 
                 if (entity == null)
@@ -625,17 +671,41 @@ namespace TaskExecutionSystem.BLL.Services
                     return detail;
                 }
 
-                entity.ContentText = dto.ContentText;
-                entity.BeginDate = dto.BeginDate;
-                entity.FinishDate = dto.FinishDate;
                 entity.Name = dto.Name;
-                entity.TypeId = dto.TypeId;
+                entity.ContentText = dto.ContentText;
+                entity.FinishDate = dto.FinishDate;
                 entity.UpdateDate = DateTime.Now;
 
-                _context.TaskModels.Update(entity);
-                await _context.SaveChangesAsync();
+                if (entity.BeginDate < entity.FinishDate
+                   && !String.IsNullOrEmpty(dto.Name) && !String.IsNullOrEmpty(dto.ContentText))
+                {
+                    _context.TaskModels.Update(entity);
+                    await _context.SaveChangesAsync();
+                    detail.Succeeded = true;
+                }
 
-                detail.Succeeded = true;
+                else
+                {
+                    detail.ErrorMessages.Add("Данные задачи заполнены некорректно, попробуйте заново.");
+                }
+
+                    
+
+                //if (entity.BeginDate < dto.FinishDate && DateTime.Now < dto.FinishDate
+                //    && !String.IsNullOrEmpty(dto.Name) && !String.IsNullOrEmpty(dto.ContentText))
+                //{
+                //    entity.Name = dto.Name;
+                //    entity.ContentText = dto.ContentText;
+                //    entity.FinishDate = dto.FinishDate;
+                //    _context.TaskModels.Update(entity);
+                //    await _context.SaveChangesAsync();
+                //    detail.Succeeded = true;
+                //}
+                //else
+                //{
+                //    detail.ErrorMessages.Add("Данные задачи заполнены некорректно, попробуйте заново.");
+                //}
+
                 return detail;
             }
             catch (Exception e)
@@ -675,30 +745,9 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // TODO: update Repo
 
-        // TODO [!]
-        public Task<OperationDetailDTO> CreateNewRepositoryAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        // TODO [!]
-        public Task<OperationDetailDTO> CreateNewThemeAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        // TODO [!]
-        public Task<OperationDetailDTO> CreateNewParagraphAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        // TODO: update Repo, theme, paragraph [!]
-        // TODO: File updating, File Adding ?? [!]
-
-
-        // todo: exceptions; return errors [!]
+        // todo: exceptions; return errors 
         // получение пользователя, сделавшего текущий запрос
         private async Task AddStudentsToTaskAsync(TaskModel task, int[] studentIDs)
         {
@@ -732,34 +781,343 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoCreateSubjectFiltersAsync()
+        // Test
+        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepoCreateSubjectFiltersAsync()
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+
+            var resultSubjectDTOList = new List<SubjectDTO>();
+
+            var subjects = await _context.Subjects.ToListAsync();
+
+            foreach(var sub in subjects)
+            {
+                resultSubjectDTOList.Add(SubjectDTO.Map(sub));
+            }
+             
+            detail.Data = resultSubjectDTOList;
+            detail.Succeeded = true;
+            return detail;
         }
 
-        public Task<OperationDetailDTO> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto)
+        // test
+        // add try - catch
+        public async Task<OperationDetailDTO<string>> CreateNewRepositoryAsync(RepositoryCreateModelDTO dto = null)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<string>();
+
+            if(dto != null)
+            {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var teacherEntity = await _context.Teachers
+                    .Where(t => t.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                var subject = await _context.Subjects.FindAsync(dto.SubjectId);
+
+                if(subject != null)
+                {
+                    var repositoryEntity = RepositoryCreateModelDTO.Map(dto);
+                    repositoryEntity.Teacher = teacherEntity;
+                    repositoryEntity.Subject = subject;
+                    await _context.RepositoryModels.AddAsync(repositoryEntity);
+                    await _context.SaveChangesAsync();
+
+                    var createdRepo = await _context.RepositoryModels.FirstOrDefaultAsync(r => r == repositoryEntity); // by id ?
+                    if(createdRepo != null)
+                    {
+                        detail.Data = createdRepo.Id.ToString();
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Не удалось получить созданный репозиторий");
+                    }
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Параметр учебного предмета создаваемого репозитория был равен NULL");
+                }
+
+                return detail;
+            }
+
+            else
+            {
+                detail.ErrorMessages.Add("Входные данные создаваемого репозитория равны NULL");
+                return detail;
+            }
         }
 
-        public Task<OperationDetailDTO> CreateNewThemeAsync(ThemeCreateModelDTO dto)
+        public async Task<OperationDetailDTO> UpdateRepositoryAsync(RepositoryCreateModelDTO dto)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO();
+
+            if(dto != null)
+            {
+                var repoEntity = await _context.RepositoryModels
+                    .FindAsync(dto.Id);
+
+                if(repoEntity == null)
+                {
+                    detail.ErrorMessages.Add("Репозиторий не найден."); 
+                    return detail;
+                }
+
+                repoEntity.ContentText = dto.ContentText;
+                repoEntity.Name = dto.Name;
+
+                _context.RepositoryModels.Update(repoEntity);
+                await _context.SaveChangesAsync();
+
+                detail.Succeeded = true;
+            }
+            else
+            {
+                detail.ErrorMessages.Add("Объекта параметра репозитория был равен null");
+            }
+
+            return detail;
         }
 
-        public Task<OperationDetailDTO> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
+        public async Task<OperationDetailDTO<List<string>>> DeleteRepositoryAsync(int id)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<List<string>>();
+            var removingFiles = new List<string>();
+
+            var entity = await _context.RepositoryModels
+                .Include(r => r.Files)
+                .Where(r => r.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (entity != null)
+            {
+                foreach (var fileEntity in entity.Files)
+                {
+                    removingFiles.Add(fileEntity.Path);
+                }
+                _context.RepositoryModels.Remove(entity);
+                await _context.SaveChangesAsync();
+
+                detail.Data = removingFiles;
+                detail.Succeeded = true;
+            }
+            else
+            {
+                detail.ErrorMessages.Add("Репозиторий не найден.");
+            }
+
+            return detail;
         }
 
-        public Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters()
+        // test
+        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetRepositoryListFilters()
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+
+            var resultSubjectDTOList = new List<SubjectDTO>();
+
+            var currentUserEntity = await GetUserFromClaimsAsync();
+
+            var teacherEntity = await _context.Teachers
+                .Where(t => t.UserId == currentUserEntity.Id)
+                .FirstOrDefaultAsync();
+
+            IQueryable<RepositoryModel> repositories = from r in _context.RepositoryModels
+                                      .Include(r => r.Teacher)
+                                      .Include(r => r.Subject)
+                                      .Where(r => r.TeacherId == teacherEntity.Id)
+                                      select r;
+
+            foreach(var repo in repositories)
+            {
+                SubjectDTO subjectDTO;
+                if((subjectDTO = resultSubjectDTOList.FirstOrDefault(s => s.Id == repo.SubjectId)) != null)
+                { }
+                else
+                {
+                    subjectDTO = SubjectDTO.Map(repo.Subject);
+                    resultSubjectDTOList.Add(subjectDTO);
+                }
+            }
+
+            detail.Data = resultSubjectDTOList;
+            detail.Succeeded = true;
+            return detail;
+        }
+        // test
+        public async Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync(FilterDTO[] filters = null)
+        {
+            var detail = new OperationDetailDTO<List<RepositoryDTO>>();
+
+            var resultList = new List<RepositoryDTO>();
+
+            var currentUserEntity = await GetUserFromClaimsAsync();
+
+            var teacherEntity = await _context.Teachers
+                .Include(t => t.User)
+                .Where(t => t.UserId == currentUserEntity.Id)
+                .FirstOrDefaultAsync();
+
+
+            var repos = from r in _context.RepositoryModels
+                        .Where(r => r.TeacherId == teacherEntity.Id)
+                        .Include(r => r.Subject)
+                        .Include(r => r.Files)
+                        select r;
+
+            repos.OrderBy(r => r.Name);
+
+            if (filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    switch (filter.Name)
+                    {
+                        case "subjectId":
+                            {
+                                var value = Convert.ToInt32(filter.Value);
+                                if (value > 0)
+                                {
+                                    repos = repos.Where(r => r.SubjectId == value);
+                                }
+                                break;
+                            }
+                    }
+                }
+            }
+
+            foreach (var entity in repos)
+            {
+                var repoDTO = RepositoryDTO.Map(entity);
+                resultList.Add(repoDTO);
+            }
+
+            detail.Data = resultList;
+            detail.Succeeded = true;
+            return detail;
+        }
+        // test
+        public async Task<OperationDetailDTO<RepositoryDTO>> GetRepositoryByID(int id)
+        {
+            var detail = new OperationDetailDTO<RepositoryDTO>();
+            try
+            {
+                var repoEntity = await _context.RepositoryModels
+                    .Include(r => r.Files)
+                    .FirstOrDefaultAsync(r => r.Id == id);
+
+                if (repoEntity != null)
+                {
+                    var dto = RepositoryDTO.Map(repoEntity);
+                    detail.Data = dto;
+                    detail.Succeeded = true;
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Репозиторий не найден");
+                }
+                return detail;
+            }
+
+            catch (Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+            
         }
 
-        public Task<OperationDetailDTO<List<RepositoryDTO>>> GetRepositoriesFromDBAsync()
-        {
-            throw new NotImplementedException();
-        }
+
+
+        // test
+        // add try - catch
+        //public async Task<OperationDetailDTO<string>> CreateNewThemeAsync(ThemeCreateModelDTO dto)
+        //{
+        //    var detail = new OperationDetailDTO<string>();
+
+        //    if (dto != null)
+        //    {
+        //        var repositoryEntity = await _context.RepositoryModels.FindAsync(dto.RepositoryId);
+
+        //        if (repositoryEntity != null)
+        //        {
+        //            var themeEntity = ThemeCreateModelDTO.Map(dto);
+        //            themeEntity.Repository = repositoryEntity;
+        //            await _context.Themes.AddAsync(themeEntity);
+        //            await _context.SaveChangesAsync();
+
+        //            var createdTheme = await _context.Themes.FindAsync(themeEntity);  // by id ?
+        //            if (createdTheme != null)
+        //            {
+        //                detail.Data = createdTheme.Id.ToString();
+        //                detail.Succeeded = true;
+        //            }
+        //            else
+        //            {
+        //                detail.ErrorMessages.Add("Не удалось получить созданную тему");
+        //            }
+        //        }
+
+        //        else
+        //        {
+        //            detail.ErrorMessages.Add("Параметр репозитория создаваемой темы был равен NULL");
+        //        }
+
+        //        return detail;
+        //    }
+
+        //    else
+        //    {
+        //        detail.ErrorMessages.Add("Входные данные создаваемой темы равны NULL");
+        //        return detail;
+        //    }
+        //}
+
+        // test
+        // add try - catch
+        //public async Task<OperationDetailDTO<string>> CreateNewParagraphAsync(ParagraphCreateModelDTO dto)
+        //{
+        //    var detail = new OperationDetailDTO<string>();
+
+        //    if (dto != null)
+        //    {
+        //        var themeEntity = await _context.Themes.FindAsync(dto.ThemeId);
+
+        //        if (themeEntity != null)
+        //        {
+        //            var paragraphEntity = ParagraphCreateModelDTO.Map(dto);
+        //            await _context.Paragraphs.AddAsync(paragraphEntity);
+        //            await _context.SaveChangesAsync();
+
+        //            var createdParagraph = await _context.Paragraphs.FindAsync(paragraphEntity);  // by id ?
+        //            if (createdParagraph != null)
+        //            {
+        //                detail.Data = createdParagraph.Id.ToString();
+        //                detail.Succeeded = true;
+        //            }
+        //            else
+        //            {
+        //                detail.ErrorMessages.Add("Не удалось получить созданный параграф");
+        //            }
+        //        }
+
+        //        else
+        //        {
+        //            detail.ErrorMessages.Add("Параметр темы создаваемого параграфа был равен NULL");
+        //        }
+
+        //        return detail;
+        //    }
+
+        //    else
+        //    {
+        //        detail.ErrorMessages.Add("Входные данные создаваемого параграфа равны NULL");
+        //        return detail;
+        //    }
+        //}
+
+        
     }
 }

@@ -44,7 +44,7 @@ class Main extends React.Component {
                     className={cls.join(' ')}
                     onClick={this.choiceGroup.bind(this, indexSubject, index)}
                 >
-                    <img src='images/folder-regular.svg' alt='' />
+                    <img src='/images/folder-regular.svg' alt='' />
                     {item.name}
                 </li>
             )
@@ -59,9 +59,9 @@ class Main extends React.Component {
             </p> : 
             this.props.mainData.map((item, index) => {
                 const cls = ['big_items']
-                let src = 'images/angle-right-solid.svg'
+                let src = '/images/angle-right-solid.svg'
                 if (item.open) {
-                    src = 'images/angle-down-solid.svg'
+                    src = '/images/angle-down-solid.svg'
                 }
                 return (
                     <Auxiliary key={index}>
@@ -87,10 +87,13 @@ class Main extends React.Component {
         )
     }
 
-    renderTasks = (tasks, studentId) => {
+    renderTasks = tasks => {
         return tasks.map((item, index) => {
-            let src = 'images/times-solid.svg'
-            if (item.solutions.includes(studentId)) src = 'images/check-square-regular.svg'
+            let src = '/images/times-solid.svg'
+            
+            if (item.solution !== null) 
+                src = '/images/check-square-regular.svg'
+        
             return (
                 <div key={index} className='tasks'>
                     <Link 
@@ -101,7 +104,7 @@ class Main extends React.Component {
                     </Link>
                     <span className='time'>
                         <span>Открыта {item.beginDate}</span><br />
-                        {!item.isOpen ? <span>Закрыта {item.finishDate.split('T').join(' ')}</span> : null}
+                        {!item.isOpen ? <span>Закрыта {item.updateDate}</span> : null}
                     </span>
                     <img src={src} alt='' />
                 </div>
@@ -133,10 +136,10 @@ class Main extends React.Component {
                             className={cls.join(' ')} 
                             onClick={() => this.props.choiceStudentHandler(indexSubject, indexGroup, index)}
                         >
-                            <img src='images/card.svg' alt='' />
+                            <img src='/images/card.svg' alt='' />
                             <p>{item.name} {item.surname} <span>({item.tasks.length})</span></p>
                         </div>
-                        {item.open ? this.renderTasks(item.tasks, item.id) : null}
+                        {item.open ? this.renderTasks(item.tasks) : null}
                     </Auxiliary>
                 )
             }) : null

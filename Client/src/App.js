@@ -3,7 +3,6 @@ import {Route, Switch, Redirect} from 'react-router-dom'
 import Auth from './containers/Auth/Auth'
 import Registration from './containers/Registration/Registration'
 import Admin from './containers/Admin/Admin'
-import Forget from './containers/Forget/Forget'
 import Logout from './components/Logout/Logout'
 
 import ProfileStudent from './containers/Student/Profile/Profile'
@@ -63,7 +62,6 @@ class App extends React.Component {
 				return (
 					<Switch>
 						<Route path='/registration' component={Registration} />
-						<Route path='/forget' component={Forget} />
 						<Route path='/auth' component={Auth} />
 						<Redirect to={'/auth'} />
 					</Switch>

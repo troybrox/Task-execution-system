@@ -11,12 +11,11 @@ namespace TaskExecutionSystem.DAL.Entities.Repository
     {
         public int Id { get; set; }
 
+        public string Name { get; set; }
+
         public string ContentText { get; set; }
 
-
-        public RepoFile File { get; set; }
-
-        public List<Theme> Themes { get; set; } 
+        public List<RepoFile> Files { get; set; }
 
 
         public int SubjectId { get; set; }
@@ -31,7 +30,7 @@ namespace TaskExecutionSystem.DAL.Entities.Repository
 
         public RepositoryModel()
         {
-            Themes = new List<Theme>();
+            Files = new List<RepoFile>();
         }
     }
 }

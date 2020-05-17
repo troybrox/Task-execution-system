@@ -3,7 +3,7 @@
     align-items: flex-end;
     margin-top: 20px;
 
-    img {
+    .author {
         height: 70px;
         border: 1px solid rgb(163, 163, 163);
         border-radius: 10px;
@@ -22,9 +22,18 @@
             font-size: 14px;
         }
 
+        .content_text_answer {
+            white-space: pre-line;
+            min-height: 100px;
+            height: max-content;
+        }
+
         p {
-            height: 100px;
             padding: 10px;
+
+            a { 
+                text-decoration: none;
+            }
         }
     }
 }

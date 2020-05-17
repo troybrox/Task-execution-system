@@ -14,9 +14,8 @@
         display: flex;
 
         .labels {
-            text-align: right;
-            width: 40%;
-            min-width: 200px;
+            margin-left: 15px;
+            min-width: max-content;
         }
 
         .label {
@@ -29,13 +28,13 @@
         .inputs {
             text-align: left;
             width: 100%;
-
+            
             input {
-                &:nth-child(7) {
-                height: 100px;
-                width: 250px;
+                border-radius: 5px;
+                border: 1px solid grey;
+                padding: 2px;
+                font-size: 14px;
             }
-        }
         }
 
         .select {
@@ -47,24 +46,29 @@
         }
     }
 
+    .description_textarea {
+        display: block;
+        padding: 5px 10px;
+        margin: 10px auto;
+        height: 150px;
+        width: 90%;
+        font-size: 16px;
+        resize: none;
+        border-radius: 10px;
+    }
+
+    .label_file {
+        margin:  5px auto;       
+    }
+
     .buttons {
         width: max-content;
         margin: 20px auto;
 
         button {
-            border: 2px solid rgb(33, 115, 153);
-            background: rgb(143, 210, 255);
             margin-right: 60px;
-            border-radius: 5px;
-            padding: 5px 10px;
             font-weight: bold;
             font-size: 15px;
-            cursor: pointer;
-        }
-
-        .cancel {
-            border: 2px solid rgb(143, 143, 143);
-            background: rgb(211, 211, 211);
         }
     }
 }
