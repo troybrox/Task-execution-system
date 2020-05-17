@@ -531,23 +531,12 @@ namespace TaskExecutionSystem.BLL.Services
 
             try
             {
-                //var currentUserEntity = await GetUserFromClaimsAsync();
-
-                //var studentEntity = await _context.Students
-                //    //.Include(s => s.Group)
-                //    //.ThenInclude(g => g.Faculty)
-                //    .Where(s => s.UserId == currentUserEntity.Id)
-                //    .FirstOrDefaultAsync();
-
                 var resultList = new List<RepositoryDTO>();
 
                 var repos = from r in _context.RepositoryModels
                             .Include(r => r.Subject)
                             .Include(r => r.Files)
                             .Include(r => r.Teacher)
-                            //.ThenInclude(t => t.Department)
-                            //.ThenInclude(d => d.Faculty)
-                            //.Where(r => r.Teacher.Department.Faculty.Id == studentEntity.Group.FacultyId)
                             select r;
 
                 repos.OrderBy(r => r.Teacher.Name);

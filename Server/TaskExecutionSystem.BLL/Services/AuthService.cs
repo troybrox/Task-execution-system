@@ -70,10 +70,15 @@ namespace TaskExecutionSystem.BLL.Services
                             }
                             else
                             {
+                                //detail.ErrorMessages.Add("Имя пользователя или почта введены некроректно");
                                 detail.ErrorMessages.Add(_signInErrorMessage);
                             }
                         }
-                        
+                        else
+                        {
+                            detail.ErrorMessages.Add(_signInErrorMessage);
+                        }
+
                     }
                 }
                 else
