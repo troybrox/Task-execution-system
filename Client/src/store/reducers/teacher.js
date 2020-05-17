@@ -12,7 +12,8 @@ import {
     SUCCESS_REPOSITORY,
     SUCCESS_CREATE_REPOSITORY_END,
     SUCCESS_SUBJECT_FULL,
-    LOGOUT} from "../actions/actionTypes"
+    LOGOUT,
+    GOOD_NEWS} from "../actions/actionTypes"
 
 const initialState = {
     profileData: [],
@@ -35,6 +36,7 @@ const initialState = {
     successId: null,
     errorShow: false,
     errorMessage: [],
+    goodNews: false,
 
     loading: false
 }
@@ -96,6 +98,10 @@ export default function teacherReducer(state = initialState, action) {
                 errorMessage: action.errorMessage,
                 loading: false
             }
+        case GOOD_NEWS:
+            return {
+                ...state, goodNews: true
+            }
         case LOGOUT: {
             return {
                 ...state,
@@ -119,7 +125,8 @@ export default function teacherReducer(state = initialState, action) {
                 successId: null,
                 errorShow: false,
                 errorMessage: [],
-            
+                goodNews: false,
+
                 loading: false
             }
         }

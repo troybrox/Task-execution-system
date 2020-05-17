@@ -47,6 +47,7 @@ class Frame extends React.Component {
                     <Error
                         errorMessage={this.props.errorMessage}
                         errorWindow={() => this.props.errorWindow(false, [])}
+                        goodNews={this.props.goodNews}
                     /> : 
                     null
                 }
@@ -68,6 +69,7 @@ function mapStateToProps(state) {
     return {
         errorShow: state.teacher.errorShow,
         errorMessage: state.teacher.errorMessage,
+        goodNews: state.teacher.goodNews,
         role: state.auth.role
     }
 }
