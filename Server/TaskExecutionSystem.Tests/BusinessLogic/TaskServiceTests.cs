@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using TaskExecutionSystem.BLL.Services;
+using Moq;
 
 namespace TaskExecutionSystem.Tests.BusinessLogic
 {
@@ -11,8 +12,8 @@ namespace TaskExecutionSystem.Tests.BusinessLogic
         [Fact]
         public void CreateStudentRegRequest()
         {
-            //AuthService authService = new AuthService();
-
+            //ar moqDbContext = Moq.
+            //askService taskService= new TaskService();
 
         }
     }
