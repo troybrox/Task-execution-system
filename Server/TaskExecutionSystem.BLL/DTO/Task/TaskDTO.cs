@@ -46,6 +46,11 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 
         public static TaskDTO Map(TaskModel entity)
         {
+            if(entity == null)
+            {
+                return null;
+            }
+
             var dto = new TaskDTO
             {
                 Id = entity.Id,
@@ -107,11 +112,15 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 
         public static TaskDTO MapForTeacherList(TaskModel entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
+
             var dto = new TaskDTO
             {
                 Id = entity.Id,
                 Type = entity.Type.Name,
-                //Subject = entity.Subject.Name,
 
                 ContentText = entity.ContentText,
                 IsOpen = entity.IsOpen,

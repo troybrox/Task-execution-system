@@ -25,14 +25,16 @@ namespace TaskExecutionSystem.BLL.Services
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly DataContext _context;
+        private readonly IUserValidator<User> _userValidator;
 
         public AuthService(IHttpContextAccessor httpContextAccessor, UserManager<User> userManager,
-            SignInManager<User> signInManager, DataContext context)
+            SignInManager<User> signInManager, DataContext context, IUserValidator<User> userValidator)
         {
             _httpContextAccessor = httpContextAccessor;
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _userValidator = userValidator;
         }
 
         // авторизация пользователя в системе 
@@ -120,6 +122,23 @@ namespace TaskExecutionSystem.BLL.Services
                     return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
                 }
 
+                var testUser = new User
+                {
+                    Email = dto.Email,
+                    UserName = dto.UserName,
+                    PasswordHash = dto.Password
+                };
+                var userValidateRes = await _userValidator.ValidateAsync(_userManager, testUser);
+                if (!userValidateRes.Succeeded)
+                {
+                    errorMessages.Add("Введенные данные не прошли валидацию. Подробнее далее.");
+                    foreach(var error in userValidateRes.Errors.ToList())
+                    {
+                        errorMessages.Add(error.Description);
+                    }
+                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
+                }
+
                 await _context.StudentRegisterRequests.AddAsync(GetStudentRegEntityFromDTO(dto));
                 await _context.SaveChangesAsync();
                 return new OperationDetailDTO { Succeeded = true };
@@ -145,6 +164,23 @@ namespace TaskExecutionSystem.BLL.Services
                     || await _userManager.FindByNameAsync(dto.UserName) != null)
                 {
                     errorMessages.Add("Пользователь с таким имененем пользователем уже существует. Пожалуйста, выберите другое.");
+                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
+                }
+
+                var testUser = new User
+                {
+                    Email = dto.Email,
+                    UserName = dto.UserName,
+                    PasswordHash = dto.Password
+                };
+                var userValidateRes = await _userValidator.ValidateAsync(_userManager, testUser);
+                if (!userValidateRes.Succeeded)
+                {
+                    errorMessages.Add("Введенные данные не прошли валидацию. Подробнее далее.");
+                    foreach (var error in userValidateRes.Errors.ToList())
+                    {
+                        errorMessages.Add(error.Description);
+                    }
                     return new OperationDetailDTO { Succeeded = false, ErrorMessages = errorMessages };
                 }
 
@@ -329,12 +365,63 @@ namespace TaskExecutionSystem.BLL.Services
         {
             var detail = new OperationDetailDTO();
 
-            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
-            var user = await _userManager.FindByIdAsync(userNameClaim.Value);
+            if(dto == null)
+            {
+                detail.ErrorMessages.Add("Параметр, полученный от клиентского приложения, был равен null");
+                return detail;
+            }
 
-            return detail;
+            try
+            {
+                var user = await GetUserFromClaimsAsync();
+
+                if (String.IsNullOrEmpty(dto.CurrentPassword) || String.IsNullOrEmpty(dto.NewPassword))
+                {
+                    detail.ErrorMessages.Add("Введены некорректные данные.");
+                    return detail;
+                }
+
+                var passwordRes = _userManager.PasswordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.CurrentPassword);
+
+                if (passwordRes == PasswordVerificationResult.Success)
+                {
+                    var passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                    var passwordResetResult = await _userManager.ResetPasswordAsync(user, passwordResetToken, dto.NewPassword);
+                    if (passwordResetResult.Succeeded)
+                    {
+                        detail.Succeeded = true;
+                    }
+                    else
+                    {
+                        detail.ErrorMessages.Add("Некорректно введён новый пароль.");
+                        foreach (var error in passwordResetResult.Errors.ToList())
+                        {
+                            detail.ErrorMessages.Add(error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    detail.ErrorMessages.Add("Введён неверный текущий пароль.");
+                }
+
+                return detail;
+            }
+            catch(Exception e)
+            {
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
         }
 
         // ---
+
+        private async Task<User> GetUserFromClaimsAsync()
+        {
+            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+            string stringID = userNameClaim.Value;
+            var user = await _userManager.FindByIdAsync(stringID);
+            return user;
+        }
     }
 }
