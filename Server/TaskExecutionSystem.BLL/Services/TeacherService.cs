@@ -29,8 +29,6 @@ using TaskExecutionSystem.DAL.Entities.File;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    // TODO: CLOSE TASK
-    // TODO: Repository - create, get, update, delete
     public class TeacherService : ITeacherService
     {
         private readonly DataContext _context;
