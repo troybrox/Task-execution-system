@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using TaskExecutionSystem.BLL.DTO;
+using TaskExecutionSystem.BLL.DTO.Auth;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.BLL.DTO.Task;
 using TaskExecutionSystem.BLL.Interfaces;
@@ -38,14 +39,16 @@ namespace TaskExecutionSystem.Controllers
 
         private readonly IStudentService _studentService;
         private readonly ITaskService _taskService;
+        private readonly IAccountService _accountService;
         public static IWebHostEnvironment _environment;
 
         public StudentController(IStudentService studentService, ITaskService taskService,
-            IWebHostEnvironment environment)
+            IWebHostEnvironment environment, IAccountService accountService)
         {
             _studentService = studentService;
             _environment = environment;
             _taskService = taskService;
+            _accountService = accountService;
         }
 
         // отправить данные профиля
@@ -61,6 +64,14 @@ namespace TaskExecutionSystem.Controllers
         public async Task<IActionResult> UpdateProfileAsync([FromBody]StudentDTO dto)
         {
             var res = await _studentService.UpdateProfileDataAsync(dto);
+            return Ok(res);
+        }
+
+
+        [HttpPost("profile/updatepassword")]
+        public async Task<IActionResult> UpdatePasswordAsync([FromBody]PasswordUpdateDTO dto)
+        {
+            var res = await _accountService.UpdatePasswordAsync(dto);
             return Ok(res);
         }
 
