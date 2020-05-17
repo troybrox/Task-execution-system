@@ -25,8 +25,6 @@ namespace TaskExecutionSystem.Controllers
     [Route("api/[controller]")]
     public class StudentController : ControllerBase
     {
-        // TODO: Repository - get
-
         // api/student/profile
         // api/student/profile/update [POST]
         // api/student/profile/updatepassword
@@ -50,10 +48,7 @@ namespace TaskExecutionSystem.Controllers
             _taskService = taskService;
         }
 
-        //private readonly string solutionFileLoadPath = _environment.WebRootPath + "\\Files\\" + "\\SolutionFiles\\";
-
-        // todo: update Password
-
+        // отправить данные профиля
         [HttpGet("profile")]
         public async Task<IActionResult> GetProfileDataAsync()
         {
@@ -61,6 +56,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        //отправить данные профиля
         [HttpPost("profile/update")]
         public async Task<IActionResult> UpdateProfileAsync([FromBody]StudentDTO dto)
         {
@@ -69,6 +65,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        // отправить списки объектов, используемых далее для фильтрации получения списка задач 
         [HttpGet("task/filters")]
         public async Task<IActionResult> GetTaskFiltersAsync()
         {
@@ -76,6 +73,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить офильтрованный список задач
         [HttpPost("tasks")]
         public async Task<IActionResult> GetFilteredTasksAsync([FromBody]FilterDTO[] filters)
         {
@@ -83,6 +81,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить задачу, полученную по её id
         [HttpGet("task/{id}")]
         public async Task<IActionResult> GetTasksByIDAsync(int id)
         {
@@ -91,6 +90,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        //  добавление решения, возвращается результат: id добавленного решения в случае успеха
         [HttpPost("solution/add")]
         public async Task<IActionResult> AddSolution([FromBody]SolutionCreateModelDTO dto)
         {
@@ -98,7 +98,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-        // TODO: fileUpdate [!]
+        //  обновление решения, возвращается результат
         [HttpPost("solution/update")]
         public async Task<IActionResult> UpdateSolution([FromBody]SolutionCreateModelDTO dto)
         {
@@ -107,6 +107,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        //  добавления/изменение файла к решению, возвращается результат
         [HttpPost("solution/add/file")]
         public async Task<IActionResult> AddFile()
         {
@@ -183,6 +184,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
+        // отправить списки предметов, используемых далее для фильтрации получения списка репозиториев 
         [HttpGet("repo/subjects")]
         public async Task<IActionResult> GetRepoFiltersAsync()
         {
@@ -190,6 +192,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+        // отправить отфильтрованный список репозиториев
         [HttpPost("repo")]
         public async Task<IActionResult> GetReposAsync([FromBody]FilterDTO[] filters)
         {
@@ -197,7 +200,7 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
-
+        // отправить объект репозитория, полученный по id
         [HttpGet("repo/{id}")]
         public async Task<IActionResult> GetRepoByIdAsync(int id)
         {

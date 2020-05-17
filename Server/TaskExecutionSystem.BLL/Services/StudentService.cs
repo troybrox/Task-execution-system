@@ -25,8 +25,6 @@ using TaskExecutionSystem.DAL.Entities.Repository;
 
 namespace TaskExecutionSystem.BLL.Services
 {
-    // TODO: Repository - get
-
     public class StudentService : IStudentService
     {
         private readonly DataContext _context;
@@ -73,7 +71,7 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        // fix
+
         public async Task<OperationDetailDTO> UpdateProfileDataAsync(StudentDTO newStudentDTO)
         {
             var detail = new OperationDetailDTO<TeacherDTO>();
@@ -355,8 +353,6 @@ namespace TaskExecutionSystem.BLL.Services
                 resultTaskDTO = TaskDTO.Map(taskEntity);
                 _taskService.GetCurrentTimePercentage(ref resultTaskDTO);
 
-                //var studentSolutionForCurTask = studentEntity.Solutions.FirstOrDefault(s => s.TaskId == id);
-
                 solutionEntity = await _context.Solutions
                     .Include(s => s.Student)
                     .Include(s => s.File)
@@ -367,11 +363,6 @@ namespace TaskExecutionSystem.BLL.Services
                 resSolutionDTO = SolutionDTO.Map(solutionEntity);
                 resultTaskDTO.Solution = resSolutionDTO;
                 resultTaskDTO.Solutions.Add(resSolutionDTO);
-
-                //if (studentSolutionForCurTask != null)
-                //{
-
-                //}
 
                 detail.Data = resultTaskDTO;
                 detail.Succeeded = true;
