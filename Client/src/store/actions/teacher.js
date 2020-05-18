@@ -90,8 +90,8 @@ export function updateData(data, path) {
                     dispatch(fetchProfile())
                 else {
                     dispatch(goodNewsHandler())
-                    const err = ['Необходимо заново авторизироваться в систему, ']
-                    err.push('чтобы обновленние данных вступило в силу.')
+                    const err = ['Необходимо заново авторизироваться в системе, ']
+                    err.push('чтобы обновление данных вступило в силу.')
                     err.push('Спасибо!')
                     let n = 6
                     err.push(`Выход из системы через ${n}...`)
