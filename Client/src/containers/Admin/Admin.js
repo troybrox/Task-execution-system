@@ -51,7 +51,11 @@ class Admin extends React.Component {
         this.setState({
             aside,
             hTitle,
-            showButtonAdd
+            showButtonAdd,
+            groupId: null,
+            facultyId: null,
+            departmentId: null,
+            search: ''
         }, () => {
             this.requestUserHandler()
             this.requestListHandler()
@@ -71,7 +75,11 @@ class Admin extends React.Component {
         this.setState({
             tabTitles,
             buttonRemoveGroup,
-            showButtonAdd
+            showButtonAdd,
+            groupId: null,
+            facultyId: null,
+            departmentId: null,
+            search: ''
         }, () => {
             this.requestUserHandler()
             this.requestListHandler()
@@ -94,6 +102,8 @@ class Admin extends React.Component {
         switch (title) {
             case 'Факультет':
                 facultyId = id
+                groupId = null
+                departmentId = null
                 break;
             case 'Группа':
                 groupId = id
