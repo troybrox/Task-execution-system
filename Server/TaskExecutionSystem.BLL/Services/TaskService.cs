@@ -275,6 +275,50 @@ namespace TaskExecutionSystem.BLL.Services
         }
 
 
+        public int GetCurrentTimePercentageValue(ref TaskDTO dto)
+        {
+            int timeProgressPercentage = 100;
+            dto.TimeBar = timeProgressPercentage;
+
+
+            if (dto.BeginDate >= dto.FinishDate)
+            {
+                return timeProgressPercentage;
+            }
+
+            if (DateTime.Now <= dto.BeginDate)
+            {
+                return timeProgressPercentage;
+            }
+
+            var totalInterval = dto.FinishDate - dto.BeginDate;
+            var pastInterval = DateTime.Now - dto.BeginDate;
+
+            if (pastInterval >= totalInterval)
+            {
+                timeProgressPercentage = 0;
+                dto.TimeBar = timeProgressPercentage;
+                return timeProgressPercentage;
+            }
+
+            if (totalInterval.TotalMinutes > 0)
+            {
+                if (pastInterval.TotalMinutes > 0)
+                {
+                    timeProgressPercentage = (int)(Math.Abs((1 - (pastInterval.TotalMinutes / totalInterval.TotalMinutes)) * 100));
+                    return timeProgressPercentage;
+                }
+            }
+
+            if (timeProgressPercentage >= 0 && timeProgressPercentage <= 100)
+            {
+                dto.TimeBar = timeProgressPercentage;
+            }
+
+            return timeProgressPercentage;
+        }
+
+
         // не используется:
         public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksFromDBAsync(FilterDTO[] filters)
         {
