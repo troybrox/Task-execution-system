@@ -38,7 +38,7 @@ export function auth(data) {
             const respData = response.data
 
             if (respData.succeeded) {
-                document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}; max-age=60`
+                document.cookie = `.AspNetCore.Application.Id=${respData.data.idToken}; max-age=3600`
                 localStorage.setItem('role', respData.data.role)        
                 dispatch(authSuccess(respData.data.role))
             } else {
