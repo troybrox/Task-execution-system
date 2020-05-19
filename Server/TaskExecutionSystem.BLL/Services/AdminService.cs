@@ -464,7 +464,8 @@ namespace TaskExecutionSystem.BLL.Services
                 var group = await _context.Groups.FindAsync(id);
                 if (group != null)
                 {
-                    _context.Groups.Remove(await _context.Groups.FindAsync(id));
+                    // _context.Groups.Remove(await _context.Groups.FindAsync(id));
+                    _context.Groups.Remove(group);
                     await _context.SaveChangesAsync();
                     return new OperationDetailDTO { Succeeded = true };
                 }
