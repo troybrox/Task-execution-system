@@ -332,7 +332,7 @@ namespace TaskExecutionSystem.Tests.BusinessLogic
                 var resultStudents = result.Data;
 
                 // Assert
-                Assert.True(resultStudents.Count > 0);
+                Assert.Equal(2, resultStudents.Count);
             }
         }
 

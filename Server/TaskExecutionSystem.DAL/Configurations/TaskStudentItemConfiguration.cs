@@ -10,19 +10,17 @@ namespace TaskExecutionSystem.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<TaskStudentItem> builder)
         {
-            //builder.HasOne(ts => ts.Task)
-            //    .WithMany(t => t.TaskStudentItems)
-            //    .HasForeignKey(ts => ts.TaskId)
-            //    //.OnDelete(DeleteBehavior.NoAction)
-            //    .OnDelete(DeleteBehavior.Cascade)
-            //    .IsRequired();
+            builder.HasOne(ts => ts.Task)
+                .WithMany(t => t.TaskStudentItems)
+                .HasForeignKey(ts => ts.TaskId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
-            //builder.HasOne(ts => ts.Student)
-            //    .WithMany(s => s.TaskStudentItems)
-            //    .HasForeignKey(ts => ts.StudentId)
-            //    //.OnDelete(DeleteBehavior.NoAction)
-            //    .OnDelete(DeleteBehavior.Cascade)
-            //    .IsRequired();
+            builder.HasOne(ts => ts.Student)
+                .WithMany(s => s.TaskStudentItems)
+                .HasForeignKey(ts => ts.StudentId)
+                .OnDelete(DeleteBehavior.NoAction)
+                .IsRequired();
 
             builder.Property(s => s.TaskId)
                 .IsRequired();

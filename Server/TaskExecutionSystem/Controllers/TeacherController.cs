@@ -327,24 +327,6 @@ namespace TaskExecutionSystem.Controllers
                     }
                     fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
 
-                    //if(System.IO.File.Exists(repoFileLoadPath + fileName))
-                    //{
-                    //    var newFileName = System.Guid.NewGuid() + fileName;
-                    //    using (var fileStream = System.IO.File.Create(repoFileLoadPath + newFileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
-                    //}
-                    //else
-                    //{
-                    //    using (var fileStream = System.IO.File.Create(repoFileLoadPath + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _repoService.AddFileToRepoAsync(id, file.FileName);
-                    //}
-
                     if (!fileRes.Succeeded)
                     {
                         detail.ErrorMessages.Add("Не удалось загрузить файл для репозитория.");

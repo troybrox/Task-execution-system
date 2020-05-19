@@ -37,7 +37,7 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
-        public async Task<OperationDetailDTO> AddFileToRepoAsync(int id, string userfileName, string fileName = null)
+        public async Task<OperationDetailDTO> AddFileToRepoAsync(int id, string userfileName, string uniquefileName = null)
         {
             var detail = new OperationDetailDTO();
 
@@ -47,14 +47,14 @@ namespace TaskExecutionSystem.BLL.Services
                 if (repo != null)
                 {
                     RepoFile newFile;
-                    if (fileName != null)
+                    if (uniquefileName != null)
                     {
                         newFile = new RepoFile
                         {
                             RepositoryModel = repo,
                             FileName = userfileName,
-                            Path = RepoFilePath + fileName,
-                            FileURI = RepoFileURI + fileName
+                            Path = RepoFilePath + uniquefileName,
+                            FileURI = RepoFileURI + uniquefileName
                         };
 
                     }
