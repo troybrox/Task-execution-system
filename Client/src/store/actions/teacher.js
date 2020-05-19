@@ -1,5 +1,5 @@
 import axios from '../../axios/axiosRole'
-import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END, SUCCESS_SUBJECT_FULL, LOGOUT } from './actionTypes'
+import { ERROR_WINDOW, SUCCESS_TASK_ADDITION, SUCCESS_MAIN, SUCCESS_PROFILE, SUCCESS_TASK, SUCCESS_TASKS, SUCCESS_CREATE, SUCCESS_CREATE_DATA, LOADING_START, SUCCESS_CREATE_REPOSITORY, SUCCESS_REPOSITORY, SUCCESS_CREATE_REPOSITORY_END, SUCCESS_SUBJECT_FULL, LOGOUT, GOOD_NEWS } from './actionTypes'
 import { logoutHandler } from './auth'
 
 export function fetchProfile() {
@@ -86,7 +86,28 @@ export function updateData(data, path) {
             const response = await axios.post(url, data)
             const respData = response.data
             if (respData.succeeded) {
-                dispatch(fetchProfile())
+                if (path === 'update')
+                    dispatch(fetchProfile())
+                else {
+                    dispatch(goodNewsHandler())
+                    const err = ['Необходимо заново авторизироваться в системе, ']
+                    err.push('чтобы обновление данных вступило в силу.')
+                    err.push('Спасибо!')
+                    let n = 6
+                    err.push(`Выход из системы через ${n}...`)
+                    let timerId = setInterval(() => {
+                        dispatch(errorWindow(false, []))
+                        err.pop()
+                        n = n - 1
+                        err.push(`Выход из системы через ${n}...`)
+                        dispatch(errorWindow(true, err))
+                    }, 1000)
+
+                    setTimeout(() => {
+                        clearInterval(timerId)
+                        dispatch(logoutHandler())
+                    }, 6000)
+                }
             } else {
                 const err = [...respData.errorMessages]
                 err.unshift('Сообщение с сервера.')
@@ -1166,6 +1187,12 @@ export function errorWindow(errorShow, errorMessage) {
     return {
         type: ERROR_WINDOW,
         errorShow, errorMessage
+    }
+}
+
+export function goodNewsHandler() {
+    return {
+        type: GOOD_NEWS
     }
 }
 

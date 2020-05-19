@@ -108,6 +108,14 @@
                 border-radius: 10px;
                 border: 2px solid rgb(143, 143, 143);
             }
+
+            button {
+                margin: 10px 0;
+            }
+        }
+
+        button {
+            margin: 10px 30px;
         }
 
         .contain_task {
@@ -121,10 +129,11 @@
                     margin-top: 20px;
                 }
             }
-        }
-
-        button {
-            margin: 10px 30px;
+            .for_edit_button {
+                .button {
+                    margin: 10px 72px;
+                }
+            }
         }
     }    
     

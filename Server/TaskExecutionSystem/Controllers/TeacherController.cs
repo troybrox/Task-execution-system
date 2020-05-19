@@ -19,6 +19,7 @@ using TaskExecutionSystem.BLL.Interfaces;
 using TaskExecutionSystem.DAL.Entities.Identity;
 using static TaskExecutionSystem.Identity.Contracts.IdentityPolicyContract;
 using System.Diagnostics;
+using TaskExecutionSystem.BLL.DTO.Auth;
 
 namespace TaskExecutionSystem.Controllers
 {
@@ -47,14 +48,16 @@ namespace TaskExecutionSystem.Controllers
         private readonly IRepoService _repoService;
         private readonly ITeacherService _teacherService;
         public static IWebHostEnvironment _environment;
+        private readonly IAccountService _accountService;
 
-        public TeacherController(ITaskService taskService, IRepoService repoService, IWebHostEnvironment environment, 
-            ITeacherService teacherService)
+        public TeacherController(ITaskService taskService, IRepoService repoService, 
+            IWebHostEnvironment environment, ITeacherService teacherService, IAccountService accountService)
         {
             _taskService = taskService;
             _repoService = repoService;
             _environment = environment;
             _teacherService = teacherService;
+            _accountService = accountService;
         }
 
         // отправить данные профиля
@@ -73,6 +76,13 @@ namespace TaskExecutionSystem.Controllers
             return Ok(res);
         }
 
+
+        [HttpPost("profile/updatepassword")]
+        public async Task<IActionResult> UpdatePasswordAsync([FromBody]PasswordUpdateDTO dto)
+        {
+            var res = await _accountService.UpdatePasswordAsync(dto);
+            return Ok(res);
+        }
 
         // отправить данные главной страницы
         [HttpGet("main")]
@@ -185,25 +195,6 @@ namespace TaskExecutionSystem.Controllers
 
                         fileRes = await _taskService.AddFileToTaskAsync(taskID, userFileName, uniqueFileName);
                     }
-
-                    
-
-                    //if (System.IO.File.Exists(taskFileLoadPath + fileName))
-                    //{
-                    //    var newFileName = System.Guid.NewGuid() + fileName;
-                    //    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + newFileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _taskService.AddFileToTaskAsync(id, fileName, newFileName);
-                    //}
-                    //else
-                    //{
-                    //    using (var fileStream = System.IO.File.Create(_environment.WebRootPath + "\\Files\\" + "\\TaskFiles\\" + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //}
 
 
                     if (!fileRes.Succeeded)
@@ -335,24 +326,6 @@ namespace TaskExecutionSystem.Controllers
                         file.CopyTo(fileStream);
                     }
                     fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
-
-                    //if(System.IO.File.Exists(repoFileLoadPath + fileName))
-                    //{
-                    //    var newFileName = System.Guid.NewGuid() + fileName;
-                    //    using (var fileStream = System.IO.File.Create(repoFileLoadPath + newFileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _repoService.AddFileToRepoAsync(id, fileName, newFileName);
-                    //}
-                    //else
-                    //{
-                    //    using (var fileStream = System.IO.File.Create(repoFileLoadPath + fileName))
-                    //    {
-                    //        file.CopyTo(fileStream);
-                    //    }
-                    //    fileRes = await _repoService.AddFileToRepoAsync(id, file.FileName);
-                    //}
 
                     if (!fileRes.Succeeded)
                     {

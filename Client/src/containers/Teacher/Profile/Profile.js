@@ -24,7 +24,7 @@ class ProfileTeacher extends React.Component {
 function mapStateToProps(state) {
     return {
         profileData: state.teacher.profileData,
-        loading: state.teacher.loading
+        loading: state.teacher.loading,
     }
 }
 

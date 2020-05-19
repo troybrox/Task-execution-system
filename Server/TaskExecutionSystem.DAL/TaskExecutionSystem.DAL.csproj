@@ -77,6 +77,12 @@
     <Compile Remove="Migrations\20200512214208_Teacher_Repo.Designer.cs" />
     <Compile Remove="Migrations\20200512214415_Teacher_Repo.cs" />
     <Compile Remove="Migrations\20200512214415_Teacher_Repo.Designer.cs" />
+    <Compile Remove="Migrations\20200518152124_TaskStudentFix.cs" />
+    <Compile Remove="Migrations\20200518152124_TaskStudentFix.Designer.cs" />
+    <Compile Remove="Migrations\20200518152452_TaskStudentFix.cs" />
+    <Compile Remove="Migrations\20200518152452_TaskStudentFix.Designer.cs" />
+    <Compile Remove="Migrations\20200518153231_TaskStudentFix.cs" />
+    <Compile Remove="Migrations\20200518153231_TaskStudentFix.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

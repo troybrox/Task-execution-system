@@ -656,10 +656,10 @@ class OneTaskComponent extends React.Component {
                     {this.props.role === 'student' && this.props.taskAdditionData.isOpen ? 
                         this.props.taskAdditionData.solution === null ? 
                             this.renderAnswerField() : 
-                            <Auxiliary>
+                            <div className='for_edit_button'>
                                 <Button typeButton='blue' value='Изменить' onClickButton={this.onEditAnswer} /> 
                                 {this.state.editAnswer ? <Button typeButton='grey' value='Отмена' onClickButton={this.onEditAnswerFalse} /> : null}
-                            </Auxiliary> : 
+                            </div> : 
                         null}
                 </div>
         )

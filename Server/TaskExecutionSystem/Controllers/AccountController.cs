@@ -50,20 +50,20 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
-        // Todo: add tokenGenerator
+        // эндроинт принимающий даддные для входа пользователя в систему и отправляющий результат действия 
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> SignInAsync([FromBody]UserLoginDTO dto)
         {
-            OperationDetailDTO<SignInDetailDTO> detailResult;
+            OperationDetailDTO<SignInDetailDTO> detailResult = new OperationDetailDTO<SignInDetailDTO>();
             var serviceResult = await _accountService.SignInAsync(dto);
 
             try
             {
                 if (!serviceResult.Succeeded)
                 {
-                    detailResult = new OperationDetailDTO<SignInDetailDTO> { Succeeded = false, ErrorMessages = serviceResult.ErrorMessages };
-                    return Unauthorized(detailResult);
+                    detailResult.ErrorMessages = serviceResult.ErrorMessages;
+                    return Ok(detailResult);
                 }
 
                 else
@@ -73,8 +73,8 @@ namespace TaskExecutionSystem.Controllers
 
                     //HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id",
                     //tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
-                    HttpContext.Response.Cookies.Append("token",
-                        tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
+                    //HttpContext.Response.Cookies.Append("token",
+                    //    tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
 
                     detailResult = new OperationDetailDTO<SignInDetailDTO>
                     {
@@ -91,7 +91,8 @@ namespace TaskExecutionSystem.Controllers
             }
             catch(Exception e)
             {
-                return Unauthorized(e.Message);
+                detailResult.ErrorMessages.Add("Произошло исключение на сервере при попытке авторизации. " + e.Message);
+                return Ok(detailResult);
             }
         }
 

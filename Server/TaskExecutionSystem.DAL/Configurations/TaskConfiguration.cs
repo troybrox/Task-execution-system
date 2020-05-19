@@ -17,7 +17,7 @@ namespace TaskExecutionSystem.DAL.Configurations
             builder.HasMany(t => t.TaskStudentItems)
                 .WithOne(ts => ts.Task)
                 .HasForeignKey(s => s.TaskId)
-                .OnDelete(DeleteBehavior.NoAction)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             builder.HasOne(t => t.File)

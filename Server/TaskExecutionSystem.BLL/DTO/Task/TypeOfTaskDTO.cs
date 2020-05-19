@@ -18,6 +18,5 @@ namespace TaskExecutionSystem.BLL.DTO.Task
             Name = entity.Name
         };
 
-
     }
 }

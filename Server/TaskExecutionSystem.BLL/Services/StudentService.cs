@@ -87,19 +87,14 @@ namespace TaskExecutionSystem.BLL.Services
 
                 if (!UserValidator.Validate(newStudentDTO, out errorMessages))
                 {
-                    //detail.Succeeded = false;
                     detail.ErrorMessages = errorMessages;
                     return detail;
                 }
 
-                //if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
-                //    || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == dto.UserName)
-                //    || await _userManager.FindByNameAsync(dto.UserName) != null)
                 if (await _context.StudentRegisterRequests.AnyAsync(x => x.UserName == newStudentDTO.UserName)
                     || await _context.TeacherRegisterRequests.AnyAsync(x => x.UserName == newStudentDTO.UserName)
                     || newStudentDTO.UserName != studentUser.UserName && await _userManager.FindByNameAsync(newStudentDTO.UserName) != null)
                 {
-                    //detail.Succeeded = false;
                     detail.ErrorMessages.Add("Пользователь с таким именем пользователя уже существует, подберите другое.");
                     return detail;
                 }
@@ -223,16 +218,18 @@ namespace TaskExecutionSystem.BLL.Services
                 foreach (var entity in tasks)
                 {
                     var solution = new Solution();
-                    var taskDTO = TaskDTO.Map(entity);
-                    var currentSolution = new SolutionDTO();
+                    SolutionDTO currentSolution = null;
+
                     if (entity.Solutions.Count > 0)
                     {
-                        if((solution = entity.Solutions.FirstOrDefault(s => s.StudentId == studentEntity.Id)) != null)
+                        if((solution = entity.Solutions.Where(s => (s.StudentId == studentEntity.Id)).FirstOrDefault()) != null)
                         {
-                            currentSolution.IsInTime = solution.InTime;
-                            taskDTO.Solution = currentSolution;
+                            currentSolution = SolutionDTO.Map(solution);
                         }
                     }
+                    entity.Solutions = null;
+                    var taskDTO = TaskDTO.Map(entity);
+                    taskDTO.Solution = currentSolution;
                     resultList.Add(taskDTO);
                 }
 
@@ -321,7 +318,7 @@ namespace TaskExecutionSystem.BLL.Services
         {
             var detail = new OperationDetailDTO<TaskDTO>();
             var resultTaskDTO = new TaskDTO();
-            var resSolutionDTO = new SolutionDTO();
+            SolutionDTO resSolutionDTO = null;
             Solution solutionEntity;
 
             try
@@ -360,9 +357,14 @@ namespace TaskExecutionSystem.BLL.Services
                     .Where(s => s.StudentId == studentEntity.Id)
                     .FirstOrDefaultAsync();
 
-                resSolutionDTO = SolutionDTO.Map(solutionEntity);
+
+                if (solutionEntity != null)
+                {
+                    resSolutionDTO = SolutionDTO.Map(solutionEntity);
+                }
+                
                 resultTaskDTO.Solution = resSolutionDTO;
-                resultTaskDTO.Solutions.Add(resSolutionDTO);
+                resultTaskDTO.Solutions = null;
 
                 detail.Data = resultTaskDTO;
                 detail.Succeeded = true;
@@ -489,9 +491,18 @@ namespace TaskExecutionSystem.BLL.Services
 
             try
             {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var studentEntity = await _context.Students
+                    .Include(s => s.Group)
+                    .ThenInclude(g => g.Faculty)
+                    .Where(s => s.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
                 var resultSubjectDTOList = new List<SubjectDTO>();
 
                 var subjects = await _context.Subjects
+                    .Include(s => s.Repositories)
                     .Where(s => s.Repositories.Count > 0)
                     .ToListAsync();
 
@@ -526,7 +537,6 @@ namespace TaskExecutionSystem.BLL.Services
                             .Include(r => r.Subject)
                             .Include(r => r.Files)
                             .Include(r => r.Teacher)
-
                             select r;
 
                 repos.OrderBy(r => r.Teacher.Name);

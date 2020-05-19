@@ -8,8 +8,8 @@ namespace TaskExecutionSystem.BLL.DTO.Task
     public class SolutionDTO
     {
         public int Id { get; set; }
-        public int TaskId { get; set; } // [?]
-        public int StudentId { get; set; } // [?]
+        public int TaskId { get; set; } 
+        public int StudentId { get; set; } 
 
         public string ContentText { get; set; }
         public DateTime CreationDate { get; set; }
@@ -27,6 +27,11 @@ namespace TaskExecutionSystem.BLL.DTO.Task
 
         public static SolutionDTO Map(Solution entity) 
         {
+            if(entity == null)
+            {
+                return null;
+            }
+
             var dto = new SolutionDTO
             {
                 Id = entity.Id,

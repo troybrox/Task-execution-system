@@ -30,6 +30,11 @@ namespace TaskExecutionSystem.BLL.DTO.Repository
 
         public static RepositoryDTO Map(RepositoryModel entity)
         {
+            if (entity == null)
+            {
+                return null;
+            }
+
             var dto = new RepositoryDTO
             {
                 Id = entity.Id,
@@ -56,8 +61,6 @@ namespace TaskExecutionSystem.BLL.DTO.Repository
                 {
                     dto.Files.Add(FileDTO.Map(file));
                 }
-                //dto.FileURI = entity.File.FileURI;
-                //dto.FileName = entity.File.FileName;
             }
 
             return dto;

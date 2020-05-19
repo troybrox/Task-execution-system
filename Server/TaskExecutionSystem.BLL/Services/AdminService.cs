@@ -16,6 +16,7 @@ using TaskExecutionSystem.DAL.Entities.Registration;
 using TaskExecutionSystem.BLL.DTO.Studies;
 using TaskExecutionSystem.BLL.DTO.Filters;
 using TaskExecutionSystem.DAL.Entities.Studies;
+using TaskExecutionSystem.DAL.Entities.Relations;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -34,7 +35,6 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
             _userManager = userManager;
         }
-
         
         public async Task<OperationDetailDTO<List<FacultyDTO>>> GetAllStudyFiletrsAsync()
         {
@@ -397,8 +397,13 @@ namespace TaskExecutionSystem.BLL.Services
             {
                 foreach(var id in entityIdList)
                 {
-                    var studentEntity = await _context.Students.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == id);
-                    //var user = _context.Users.Include(u => u.Student).Include(u => u.Teacher).FirstOrDefault(u => u.Id == id);
+                    var studentEntity = await _context.Students
+                        .Include(s => s.User)
+                        .Include(s => s.TaskStudentItems)
+                        .FirstOrDefaultAsync(s => s.Id == id);
+
+                    _context.TaskStudentItems.RemoveRange(studentEntity.TaskStudentItems);
+                    await _context.SaveChangesAsync();
                     await _userManager.DeleteAsync(studentEntity.User);
                 }
                 return new OperationDetailDTO { Succeeded = true };
@@ -412,13 +417,12 @@ namespace TaskExecutionSystem.BLL.Services
         // удаление из БД преподов
         public async Task<OperationDetailDTO> DeleteExistTeachersAsync(int[] entityIdList)
         {
+            if (entityIdList.Length < 1)
+            {
+                return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _entityDeletingError + "Параметры удаления пользователей были равны null" } };
+            }
             try
             {
-                if(entityIdList.Length < 1)
-                {
-                    return new OperationDetailDTO { Succeeded = false, ErrorMessages = { _entityDeletingError + "Параметры удаления пользователей были равны null" } };
-                }
-
                 foreach (var id in entityIdList)
                 {
                     var teacherEntity = await _context.Teachers
@@ -435,14 +439,12 @@ namespace TaskExecutionSystem.BLL.Services
                         var taskStudItems = await _context.TaskStudentItems
                             .Where(ts => ts.TaskId == task.Id)
                             .FirstOrDefaultAsync();
-
                         _context.Solutions.RemoveRange(solutions);
                         _context.TaskStudentItems.RemoveRange(taskStudItems);
                     }
-
+                    await _context.SaveChangesAsync();
                     _context.TaskModels.RemoveRange(teacherEntity.Tasks);
                     await _context.SaveChangesAsync();
-
                     await _userManager.DeleteAsync(teacherEntity.User);
                     await _context.SaveChangesAsync();
                 }
@@ -647,12 +649,14 @@ namespace TaskExecutionSystem.BLL.Services
 
                             case "searchString":
                                 {
-                                    var value = (string)filter.Value;
+                                    var value = filter.Value.ToUpper();
                                     if (!String.IsNullOrEmpty(value))
                                     {
                                         students = students.Where(s => s.Name.ToUpper().Contains(value)
                                         || s.Surname.ToUpper().Contains(value)
-                                        || s.Patronymic.ToUpper().Contains(value));
+                                        || s.Patronymic.ToUpper().Contains(value)
+                                        || s.Group.NumberName.Contains(value)
+                                        || s.User.NormalizedUserName.Contains(value));
                                     }
                                     break;
                                 }
@@ -680,7 +684,11 @@ namespace TaskExecutionSystem.BLL.Services
             var resultList = new List<TeacherDTO>();
             try
             {
-                var teachers = from t in _context.Teachers.Include(tr => tr.User).Include(tr => tr.Department).ThenInclude(d => d.Faculty) select t;
+                var teachers = from t in _context.Teachers
+                               .Include(tr => tr.User)
+                               .Include(tr => tr.Department)
+                               .ThenInclude(d => d.Faculty)
+                               select t;
 
                 teachers = teachers.OrderBy(t => t.Surname);
 
@@ -711,13 +719,15 @@ namespace TaskExecutionSystem.BLL.Services
 
                             case "searchString":
                                 {
-                                    var value = filter.Value;
+                                    var value = filter.Value.ToUpper(); 
                                     if (!String.IsNullOrEmpty(value))
                                     {
-                                        teachers = teachers.Where(t => t.Name.ToUpper().Contains(value)
+                                        teachers = teachers
+                                            .Where(t => t.Name.ToUpper().Contains(value)
                                         || t.Surname.ToUpper().Contains(value)
                                         || t.Patronymic.ToUpper().Contains(value)
-                                        || t.Department.Name.Contains(value));
+                                        || t.Department.Name.ToUpper().Contains(value)
+                                        || t.User.NormalizedUserName.Contains(value));
                                     }
                                     break;
                                 }
