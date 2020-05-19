@@ -162,10 +162,15 @@ namespace TaskExecutionSystem.Controllers
         }
 
         [HttpPost("delete_group")]
-        public async Task<IActionResult> DeleteGroupAstnc([FromBody]int groupId)
+        public async Task<IActionResult> DeleteGroupAstnc([FromBody]GroupDeleteModel group)
         {
-            var result = await _adminService.DeleteGroupAsync(groupId);
+            var result = await _adminService.DeleteGroupAsync(group.GroupId);
             return Ok(result);
+        }
+
+        public class GroupDeleteModel
+        {
+            public int GroupId { get; set; }
         }
     }
 }
