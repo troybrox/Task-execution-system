@@ -459,22 +459,22 @@ namespace TaskExecutionSystem.BLL.Services
         // удаление из БД группы
         public async Task<OperationDetailDTO> DeleteGroupAsync(int id)
         {
+            var detail = new OperationDetailDTO();
             try
             {
                 var group = await _context.Groups.FindAsync(id);
                 if (group != null)
                 {
-                    _context.Groups.Remove(await _context.Groups.FindAsync(id));
+                    _context.Groups.Remove(group);
                     await _context.SaveChangesAsync();
-                    return new OperationDetailDTO { Succeeded = true };
+                    detail.Succeeded = true;
                 }
                 else
                 {
-                    var detail = new OperationDetailDTO();
+                    
                     detail.ErrorMessages.Add("Ошибка при удалении: группа не найдена");
-                    detail.Succeeded = false;
-                    return detail;
                 }
+                return detail;
             }
             catch (Exception e)
             {

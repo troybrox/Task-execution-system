@@ -9,7 +9,7 @@ namespace TaskExecutionSystem.Identity.JWT.Options
         internal JWTOptions(string issuer,
             string audience,
             SecurityKey signingKey,
-            int tokenExpiryInMinutes = 5)
+            int tokenExpiryInMinutes = 720)
         {
             if (string.IsNullOrWhiteSpace(audience))
                 throw new ArgumentNullException(
@@ -30,7 +30,7 @@ namespace TaskExecutionSystem.Identity.JWT.Options
         public JWTOptions(string issuer,
             string audience,
             string rawSigningKey,
-            int tokenExpiryInMinutes = 60)
+            int tokenExpiryInMinutes = 720)
             : this(issuer, audience, new SymmetricSecurityKey(
                     Encoding.ASCII.GetBytes(rawSigningKey)), tokenExpiryInMinutes)
         { }

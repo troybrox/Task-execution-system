@@ -8,8 +8,6 @@ namespace TaskExecutionSystem.DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Student> builder)
         {
-            //builder.HasAlternateKey(s => s.UserId);
-
             builder.HasMany(student => student.Solutions)
                 .WithOne(s => s.Student)
                 .HasForeignKey(s => s.StudentId)
