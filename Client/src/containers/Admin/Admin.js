@@ -55,7 +55,8 @@ class Admin extends React.Component {
             groupId: null,
             facultyId: null,
             departmentId: null,
-            search: ''
+            search: '',
+            buttonActiveAction: false
         }, () => {
             this.requestUserHandler()
             this.requestListHandler()
@@ -79,7 +80,8 @@ class Admin extends React.Component {
             groupId: null,
             facultyId: null,
             departmentId: null,
-            search: ''
+            search: '',
+            buttonActiveAction: false
         }, () => {
             this.requestUserHandler()
             this.requestListHandler()
@@ -303,7 +305,7 @@ class Admin extends React.Component {
     renderButtons() {
         let cls = 'blue_big'
         const active = this.state.buttonActiveAction
-        if (!active || this.props.users.length !== 0) cls = 'disactive_big'
+        if (!active || this.props.users.length === 0) cls = 'disactive_big'
 
         return (
             <Auxiliary>
