@@ -16,11 +16,11 @@ namespace TaskExecutionSystem.DAL.Configurations
                 .OnDelete(DeleteBehavior.NoAction)
                 .IsRequired();
 
-            builder.HasOne(ts => ts.Student)
-                .WithMany(s => s.TaskStudentItems)
-                .HasForeignKey(ts => ts.StudentId)
-                .OnDelete(DeleteBehavior.NoAction)
-                .IsRequired();
+            //builder.HasOne(ts => ts.Student)
+            //    .WithMany(s => s.TaskStudentItems)
+            //    .HasForeignKey(ts => ts.StudentId)
+            //    .OnDelete(DeleteBehavior.NoAction)
+            //    .IsRequired();
 
             builder.Property(s => s.TaskId)
                 .IsRequired();
