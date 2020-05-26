@@ -20,6 +20,11 @@ namespace TaskExecutionSystem.DAL.Configurations
                 .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
+            builder.HasOne(s => s.User)
+                .WithOne(ts => ts.Student)
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
+
 
             builder.Property(s => s.UserId)
                 .IsRequired();
