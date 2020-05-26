@@ -18,6 +18,7 @@ using TaskExecutionSystem.DAL.Entities.Identity;
 
 namespace TaskExecutionSystem
 {
+    // класс - точка входа программы
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -30,7 +31,7 @@ namespace TaskExecutionSystem
 
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-        // äîáàâëåíèå è íàñòðîéêà ñåðâèñîâ, èñïîëüçóåìûõ ïðèëîæåíèåì
+        // настройка сервисов
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(optionsBuilder => 
@@ -52,7 +53,6 @@ namespace TaskExecutionSystem
                 builder =>
                 {
                     builder.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://localhost:44303")
-                   //builder.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -72,7 +72,7 @@ namespace TaskExecutionSystem
         }
 
 
-        // äàííûé ìåòîäîì âûçûâàåòñÿ ïðè çàïóñêå, èñïîëüçóåòñÿ äëÿ íàñòðîéêè êîíôèãóðàöèè êîíâåéåðà http çàïðîñîâ 
+        // основная настройка работы веб-приложения 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -90,7 +90,6 @@ namespace TaskExecutionSystem
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 MinimumSameSitePolicy = SameSiteMode.Strict,
-                // set always
                 HttpOnly = HttpOnlyPolicy.Always,
                 Secure = CookieSecurePolicy.Always
             });

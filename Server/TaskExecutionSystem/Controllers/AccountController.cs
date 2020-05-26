@@ -50,7 +50,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
-        // эндроинт принимающий даддные для входа пользователя в систему и отправляющий результат действия 
+        // эндпоинт принимающий даддные для входа пользователя в систему и отправляющий результат действия 
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> SignInAsync([FromBody]UserLoginDTO dto)
