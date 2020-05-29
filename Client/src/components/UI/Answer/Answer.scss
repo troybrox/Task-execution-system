@@ -23,6 +23,7 @@
         }
 
         .content_text_answer {
+            word-break: break-all;
             white-space: pre-line;
             min-height: 100px;
             height: max-content;
