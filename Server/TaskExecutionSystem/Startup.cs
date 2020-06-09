@@ -59,6 +59,15 @@ namespace TaskExecutionSystem
                 });
             });
 
+            //
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            //    options.CheckConsentNeeded = context => true;
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //});
+
+
             services.AddControllers();
 
             services.AddTransient<IAccountService, AuthService>()
@@ -87,12 +96,15 @@ namespace TaskExecutionSystem
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-                HttpOnly = HttpOnlyPolicy.Always,
-                Secure = CookieSecurePolicy.Always
-            });
+            //
+            app.UseCookiePolicy();
+
+            //app.UseCookiePolicy(new CookiePolicyOptions
+            //{
+            //    MinimumSameSitePolicy = SameSiteMode.None,
+            //    HttpOnly = HttpOnlyPolicy.Always,
+            //    Secure = CookieSecurePolicy.Always
+            //});
 
             app.UseCors(MyAllowSpecificOrigins);
 
