@@ -55,14 +55,6 @@
 			width: 60vw;
 		}
 
-		.select {
-			margin: 10px 0 0 10px;
-			line-height: 25px;
-			height: 25px;
-			width: calc(60% + 5px);
-			background: white;
-		}
-
 		.center_loader {
 			text-align: left;
 			margin-left: 50px;
@@ -79,6 +71,15 @@
 
 	a {
 		font-size: 13px;
+
+		&:visited {
+			color: rgb(0, 0, 231);
+		}
+
+		&:active, &:focus {
+			outline: none;
+			color: rgb(231, 0, 0);
+		}
 	}
 
 	.forgot_pass {

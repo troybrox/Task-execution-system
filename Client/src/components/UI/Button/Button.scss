@@ -5,6 +5,10 @@
     line-height: 26px;
     padding: 0 10px;
     cursor: pointer;
+
+    &:active, &:focus {
+        outline: none;
+    }
 }
 
 .auth_button {
@@ -16,6 +20,10 @@
 	font-size: 16px;
     font-weight: bold;
     padding: 0 20px 0 10px;
+
+    &:active, &:focus {
+        border: 1px solid rgb(33, 115, 153);
+    }
 }
 
 .active_blue_button {
