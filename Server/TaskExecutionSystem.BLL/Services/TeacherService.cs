@@ -26,6 +26,7 @@ using TaskExecutionSystem.DAL.Entities.Relations;
 using TaskExecutionSystem.BLL.DTO.Repository;
 using TaskExecutionSystem.DAL.Entities.Repository;
 using TaskExecutionSystem.DAL.Entities.File;
+using Microsoft.VisualBasic;
 
 namespace TaskExecutionSystem.BLL.Services
 {
@@ -317,8 +318,10 @@ namespace TaskExecutionSystem.BLL.Services
                     GroupDTO currentGroupDTO;
                     var newStudentDTO = new StudentDTO();
 
+                    // если в списке предметов уже есть предмет с текущей задачей
                     if ((currentSubjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
                     {
+                        // если среди групп данного предмета уже есть группа, которой принадлежит эта задача
                         if ((currentGroupDTO = currentSubjectDTO.Groups.FirstOrDefault(g => g.Id == task.GroupId)) != null)
                         {
                             if (currentGroupDTO.Students != null)
@@ -328,6 +331,7 @@ namespace TaskExecutionSystem.BLL.Services
                                     // get every student solution for current task
                                     var ts = new TaskStudentItem();
                                     var solution = new Solution();
+
                                     if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
                                     {
                                         var taskDTO = TaskDTO.Map(task);
@@ -342,12 +346,14 @@ namespace TaskExecutionSystem.BLL.Services
                                     }
                                 }
                             }
-
                         }
+
+                        // если среди групп предмета ещё нет группы текущей задачи
                         else
                         {
                             currentGroupDTO = GroupDTO.Map(task.Group); //
                             currentSubjectDTO.Groups.Add(currentGroupDTO);
+
                             if (currentGroupDTO.Students != null)
                             {
                                 foreach (var student in currentGroupDTO.Students)
@@ -371,10 +377,12 @@ namespace TaskExecutionSystem.BLL.Services
                         }
                     }
 
+                    // если предмета ещё нет в списке
                     else
                     {
                         currentGroupDTO = GroupDTO.Map(task.Group);
                         currentSubjectDTO = SubjectDTO.Map(task.Subject);
+
                         // наполняем студентов группы заданиями и решениями 
                         foreach (var student in currentGroupDTO.Students)
                         {
@@ -406,6 +414,139 @@ namespace TaskExecutionSystem.BLL.Services
                 detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
                 return detail;
             }
+        }
+
+
+        // ГЛАВНАЯ
+        // выводить здесь все предметы ?
+
+        public async Task<OperationDetailDTO<List<SubjectDTO>>> GetSubjectsForMainAsync()
+        {
+            var detail = new OperationDetailDTO<List<SubjectDTO>>();
+            var resSubjectDTOList = new List<SubjectDTO>();
+
+            try
+            {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var currentTeacher = await _context.Teachers
+                    .Where(t => t.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+                // все задачи текущего преподавателя
+                IQueryable<TaskModel> taskQueryList = from t in _context.TaskModels
+                                     .Include(t => t.Subject)
+                                     .Where(t => t.TeacherId == currentTeacher.Id)
+                                                             select t;
+
+                // все предметы, по которым есть задачи
+                IQueryable<Subject> subjectQueryList_ = from s in _context.Subjects
+                                                       .Include(s => s.Tasks)
+                                                       .Where(s => s.Tasks.Count > 0)
+                                                        select s;
+
+
+                // из всех задач препода получить список предметов по которым у препода есть задачи
+                foreach (var task in taskQueryList)
+                {
+                    SubjectDTO currentSubjectDTO;
+
+                    if ((currentSubjectDTO = resSubjectDTOList.FirstOrDefault(s => s.Id == task.SubjectId)) != null)
+                    { }
+
+                    else
+                    {
+                        currentSubjectDTO = SubjectDTO.Map(task.Subject);
+                        resSubjectDTOList.Add(currentSubjectDTO);
+                    }
+                }
+
+                detail.Data = resSubjectDTOList;
+                detail.Succeeded = true;
+                return detail;
+            }
+            catch (Exception e)
+            {
+                detail.Succeeded = false;
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+        }
+
+        public async Task<OperationDetailDTO<List<GroupDTO>>> GetGroupsForSubjectAsync(int subjectID)
+        {
+            var detail = new OperationDetailDTO<List<GroupDTO>>();
+            var resGroupDTOList = new List<GroupDTO>();
+
+            try
+            {
+                var currentUserEntity = await GetUserFromClaimsAsync();
+
+                var currentTeacher = await _context.Teachers
+                    .Where(t => t.UserId == currentUserEntity.Id)
+                    .FirstOrDefaultAsync();
+
+
+                //-------
+                // все задачи текущего преподавателя для текущего предмета
+                IQueryable<TaskModel> teacherTaskQueryList = from t in _context.TaskModels
+                                     .Include(t => t.Group)
+                                     .Where(t => t.TeacherId == currentTeacher.Id)
+                                     .Where(t => t.SubjectId == subjectID)
+                                                             select t;
+                foreach (var task in teacherTaskQueryList)
+                {
+                    GroupDTO currentGroupDTO;
+                    var newStudentDTO = new StudentDTO();
+
+                    // проверка, если в итоговом списке групп уже есть группа текущего задания
+                    if ((currentGroupDTO = resGroupDTOList.FirstOrDefault(g => g.Id == task.GroupId)) != null)
+                    { }
+
+                    else
+                    {
+                        currentGroupDTO = GroupDTO.Map(task.Group);
+                        resGroupDTOList.Add(currentGroupDTO);
+                    }
+                }
+
+                detail.Data = resGroupDTOList;
+                detail.Succeeded = true;
+                return detail;
+            }
+
+            catch(Exception e)
+            {
+                detail.Succeeded = false;
+                detail.ErrorMessages.Add(_serverErrorMessage + e.Message);
+                return detail;
+            }
+        }
+
+        public async Task<OperationDetailDTO<List<StudentDTO>>> GetStudentsForGroupAsync(int groupID)
+        {
+            var detail = new OperationDetailDTO<List<StudentDTO>>();
+            var resStudentDTOList = new List<StudentDTO>();
+
+            var currentUserEntity = await GetUserFromClaimsAsync();
+
+            var currentTeacher = await _context.Teachers
+                .Where(t => t.UserId == currentUserEntity.Id)
+                .FirstOrDefaultAsync();
+
+            // все задачи текущего преподавателя для текущей группы
+            IQueryable<TaskModel> teacherTaskQueryList = from t in _context.TaskModels
+                                 .Where(t => t.TeacherId == currentTeacher.Id)
+                                 .Where(t => t.GroupId ==  groupID)
+                                                         select t;
+
+
+            throw new NotImplementedException();
+        }
+
+        public async Task<OperationDetailDTO<List<TaskDTO>>> GetTasksForStudentAsync(int studentID)
+        {
+            throw new NotImplementedException();
         }
 
         // done
