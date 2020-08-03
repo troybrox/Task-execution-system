@@ -65,6 +65,14 @@ namespace TaskExecutionSystem.Controllers
         public async Task<IActionResult> GetProfileDataAsync()
         {
             var res = await _teacherService.GetProfileDataAsync();
+
+            //test
+            string cookieKey = "myToken";
+            CookieOptions cookieOptions = new CookieOptions();
+            cookieOptions.Expires = DateTime.Now.AddDays(1);
+            Response.Cookies.Append(cookieKey, "test_value", cookieOptions);
+            //
+
             return Ok(res);
         }
 

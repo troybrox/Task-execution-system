@@ -456,22 +456,41 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+
         // удаление из БД группы
         public async Task<OperationDetailDTO> DeleteGroupAsync(int id)
         {
             var detail = new OperationDetailDTO();
+
             try
             {
-                var group = await _context.Groups.FindAsync(id);
+                var group = await _context.Groups
+                    .Include(g => g.Students)
+                    .FirstOrDefaultAsync(g => g.Id == id);
+
                 if (group != null)
                 {
+                    var removingUsers = new List<User>();
+
+                    foreach (var student in group.Students)
+                    {
+                        var user = await _userManager.FindByIdAsync(student.UserId.ToString());
+                        removingUsers.Add(user);
+                    }
+
+                    foreach (var user in removingUsers)
+                    {
+                        await _userManager.DeleteAsync(user);
+                    }
+
                     _context.Groups.Remove(group);
                     await _context.SaveChangesAsync();
                     detail.Succeeded = true;
                 }
+
                 else
                 {
-                    
+
                     detail.ErrorMessages.Add("Ошибка при удалении: группа не найдена");
                 }
                 return detail;

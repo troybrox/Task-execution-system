@@ -18,6 +18,7 @@ using TaskExecutionSystem.DAL.Entities.Identity;
 
 namespace TaskExecutionSystem
 {
+    // класс - точка входа программы
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -30,7 +31,7 @@ namespace TaskExecutionSystem
 
         readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
-        // äîáàâëåíèå è íàñòðîéêà ñåðâèñîâ, èñïîëüçóåìûõ ïðèëîæåíèåì
+        // настройка сервисов
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<DataContext>(optionsBuilder => 
@@ -52,12 +53,20 @@ namespace TaskExecutionSystem
                 builder =>
                 {
                     builder.WithOrigins("https://localhost:3000", "http://localhost:3000", "https://localhost:44303")
-                   //builder.AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
                 });
             });
+
+            //
+            //services.Configure<CookiePolicyOptions>(options =>
+            //{
+            //    // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            //    options.CheckConsentNeeded = context => true;
+            //    options.MinimumSameSitePolicy = SameSiteMode.None;
+            //});
+
 
             services.AddControllers();
 
@@ -72,7 +81,7 @@ namespace TaskExecutionSystem
         }
 
 
-        // äàííûé ìåòîäîì âûçûâàåòñÿ ïðè çàïóñêå, èñïîëüçóåòñÿ äëÿ íàñòðîéêè êîíôèãóðàöèè êîíâåéåðà http çàïðîñîâ 
+        // основная настройка работы веб-приложения 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -87,13 +96,15 @@ namespace TaskExecutionSystem
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-                // set always
-                HttpOnly = HttpOnlyPolicy.Always,
-                Secure = CookieSecurePolicy.Always
-            });
+            //
+            app.UseCookiePolicy();
+
+            //app.UseCookiePolicy(new CookiePolicyOptions
+            //{
+            //    MinimumSameSitePolicy = SameSiteMode.None,
+            //    HttpOnly = HttpOnlyPolicy.Always,
+            //    Secure = CookieSecurePolicy.Always
+            //});
 
             app.UseCors(MyAllowSpecificOrigins);
 

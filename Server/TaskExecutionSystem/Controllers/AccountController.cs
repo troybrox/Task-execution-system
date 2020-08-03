@@ -50,7 +50,7 @@ namespace TaskExecutionSystem.Controllers
         }
 
 
-        // эндроинт принимающий даддные для входа пользователя в систему и отправляющий результат действия 
+        // эндпоинт принимающий даддные для входа пользователя в систему и отправляющий результат действия 
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> SignInAsync([FromBody]UserLoginDTO dto)
@@ -71,6 +71,11 @@ namespace TaskExecutionSystem.Controllers
                     var userRoles = serviceResult.Data.UserRoles;
                     var tokenResult = _jwtTokenGenerator.Generate(serviceResult.Data.User, userRoles);
 
+                    string cookieKey = "myToken";
+                    CookieOptions cookieOptions = new CookieOptions();
+                    cookieOptions.Expires = DateTime.Now.AddDays(1);
+                    Response.Cookies.Append(cookieKey, tokenResult.AccessToken, cookieOptions);
+                   
                     //HttpContext.Response.Cookies.Append(".AspNetCore.Application.Id",
                     //tokenResult.AccessToken, new CookieOptions { MaxAge = TimeSpan.FromMinutes(60) });
                     //HttpContext.Response.Cookies.Append("token",

@@ -37,6 +37,7 @@ namespace TaskExecutionSystem.BLL.Services
             _context = context;
         }
 
+        // добавление файла к репозиторию
         public async Task<OperationDetailDTO> AddFileToRepoAsync(int id, string userfileName, string uniquefileName = null)
         {
             var detail = new OperationDetailDTO();

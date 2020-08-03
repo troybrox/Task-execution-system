@@ -21,6 +21,7 @@ class OneTaskComponent extends React.Component {
         files: null,
         beginDate: '',
         finishDate: '',
+        validDate: true,
         checkAll: false,
         editAnswer: false
     }
@@ -87,14 +88,30 @@ class OneTaskComponent extends React.Component {
     changeDate = (event, type) => {
         if (type === 'begin') {
             let beginDate = ''
-            if (event.target.value !== ''  && event.target.validity.valid)
+            let validDate = false
+            if (event.target.value !== ''  && event.target.validity.valid) {
                 beginDate = event.target.value
-            this.setState({beginDate})
+                validDate = this.state.finishDate && true
+            } else {
+                beginDate = ''
+            }
+            this.setState({
+                beginDate,
+                validDate
+            })
         } else {
             let finishDate = ''
-            if (event.target.value !== ''  && event.target.validity.valid)
+            let validDate = false
+            if (event.target.value !== ''  && event.target.validity.valid) {
                 finishDate = event.target.value
-            this.setState({finishDate})
+                validDate = this.state.beginDate && true
+            } else {
+                finishDate = ''
+            }
+            this.setState({
+                finishDate,
+                validDate
+            })
         }
     }
 
@@ -292,6 +309,8 @@ class OneTaskComponent extends React.Component {
     }
 
     renderDateCreate() {
+        // const cls = ['date_input_create']
+        // if (!this.state.validDate) cls.push('invalid')
         return (
             <Auxiliary>
                 <h4>
@@ -306,7 +325,9 @@ class OneTaskComponent extends React.Component {
                     required
                     value={this.state.beginDate}
                     readOnly={Object.keys(this.props.taskAdditionData).length !== 0}
-                    className='date_input_create' 
+                    // className='date_input_create'
+                    // className={cls.join(' ')} 
+                    className={this.state.validDate || this.state.beginDate ? 'date_input_create' : 'date_input_create invalid'}
                     onChange={(event) => this.changeDate(event, 'begin')}
                 />
                 <p className='date_p_create'>Дата сдачи:</p>
@@ -315,7 +336,9 @@ class OneTaskComponent extends React.Component {
                     min={this.state.beginDate || (new Date()).toJSON().substr(0, 16)}
                     required
                     value={this.state.finishDate}
-                    className='date_input_create' 
+                    // className='date_input_create invalid'
+                    // className={cls.join(' ')} 
+                    className={this.state.validDate || this.state.finishDate ? 'date_input_create' : 'date_input_create invalid'}
                     onChange={(event) => this.changeDate(event, 'end')}
                 />
                 <p className='small_text_date'>Обратите внимание, что дата сдачи должна быть не ранее даты начала</p>
