@@ -13,15 +13,25 @@
 
 .auth_button {
 	min-width: 100px;
-	background: rgb(0, 247, 255);
-	border: 1px solid rgb(0, 183, 255);
+	background: rgb(0, 170, 255);
+    border: 1px solid #4ba3cc;
+    color: #101010;
 	border-radius: 2px;
 	margin: 10px 0 0 10px;
 	font-size: 16px;
     font-weight: bold;
     padding: 0 20px 0 10px;
 
-    &:active, &:focus {
+    &:hover {
+        background: rgb(32, 181, 255);
+    }
+
+    &:active {
+        line-height: 20px;
+        background: rgb(0, 160, 240);
+    }
+
+    &:focus {
         border: 1px solid rgb(33, 115, 153);
     }
 }
