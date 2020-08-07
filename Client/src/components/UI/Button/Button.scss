@@ -6,6 +6,13 @@
     padding: 0 10px;
     cursor: pointer;
 
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
     &:active, &:focus {
         outline: none;
     }
@@ -16,7 +23,7 @@
 	background: rgb(0, 170, 255);
     border: 1px solid #4ba3cc;
     color: #101010;
-	border-radius: 2px;
+    border-radius: 2px;
 	margin: 10px 0 0 10px;
 	font-size: 16px;
     font-weight: bold;
@@ -27,7 +34,6 @@
     }
 
     &:active {
-        line-height: 20px;
         background: rgb(0, 160, 240);
     }
 
