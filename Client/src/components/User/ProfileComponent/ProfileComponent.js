@@ -141,6 +141,13 @@ class ProfileComponent extends React.Component {
         )
     }
 
+    updateProfileHandler = () => {
+        this.props.updateProfile()
+        this.setState({
+            flagInfo: ''
+        })
+    }
+
     updatePasswordHandler = () => {
         const dataPassword = [...this.state.dataPassword]
         const data = {}
@@ -173,7 +180,7 @@ class ProfileComponent extends React.Component {
             <Frame active_index={0}>
                 <div className='profile'>
                     <div className='photo_side'>
-                        <img src='/images/profile_user.svg' alt='' />
+                        <img src='/images/profile_user.jpg' alt='' />
                     </div>
                     <div className='info_side'>
                         <h3>Общая информация</h3>
@@ -183,7 +190,7 @@ class ProfileComponent extends React.Component {
                         <div className='buttons_profile'>
                             <Button
                                 typeButton={this.state.flagInfo ? 'blue' : 'disactive'}
-                                onClickButton={this.props.updateProfile}
+                                onClickButton={this.updateProfileHandler}
                                 value='Изменить профиль' 
                             />
                         </div>

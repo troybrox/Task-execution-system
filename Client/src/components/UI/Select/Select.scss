@@ -1,20 +1,36 @@
 .select {
     margin: 10px 0 0 10px;
+    width: calc(60% + 8px);
     line-height: 24px;
     height: 24px;
-    width: calc(50% + 40px);
-    background: white;
     border: 1px solid rgb(66, 150, 189);
-    border-radius: 5px;
+    border-radius: 4px;
     color: rgb(49, 49, 49);
+    background: #fff;
 
     &:active, &:focus {
         outline: none;
     }
-}
 
-.invalid {
-    border: 2px solid red;
+    &.invalid {
+        border: 1px solid red;
+        background: rgb(245, 245, 245);
+    }
+
+    option {
+        background: #fff;
+        line-height: 20px;
+
+        &:hover {
+            outline: none;
+            border: 1px solid red;
+            background: green;
+        }
+
+        &:active, &:focus {
+            outline: none;
+        }        
+    }
 }
 
 .blue_select {

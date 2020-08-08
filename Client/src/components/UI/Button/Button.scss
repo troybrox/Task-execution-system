@@ -5,22 +5,60 @@
     line-height: 26px;
     padding: 0 10px;
     cursor: pointer;
+
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    &:active, &:focus {
+        outline: none;
+    }
 }
 
 .auth_button {
 	min-width: 100px;
-	background: rgb(0, 247, 255);
-	border: 1px solid rgb(0, 183, 255);
-	border-radius: 2px;
+	background: rgb(0, 170, 255);
+    border: 1px solid #4ba3cc;
+    color: #101010;
+    border-radius: 2px;
 	margin: 10px 0 0 10px;
 	font-size: 16px;
     font-weight: bold;
     padding: 0 20px 0 10px;
+
+    &:hover {
+        background: rgb(32, 181, 255);
+    }
+
+    &:active {
+        background: rgb(0, 160, 240);
+    }
+
+    &:focus {
+        border: 1px solid rgb(33, 115, 153);
+    }
 }
 
 .active_blue_button {
-    border: 2px solid rgb(33, 115, 153);
-    background: rgb(81, 163, 201);
+    border: 2px solid rgb(47, 130, 168);
+    background: rgb(114, 186, 219);
+
+    &:hover {
+        background: rgb(130, 199, 231);
+;
+    }
+
+    &:active {
+        background: rgb(99, 173, 207);
+;
+    }
+
+    &:focus {
+        border: 2px solid rgb(28, 108, 145);
+    }
 }
 
 .big_button {
@@ -32,12 +70,25 @@
 }
 
 .active_grey_button {
+    background: rgb(210, 210, 210);
     border: 2px solid grey;
+
+    &:hover {
+        background: rgb(220, 220, 220);
+    }
+
+    &:active {
+        background: rgb(200, 200, 200);
+    }
+
+    &:focus {
+        border: 2px solid rgb(90, 90, 90);
+    }
 }
 
 .disactive_button {
     cursor: not-allowed;
-    border: 2px solid rgb(143, 143, 143);
+    border: 2px solid rgb(204, 204, 204);
     background: rgb(211, 211, 211);
 }
 
@@ -46,6 +97,25 @@
     background: white;
     font-size: 17px;
     font-weight: bold;
+}
+
+.delete_button {
+    border: 2px solid rgb(168, 47, 47);
+    background: rgb(219, 114, 114);
+
+    &:hover {
+        background: rgb(231, 130, 130);
+;
+    }
+
+    &:active {
+        background: rgb(207, 99, 99);
+;
+    }
+
+    &:focus {
+        border: 2px solid rgb(145, 28, 28);
+    }
 }
 
 .download {

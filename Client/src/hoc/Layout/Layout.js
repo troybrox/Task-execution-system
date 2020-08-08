@@ -142,19 +142,18 @@ class Layout extends React.Component {
                         <span>{this.props.head}</span>
                     </Link>
                 </header>
-            
-                <main className="form_box">
+                <main className='form_box'>
                     <h2>{this.props.hTitle}</h2>
 
                     <form onSubmit={this.props.onSubmit}>
                         <div className='all_labels'>
-					        { this.renderLabels() }
-				        </div>
+                            { this.renderLabels() }
+                        </div>
 
-				        <div className='all_inputs'>
-					        { this.renderInputs() }
+                        <div className='all_inputs'>
+                            { this.renderInputs() }
                             { this.props.children }
-				        </div>
+                        </div>
                     </form>
 
                     <Link to={this.props.to} className='link_registration'>

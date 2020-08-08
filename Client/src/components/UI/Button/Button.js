@@ -33,6 +33,9 @@ const Button = props => {
         case 'download':
             cls.push('download')
             break;
+        case 'delete':
+            cls.push('delete_button')
+            break;
         default:
             break;
     }

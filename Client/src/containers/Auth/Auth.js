@@ -86,7 +86,7 @@ class Auth extends React.Component {
                 <Button 
                     typeButton='auth'
                     onClickButton={event => this.onSubmitHandler(event)}
-                    value='Вход'
+                    value='Войти'
                 />
 			</Layout>
         )

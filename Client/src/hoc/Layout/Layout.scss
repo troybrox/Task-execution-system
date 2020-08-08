@@ -1,6 +1,7 @@
 .header {
     padding: 10px;
 	border-bottom: 1px solid grey;
+	background: rgb(227, 227, 227);
 	
 	.top_link {
 		color: rgb(80, 80, 80);
@@ -24,15 +25,16 @@
 .form_box {
 	width: 50vw;
 	min-width: 420px;
-    margin: 70px auto;
-    border: 1px solid grey;
-    background: rgb(230, 255, 255);
+	margin: 60px auto;
+	border: 1px solid grey;
+	border-radius: 2px;
+	background: rgb(217, 253, 253);
 	padding-bottom: 10px;
 
 	h2 {
 		border-bottom: 1px solid grey;
 		text-align: center;
-  	}
+	}
 
 	form {  
 		display: flex;
@@ -55,18 +57,11 @@
 			width: 60vw;
 		}
 
-		.select {
-			margin: 10px 0 0 10px;
-			line-height: 25px;
-			height: 25px;
-			width: calc(60% + 5px);
-			background: white;
-		}
-
 		.center_loader {
-			text-align: left;
-			margin-left: 50px;
-			
+			width: 255px;
+			height: 50px;
+			line-height: 50px;
+
 			.lds-ellipsis {
 				height: 0;
 
@@ -79,6 +74,15 @@
 
 	a {
 		font-size: 13px;
+
+		&:visited {
+			color: rgb(0, 0, 231);
+		}
+
+		&:active, &:focus {
+			outline: none;
+			color: rgb(231, 0, 0);
+		}
 	}
 
 	.forgot_pass {
@@ -91,5 +95,3 @@
 		margin: 10px 5px 0 auto;
 	}
 }
-  
-  

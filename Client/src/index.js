@@ -9,9 +9,9 @@ import App from './App'
 import rootReducer from './store/reducers/rootReducer'
 import * as serviceWorker from './serviceWorker'
 
-const composeEnhancers =
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?   
+const composeEnhancers = 
+    typeof window === 'object' && 
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?   
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
     }) : compose;
 

@@ -284,6 +284,13 @@ class TasksComponent extends React.Component {
             this.props.fetchListTasks(filters)
     }
 
+    resetSearchUsersHandler = () => {
+        const search = ''
+        this.setState({
+            search
+        }, () => this.onSearchHandler())
+    }
+
     changeTab = index => {
         const tabTitles = [...this.state.tabTitles]
         tabTitles.forEach(el => {
@@ -339,8 +346,13 @@ class TasksComponent extends React.Component {
                     />
                     <Button 
                         onClickButton={this.onSearchHandler}
-                        typeButton='grey'
+                        typeButton='blue'
                         value='Поиск'
+                    />
+                    <Button 
+                        onClickButton={this.resetSearchUsersHandler}
+                        typeButton={this.state.search === '' ? 'disactive' : 'grey'}
+                        value='Сброс'
                     />
                 </div>
 

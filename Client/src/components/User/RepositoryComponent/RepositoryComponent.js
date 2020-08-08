@@ -181,7 +181,7 @@ class RepositoryComponent extends React.Component {
             return (
                 <div className='buttons'>
                     <Button 
-                        typeButton='blue'
+                        typeButton='delete'
                         value='Удалить'
                         onClickButton={() => this.deleteRepoHandler(this.state.activeRepoIndex)}
                     />

@@ -198,7 +198,7 @@ class Registration extends React.Component {
 					<Button 
                 	    typeButton='auth'
                 	    onClickButton={event => this.onSubmitHandler(event)}
-                	    value='Регистрация пользователя'
+                	    value='Зарегистрироваться'
                 	/>
 				</Layout>
         )
