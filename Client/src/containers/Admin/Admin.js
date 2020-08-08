@@ -140,6 +140,13 @@ class Admin extends React.Component {
         }
     }
 
+    resetSearchUsersHandler = () => {
+        const search = ''
+        this.setState({
+            search
+        }, () => {this.requestUserHandler()})
+    }
+
     pathHandler = () => {
         let roleForURL = 'teachers'
         let typeForURL = 'exist'
@@ -382,13 +389,19 @@ class Admin extends React.Component {
                         <div className='search'>
                             <input 
                                 type='search' 
-                                placeholder='Поиск...' 
+                                placeholder='Поиск...'
+                                value={this.state.search}
                                 onChange={event => this.searchChange(event)}
                             />
                             <Button 
-                                typeButton='grey'
+                                typeButton='blue'
                                 onClickButton={this.searchUsersHandler}
                                 value='Поиск'
+                            />
+                            <Button 
+                                typeButton={this.state.search === '' ? 'disactive' : 'grey'}
+                                onClickButton={this.resetSearchUsersHandler}
+                                value='Сброс'
                             />
                         </div>
 

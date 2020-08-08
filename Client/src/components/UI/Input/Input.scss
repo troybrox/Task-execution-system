@@ -19,14 +19,15 @@
 
 .hide {
     padding: 0 3px;
-    border: 2px solid white;
+    border: 2px solid rgb(250, 250, 250);
     background: none;
     border-radius: 5px;
     width: 50%;
     cursor: pointer;
 
     &:active, &:focus {
-        border: 2px solid rgb(41, 73, 255);;
+        border: 2px solid rgb(41, 73, 255);
+        background: white;
         outline: none;
         cursor: text;
     }

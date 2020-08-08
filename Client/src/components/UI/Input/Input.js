@@ -22,7 +22,8 @@ const Input = props => {
                 <img 
                     className='pen' 
                     src='/images/pen-square-solid.svg' 
-                    alt='' 
+                    alt=''
+                    // onClick={this.}
                 /> :
                 null
             }
