@@ -25,7 +25,7 @@ namespace TaskExecutionSystem.Tests.BusinessLogic
                 FinishDate = new DateTime(2020, 05, 15, 0, 0, 0)
             };
             // Create instance
-            TaskService taskService= new TaskService(context);
+            TaskService taskService = new TaskService(context);
 
             // Act
             var timeBarValue = taskService.GetCurrentTimePercentageValue(ref taskDTO);

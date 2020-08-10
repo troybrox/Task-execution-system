@@ -416,6 +416,11 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
+        // методы для главной по принципу фильтрации 
+
+
+
+
 
         // ГЛАВНАЯ
         // выводить здесь все предметы ?
@@ -429,9 +434,18 @@ namespace TaskExecutionSystem.BLL.Services
             {
                 var currentUserEntity = await GetUserFromClaimsAsync();
 
-                var currentTeacher = await _context.Teachers
+                Teacher currentTeacher;
+
+                if (currentUserEntity != null)
+                {
+                    currentTeacher = await _context.Teachers
                     .Where(t => t.UserId == currentUserEntity.Id)
                     .FirstOrDefaultAsync();
+                }
+                else
+                {
+                    currentTeacher = await _context.Teachers.FirstAsync();
+                }
 
                 // все задачи текущего преподавателя
                 IQueryable<TaskModel> taskQueryList = from t in _context.TaskModels
@@ -482,9 +496,18 @@ namespace TaskExecutionSystem.BLL.Services
             {
                 var currentUserEntity = await GetUserFromClaimsAsync();
 
-                var currentTeacher = await _context.Teachers
+                Teacher currentTeacher;
+
+                if (currentUserEntity != null)
+                {
+                    currentTeacher = await _context.Teachers
                     .Where(t => t.UserId == currentUserEntity.Id)
                     .FirstOrDefaultAsync();
+                }
+                else
+                {
+                    currentTeacher = await _context.Teachers.FirstAsync();
+                }
 
 
                 //-------
@@ -523,16 +546,30 @@ namespace TaskExecutionSystem.BLL.Services
             }
         }
 
-        public async Task<OperationDetailDTO<List<StudentDTO>>> GetStudentsForGroupAsync(int groupID)
+        // todo
+        public async Task<OperationDetailDTO<List<StudentDTO>>> GetStudentsForMainAsync(int groupID)
         {
             var detail = new OperationDetailDTO<List<StudentDTO>>();
             var resStudentDTOList = new List<StudentDTO>();
 
             var currentUserEntity = await GetUserFromClaimsAsync();
 
-            var currentTeacher = await _context.Teachers
+            Teacher currentTeacher;
+
+            if (currentUserEntity != null)
+            {
+                currentTeacher = await _context.Teachers
                 .Where(t => t.UserId == currentUserEntity.Id)
                 .FirstOrDefaultAsync();
+            }
+            else
+            {
+                currentTeacher = await _context.Teachers.FirstAsync();
+            }
+
+            // здесь нужно получить все задачи, которые назначил текущий препод для выбранного предмета
+            // для выбранной группы 
+
 
             // все задачи текущего преподавателя для текущей группы
             IQueryable<TaskModel> teacherTaskQueryList = from t in _context.TaskModels
@@ -544,9 +581,189 @@ namespace TaskExecutionSystem.BLL.Services
             throw new NotImplementedException();
         }
 
-        public async Task<OperationDetailDTO<List<TaskDTO>>> GetTasksForStudentAsync(int studentID)
+        // здесь можем получить список студентов сразу с задачами
+        public async Task<OperationDetailDTO<List<StudentDTO>>> GetStudentsForMainAsync(FilterDTO[] filters)
         {
-            throw new NotImplementedException();
+            var detail = new OperationDetailDTO<List<StudentDTO>>();
+            var resStudentDTOList = new List<StudentDTO>();
+            Group group = new Group();
+
+            var currentUser = await GetUserFromClaimsAsync();
+            Teacher currentTeacher;
+
+            if (currentUser != null)
+            {
+                currentTeacher = await _context.Teachers
+                .Where(t => t.UserId == currentUser.Id)
+                .FirstOrDefaultAsync();
+            }
+            else
+            {
+                currentTeacher = await _context.Teachers.FirstAsync();
+            }
+
+            // здесь нужно получить все задачи, которые назначил текущий препод для выбранного предмета
+            // для выбранной группы 
+
+            // все задачи текущего преподавателя
+            IQueryable<TaskModel> tasks = from t in _context.TaskModels
+                                 .Where(t => t.TeacherId == currentTeacher.Id)
+                                                         select t;
+
+            if (filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    switch (filter.Name)
+                    {
+                        case "subjectId":
+                            {
+                                var value = Convert.ToInt32(filter.Value);
+                                if (value > 0)
+                                {
+                                    tasks = tasks.Where(t => t.SubjectId == value);
+                                }
+                                
+                                break;
+                            }
+
+                        case "groupId":
+                            {
+                                var value = Convert.ToInt32(filter.Value);
+                                group = await _context.Groups
+                                    .Include(g => g.Students)
+                                    .FirstOrDefaultAsync(g => g.Id == value);
+                                if (value > 0)
+                                {
+                                    tasks = tasks.Where(t => t.GroupId == value);
+                                }
+
+                                break;
+                            }
+                    }
+                }
+            }
+
+            var groupDTO = GroupDTO.Map(group);
+
+            // todo: УБРАТЬ ПЕРВЫЙ ЦИКЛ
+            foreach (var task in tasks)
+            {
+                foreach (var student in groupDTO.Students)
+                {
+                    var ts = new TaskStudentItem();
+                    if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                    {
+                        var taskDTO = TaskDTO.Map(task);
+                        var solution = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                        if (solution != null)
+                        {
+                            taskDTO.Solution = SolutionDTO.Map(solution);
+                        }
+                        student.Tasks.Add(taskDTO);
+                    }
+                }
+            }
+
+            detail.Data = groupDTO.Students;
+            detail.Succeeded = true;
+            return detail;
+        }
+
+
+        public async Task<OperationDetailDTO<List<TaskDTO>>> GetTasksForStudentAsync(FilterDTO[] filters)
+        {
+            var detail = new OperationDetailDTO<List<TaskDTO>>();
+
+            var resTaskDTOList = new List<TaskDTO>();
+            Group group = new Group();
+
+            var currentUser = await GetUserFromClaimsAsync();
+            Teacher currentTeacher;
+
+            if (currentUser != null)
+            {
+                currentTeacher = await _context.Teachers
+                .Where(t => t.UserId == currentUser.Id)
+                .FirstOrDefaultAsync();
+            }
+            else
+            {
+                currentTeacher = await _context.Teachers.FirstAsync();
+            }
+
+
+            IQueryable<TaskModel> tasks = from t in _context.TaskModels
+                                 .Where(t => t.TeacherId == currentTeacher.Id)
+                                 .Include(t => t.TaskStudentItems)
+                                          select t;
+
+            if (filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    switch (filter.Name)
+                    {
+                        case "subjectId":
+                            {
+                                var value = Convert.ToInt32(filter.Value);
+                                if (value > 0)
+                                {
+                                    tasks = tasks.Where(t => t.SubjectId == value);
+                                }
+
+                                break;
+                            }
+
+                        case "groupId":
+                            {
+                                var value = Convert.ToInt32(filter.Value);
+                                group = await _context.Groups.FindAsync(value);
+                                if (value > 0)
+                                {
+                                    tasks = tasks.Where(t => t.GroupId == value);
+                                }
+
+                                break;
+                            }
+
+                        case "studentId":
+                            {
+                                //var taskDTOList = new List<TaskDTO>();
+                                var value = Convert.ToInt32(filter.Value);
+                                var student = await _context.Students
+                                    .Include(s => s.TaskStudentItems)
+                                    .FirstOrDefaultAsync(s => s.Id == value);
+                                if(student != null)
+                                {
+                                    //var studentDTO = StudentDTO.Map(student);
+                                    var ts = new TaskStudentItem();
+
+                                    foreach (var task in tasks)
+                                    {
+                                        if ((ts = task.TaskStudentItems.FirstOrDefault(ts => (ts.StudentId == student.Id) && (ts.TaskId == task.Id))) != null)
+                                        {
+                                            var taskDTO = TaskDTO.Map(task);
+                                            var solution = task.Solutions.Where(s => s.StudentId == student.Id).FirstOrDefault();
+                                            if (solution != null)
+                                            {
+                                                taskDTO.Solution = SolutionDTO.Map(solution);
+                                            }
+
+                                            resTaskDTOList.Add(taskDTO);
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+                    }
+                }
+            }
+
+            detail.Data = resTaskDTOList;
+            detail.Succeeded = true;
+            return detail;
         }
 
         // done
@@ -907,10 +1124,21 @@ namespace TaskExecutionSystem.BLL.Services
         // todo: exceptions; return errors [!]
         public async Task<User> GetUserFromClaimsAsync()
         {
-            var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
-            string stringID = userNameClaim.Value;
-            var user = await _userManager.FindByIdAsync(stringID);
-            return user;
+            try
+            {
+                var userNameClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name);
+                if(userNameClaim != null)
+                {
+                    string stringID = userNameClaim.Value;
+                    var user = await _userManager.FindByIdAsync(stringID);
+                    return user;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(_serverErrorMessage + e.Message);
+            }
+            return null;
         }
 
         private string GetUserName()

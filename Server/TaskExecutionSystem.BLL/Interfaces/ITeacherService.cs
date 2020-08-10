@@ -16,6 +16,10 @@ namespace TaskExecutionSystem.BLL.Interfaces
     public interface ITeacherService
     {
         // [профиль]
+        /// <summary>
+        /// Возвращает информацию о профиле преподавателя в объекте TaskExecutionSystem.BLL.DTO.TeacherDTO
+        /// </summary>
+        /// <returns></returns>
         public Task<OperationDetailDTO<TeacherDTO>> GetProfileDataAsync();
         public Task<OperationDetailDTO> UpdateProfileDataAsync(TeacherDTO dto); // модель в параметре ?? без данных для user 
         
@@ -43,5 +47,11 @@ namespace TaskExecutionSystem.BLL.Interfaces
         public Task<OperationDetailDTO> UpdateRepositoryAsync(RepositoryCreateModelDTO dto);
 
         public Task<User> GetUserFromClaimsAsync();
+
+        // главная разделенная
+        public Task<OperationDetailDTO<List<SubjectDTO>>> GetSubjectsForMainAsync();
+        public Task<OperationDetailDTO<List<GroupDTO>>> GetGroupsForSubjectAsync(int subjectID);
+        public Task<OperationDetailDTO<List<StudentDTO>>> GetStudentsForMainAsync(FilterDTO[] filters);
+        public Task<OperationDetailDTO<List<TaskDTO>>> GetTasksForStudentAsync(FilterDTO[] filters);
     }
 }
