@@ -252,7 +252,6 @@ class OneTaskComponent extends React.Component {
             null
 
         return (
-            
             <Auxiliary>
                 <h4>
                     Назначить
@@ -352,7 +351,6 @@ class OneTaskComponent extends React.Component {
             <Auxiliary>
                 <h4>Срок выполнения</h4>
                 <div>
-                    
                     <p className='date_p_create'>
                         Дата начала:
                         <span>{this.props.taskAdditionData.beginDate}</span>
@@ -384,7 +382,6 @@ class OneTaskComponent extends React.Component {
                     }
                 </div>
             </Auxiliary>
-
         )
     }
 
