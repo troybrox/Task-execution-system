@@ -214,7 +214,7 @@ class TasksComponent extends React.Component {
                             </div>
                             { this.props.role === 'teacher' ?
                                 <div className='tasks_right'>
-                                    <img src='/images/check-circle-solid.svg' alt='' />
+                                    <img src='/images/check-circle-solid.jpg' alt='' />
                                     <span>{item.solutionsCount}/{item.studentsCount}</span>
                                 </div> :
                                 <div className='tasks_right'>
